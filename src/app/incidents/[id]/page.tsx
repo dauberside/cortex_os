@@ -246,23 +246,26 @@ export default function IncidentDetailPage() {
           </div>
 
           {/* Affected Services */}
-          {incident.affectedServices && incident.affectedServices.length > 0 && (
-            <div className="mt-4 rounded-lg bg-white p-4 shadow">
-              <div className="mb-2 text-sm font-medium text-gray-700">
-                影響を受けるサービス
+          {incident.affectedServices &&
+            incident.affectedServices.length > 0 && (
+              <div className="mt-4 rounded-lg bg-white p-4 shadow">
+                <div className="mb-2 text-sm font-medium text-gray-700">
+                  影響を受けるサービス
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {incident.affectedServices.map(
+                    (service: string, idx: number) => (
+                      <span
+                        key={idx}
+                        className="rounded bg-red-100 px-3 py-1 text-sm font-medium text-red-800"
+                      >
+                        {service}
+                      </span>
+                    )
+                  )}
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {incident.affectedServices.map((service: string, idx: number) => (
-                  <span
-                    key={idx}
-                    className="rounded bg-red-100 px-3 py-1 text-sm font-medium text-red-800"
-                  >
-                    {service}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
+            )}
 
           {/* Communication Channel */}
           {incident.commsChannelUrl && (

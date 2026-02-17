@@ -75,9 +75,11 @@ export default function AIPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-4 sm:mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-4 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-            <h1 className="text-2xl sm:text-3xl font-bold text-black">Cortex OS - AIチャット</h1>
+            <h1 className="text-2xl font-bold text-black sm:text-3xl">
+              Cortex OS - AIチャット
+            </h1>
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -98,7 +100,9 @@ export default function AIPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <span className="text-xs sm:text-sm text-black truncate max-w-[150px] sm:max-w-none">{session.user.email}</span>
+            <span className="max-w-[150px] truncate text-xs text-black sm:max-w-none sm:text-sm">
+              {session.user.email}
+            </span>
             <Button variant="outline" size="sm" onClick={() => signOut()}>
               ログアウト
             </Button>
@@ -108,7 +112,7 @@ export default function AIPage() {
         <div className="grid gap-4 sm:gap-8 lg:grid-cols-4">
           {/* サイドバー：会話一覧 */}
           <div className="space-y-4 sm:space-y-6">
-            <div className="rounded-lg bg-white p-4 sm:p-6 shadow">
+            <div className="rounded-lg bg-white p-4 shadow sm:p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-black">会話履歴</h2>
                 <Button size="sm" onClick={handleNewConversation}>
@@ -116,42 +120,51 @@ export default function AIPage() {
                 </Button>
               </div>
               <div className="space-y-2">
-                {conversations?.map((conv: { conversationId: string; previewText: string; messageCount: number; lastMessageAt: string | Date }) => (
-                  <div
-                    key={conv.conversationId}
-                    className={`rounded border p-3 hover:bg-gray-50 ${
-                      conversationId === conv.conversationId
-                        ? "border-blue-500 bg-blue-50"
-                        : ""
-                    }`}
-                  >
-                    <button
-                      onClick={() => setConversationId(conv.conversationId)}
-                      className="w-full text-left"
+                {conversations?.map(
+                  (conv: {
+                    conversationId: string;
+                    previewText: string;
+                    messageCount: number;
+                    lastMessageAt: string | Date;
+                  }) => (
+                    <div
+                      key={conv.conversationId}
+                      className={`rounded border p-3 hover:bg-gray-50 ${
+                        conversationId === conv.conversationId
+                          ? "border-blue-500 bg-blue-50"
+                          : ""
+                      }`}
                     >
-                      <p className="text-sm font-medium text-black">{conv.previewText}</p>
-                      <p className="text-xs text-black">
-                        {conv.messageCount}件のメッセージ
-                      </p>
-                      <p className="text-xs text-black">
-                        {new Date(conv.lastMessageAt).toLocaleString("ja-JP")}
-                      </p>
-                    </button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() =>
-                        deleteConversation.mutate({
-                          conversationId: conv.conversationId,
-                        })
-                      }
-                      disabled={deleteConversation.isPending}
-                      className="mt-2 w-full"
-                    >
-                      削除
-                    </Button>
-                  </div>
-                ))}
+                      <button
+                        onClick={() => setConversationId(conv.conversationId)}
+                        className="w-full text-left"
+                      >
+                        <p className="text-sm font-medium text-black">
+                          {conv.previewText}
+                        </p>
+                        <p className="text-xs text-black">
+                          {conv.messageCount}件のメッセージ
+                        </p>
+                        <p className="text-xs text-black">
+                          {new Date(conv.lastMessageAt).toLocaleString("ja-JP")}
+                        </p>
+                      </button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() =>
+                          deleteConversation.mutate({
+                            conversationId: conv.conversationId,
+                          })
+                        }
+                        disabled={deleteConversation.isPending}
+                        className="mt-2 w-full"
+                      >
+                        削除
+                      </Button>
+                    </div>
+                  )
+                )}
                 {conversations?.length === 0 && (
                   <p className="text-sm text-black">会話履歴がありません</p>
                 )}
@@ -163,7 +176,7 @@ export default function AIPage() {
           <div className="space-y-4 sm:space-y-6 lg:col-span-3">
             {/* ノート選択（オプション） */}
             {!conversationId && (
-              <div className="rounded-lg bg-white p-4 sm:p-6 shadow">
+              <div className="rounded-lg bg-white p-4 shadow sm:p-6">
                 <h2 className="mb-4 text-lg font-semibold text-black">
                   ノートに関する質問（オプション）
                 </h2>
@@ -183,7 +196,7 @@ export default function AIPage() {
             )}
 
             {/* チャット表示エリア */}
-            <div className="rounded-lg bg-white p-4 sm:p-6 shadow">
+            <div className="rounded-lg bg-white p-4 shadow sm:p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-black">
                   {conversationId ? "会話" : "新規会話"}
@@ -206,8 +219,8 @@ export default function AIPage() {
                     key={msg.id}
                     className={`rounded-lg p-3 sm:p-4 ${
                       msg.role === "user"
-                        ? "ml-4 sm:ml-8 bg-blue-100"
-                        : "mr-4 sm:mr-8 bg-gray-100"
+                        ? "ml-4 bg-blue-100 sm:ml-8"
+                        : "mr-4 bg-gray-100 sm:mr-8"
                     }`}
                   >
                     <div className="mb-1 flex items-center gap-2">
@@ -220,7 +233,9 @@ export default function AIPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm whitespace-pre-wrap text-black">{msg.content}</p>
+                    <p className="text-sm whitespace-pre-wrap text-black">
+                      {msg.content}
+                    </p>
                     <p className="mt-2 text-xs text-black">
                       {new Date(msg.createdAt).toLocaleString("ja-JP")}
                     </p>
@@ -269,7 +284,9 @@ export default function AIPage() {
               {sendMessage.error && (
                 <div className="mt-4 rounded border border-red-300 bg-red-50 p-3 text-red-700">
                   <p className="text-sm font-semibold text-red-700">エラー</p>
-                  <p className="text-sm text-red-700">{sendMessage.error.message}</p>
+                  <p className="text-sm text-red-700">
+                    {sendMessage.error.message}
+                  </p>
                 </div>
               )}
             </div>

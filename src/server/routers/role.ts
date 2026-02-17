@@ -53,7 +53,9 @@ export const roleRouter = router({
         },
       });
 
-      const roleAssignment = await (ctx.prisma as any).incidentRoleAssignment.create({
+      const roleAssignment = await (
+        ctx.prisma as any
+      ).incidentRoleAssignment.create({
         data: {
           noteId: input.noteId,
           role: input.role,
@@ -78,14 +80,17 @@ export const roleRouter = router({
   end: protectedProcedure
     .input(endRoleSchema)
     .mutation(async ({ ctx, input }) => {
-      const roleAssignment = await (ctx.prisma as any).incidentRoleAssignment.findUnique(
-        {
-          where: { id: input.id },
-          include: { note: true },
-        }
-      );
+      const roleAssignment = await (
+        ctx.prisma as any
+      ).incidentRoleAssignment.findUnique({
+        where: { id: input.id },
+        include: { note: true },
+      });
 
-      if (!roleAssignment || roleAssignment.note.userId !== ctx.session.user.id) {
+      if (
+        !roleAssignment ||
+        roleAssignment.note.userId !== ctx.session.user.id
+      ) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "役割割り当てが見つかりません",

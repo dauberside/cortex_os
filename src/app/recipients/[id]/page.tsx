@@ -81,7 +81,11 @@ export default function RecipientDetailPage() {
   );
 
   const handleDelete = () => {
-    if (window.confirm(`${recipient?.name} さんを削除してもよろしいですか？\n\n※論理削除のため、後から復元可能です。`)) {
+    if (
+      window.confirm(
+        `${recipient?.name} さんを削除してもよろしいですか？\n\n※論理削除のため、後から復元可能です。`
+      )
+    ) {
       deleteMutation.mutate({ id: recipientId });
     }
   };
@@ -110,7 +114,7 @@ export default function RecipientDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-lg">読み込み中...</div>
       </div>
     );
@@ -118,14 +122,14 @@ export default function RecipientDetailPage() {
 
   if (!recipient) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg text-destructive">利用者が見つかりません</div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-destructive text-lg">利用者が見つかりません</div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto px-4 py-8">
       <Link href="/recipients">
         <Button variant="ghost" className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -133,9 +137,9 @@ export default function RecipientDetailPage() {
         </Button>
       </Link>
 
-      <div className="flex justify-between items-start mb-8">
+      <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">{recipient.name}</h1>
+          <h1 className="mb-2 text-3xl font-bold">{recipient.name}</h1>
           {recipient.nameKana && (
             <p className="text-muted-foreground mb-1">({recipient.nameKana})</p>
           )}
@@ -167,42 +171,42 @@ export default function RecipientDetailPage() {
       </div>
 
       {/* 基本情報 */}
-      <div className="bg-card border rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">基本情報</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-card mb-6 rounded-lg border p-6">
+        <h2 className="mb-4 text-xl font-semibold">基本情報</h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <p className="text-sm text-muted-foreground">生年月日</p>
+            <p className="text-muted-foreground text-sm">生年月日</p>
             <p className="font-medium">
               {new Date(recipient.birthDate).toLocaleDateString("ja-JP")}
             </p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">性別</p>
+            <p className="text-muted-foreground text-sm">性別</p>
             <p className="font-medium">
               {recipient.gender === "Male"
                 ? "男性"
                 : recipient.gender === "Female"
-                ? "女性"
-                : "その他"}
+                  ? "女性"
+                  : "その他"}
             </p>
           </div>
           {recipient.supportLevel && (
             <div>
-              <p className="text-sm text-muted-foreground">障害支援区分</p>
+              <p className="text-muted-foreground text-sm">障害支援区分</p>
               <p className="font-medium">区分{recipient.supportLevel}</p>
             </div>
           )}
           {recipient.disabilityType.length > 0 && (
             <div>
-              <p className="text-sm text-muted-foreground">障害種別</p>
+              <p className="text-muted-foreground text-sm">障害種別</p>
               <p className="font-medium">
                 {recipient.disabilityType
                   .map((t) =>
                     t === "Physical"
                       ? "身体障害"
                       : t === "Intellectual"
-                      ? "知的障害"
-                      : "精神障害"
+                        ? "知的障害"
+                        : "精神障害"
                   )
                   .join(", ")}
               </p>
@@ -212,18 +216,22 @@ export default function RecipientDetailPage() {
       </div>
 
       {/* サービス情報 */}
-      {((recipient as any).serviceTypes?.length > 0 || (recipient as any).utilizationStatus || (recipient as any).recipientNumber) && (
-        <div className="bg-card border rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">サービス・受給者証情報</h2>
+      {((recipient as any).serviceTypes?.length > 0 ||
+        (recipient as any).utilizationStatus ||
+        (recipient as any).recipientNumber) && (
+        <div className="bg-card mb-6 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">サービス・受給者証情報</h2>
           <div className="space-y-4">
             {(recipient as any).serviceTypes?.length > 0 && (
               <div>
-                <p className="text-sm text-muted-foreground mb-2">利用サービス種別</p>
+                <p className="text-muted-foreground mb-2 text-sm">
+                  利用サービス種別
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {(recipient as any).serviceTypes.map((type: string) => (
                     <span
                       key={type}
-                      className={`px-3 py-1 text-sm font-medium rounded-full ${
+                      className={`rounded-full px-3 py-1 text-sm font-medium ${
                         SERVICE_TYPE_COLORS[type] || "bg-gray-100 text-gray-700"
                       }`}
                     >
@@ -231,52 +239,70 @@ export default function RecipientDetailPage() {
                     </span>
                   ))}
                   {(recipient as any).behaviorSupportNeeded && (
-                    <span className="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full border border-red-200">
+                    <span className="rounded-full border border-red-200 bg-red-100 px-3 py-1 text-sm font-medium text-red-800">
                       行動援護対象
-                      {(recipient as any).behaviorScore && ` (${(recipient as any).behaviorScore}点)`}
+                      {(recipient as any).behaviorScore &&
+                        ` (${(recipient as any).behaviorScore}点)`}
                     </span>
                   )}
                 </div>
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {(recipient as any).utilizationStatus && (
                 <div>
-                  <p className="text-sm text-muted-foreground">利用状況</p>
+                  <p className="text-muted-foreground text-sm">利用状況</p>
                   <p className="font-medium">
-                    {UTILIZATION_STATUS_LABELS[(recipient as any).utilizationStatus] || (recipient as any).utilizationStatus}
+                    {UTILIZATION_STATUS_LABELS[
+                      (recipient as any).utilizationStatus
+                    ] || (recipient as any).utilizationStatus}
                   </p>
                 </div>
               )}
               {(recipient as any).recipientNumber && (
                 <div>
-                  <p className="text-sm text-muted-foreground">受給者番号</p>
-                  <p className="font-medium font-mono">{(recipient as any).recipientNumber}</p>
+                  <p className="text-muted-foreground text-sm">受給者番号</p>
+                  <p className="font-mono font-medium">
+                    {(recipient as any).recipientNumber}
+                  </p>
                 </div>
               )}
               {(recipient as any).receivedDate && (
                 <div>
-                  <p className="text-sm text-muted-foreground">受給者証交付日</p>
+                  <p className="text-muted-foreground text-sm">
+                    受給者証交付日
+                  </p>
                   <p className="font-medium">
-                    {new Date((recipient as any).receivedDate).toLocaleDateString("ja-JP")}
+                    {new Date(
+                      (recipient as any).receivedDate
+                    ).toLocaleDateString("ja-JP")}
                   </p>
                 </div>
               )}
               {(recipient as any).validUntil && (
                 <div>
-                  <p className="text-sm text-muted-foreground">受給者証有効期限</p>
-                  <p className={`font-medium ${
-                    new Date((recipient as any).validUntil) < new Date()
-                      ? "text-destructive"
-                      : new Date((recipient as any).validUntil) < new Date(+new Date() + 30 * 24 * 60 * 60 * 1000)
-                      ? "text-amber-600"
-                      : ""
-                  }`}>
-                    {new Date((recipient as any).validUntil).toLocaleDateString("ja-JP")}
-                    {new Date((recipient as any).validUntil) < new Date() && " (期限切れ)"}
+                  <p className="text-muted-foreground text-sm">
+                    受給者証有効期限
+                  </p>
+                  <p
+                    className={`font-medium ${
+                      new Date((recipient as any).validUntil) < new Date()
+                        ? "text-destructive"
+                        : new Date((recipient as any).validUntil) <
+                            new Date(+new Date() + 30 * 24 * 60 * 60 * 1000)
+                          ? "text-amber-600"
+                          : ""
+                    }`}
+                  >
+                    {new Date((recipient as any).validUntil).toLocaleDateString(
+                      "ja-JP"
+                    )}
+                    {new Date((recipient as any).validUntil) < new Date() &&
+                      " (期限切れ)"}
                     {new Date((recipient as any).validUntil) >= new Date() &&
-                      new Date((recipient as any).validUntil) < new Date(+new Date() + 30 * 24 * 60 * 60 * 1000) &&
+                      new Date((recipient as any).validUntil) <
+                        new Date(+new Date() + 30 * 24 * 60 * 60 * 1000) &&
                       " (間もなく期限切れ)"}
                   </p>
                 </div>
@@ -285,12 +311,12 @@ export default function RecipientDetailPage() {
 
             {(recipient as any).allowances?.length > 0 && (
               <div>
-                <p className="text-sm text-muted-foreground mb-2">適用加算</p>
+                <p className="text-muted-foreground mb-2 text-sm">適用加算</p>
                 <div className="flex flex-wrap gap-2">
                   {(recipient as any).allowances.map((allowance: string) => (
                     <span
                       key={allowance}
-                      className="px-3 py-1 bg-amber-50 text-amber-800 text-sm rounded border border-amber-200"
+                      className="rounded border border-amber-200 bg-amber-50 px-3 py-1 text-sm text-amber-800"
                     >
                       {ALLOWANCE_LABELS[allowance] || allowance}
                     </span>
@@ -303,34 +329,48 @@ export default function RecipientDetailPage() {
       )}
 
       {/* 障害福祉制度情報 */}
-      {((recipient as any).physicalHandicapBook || (recipient as any).intellectualHandicapBook || (recipient as any).mentalHandicapBook ||
-        (recipient as any).disabilityPension || (recipient as any).specialChildAllowance || (recipient as any).specialDisabilityAllowance ||
-        (recipient as any).nursingAllowance || (recipient as any).psychiatricDiagnosis || (recipient as any).developmentalDiagnosis ||
-        (recipient as any).isElderly || (recipient as any).careInsuranceCertified) && (
-        <div className="bg-card border rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">障害福祉制度情報</h2>
+      {((recipient as any).physicalHandicapBook ||
+        (recipient as any).intellectualHandicapBook ||
+        (recipient as any).mentalHandicapBook ||
+        (recipient as any).disabilityPension ||
+        (recipient as any).specialChildAllowance ||
+        (recipient as any).specialDisabilityAllowance ||
+        (recipient as any).nursingAllowance ||
+        (recipient as any).psychiatricDiagnosis ||
+        (recipient as any).developmentalDiagnosis ||
+        (recipient as any).isElderly ||
+        (recipient as any).careInsuranceCertified) && (
+        <div className="bg-card mb-6 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">障害福祉制度情報</h2>
 
           {/* 障害者手帳 */}
-          {((recipient as any).physicalHandicapBook || (recipient as any).intellectualHandicapBook || (recipient as any).mentalHandicapBook) && (
+          {((recipient as any).physicalHandicapBook ||
+            (recipient as any).intellectualHandicapBook ||
+            (recipient as any).mentalHandicapBook) && (
             <div className="mb-4">
-              <p className="text-sm font-medium text-muted-foreground mb-2">障害者手帳</p>
+              <p className="text-muted-foreground mb-2 text-sm font-medium">
+                障害者手帳
+              </p>
               <div className="flex flex-wrap gap-2">
                 {(recipient as any).physicalHandicapBook && (
-                  <span className="px-3 py-1 bg-blue-50 text-blue-800 text-sm rounded border border-blue-200">
+                  <span className="rounded border border-blue-200 bg-blue-50 px-3 py-1 text-sm text-blue-800">
                     身体障害者手帳
-                    {(recipient as any).physicalHandicapGrade && ` ${(recipient as any).physicalHandicapGrade}級`}
+                    {(recipient as any).physicalHandicapGrade &&
+                      ` ${(recipient as any).physicalHandicapGrade}級`}
                   </span>
                 )}
                 {(recipient as any).intellectualHandicapBook && (
-                  <span className="px-3 py-1 bg-green-50 text-green-800 text-sm rounded border border-green-200">
+                  <span className="rounded border border-green-200 bg-green-50 px-3 py-1 text-sm text-green-800">
                     療育手帳
-                    {(recipient as any).intellectualHandicapGrade && ` ${(recipient as any).intellectualHandicapGrade}`}
+                    {(recipient as any).intellectualHandicapGrade &&
+                      ` ${(recipient as any).intellectualHandicapGrade}`}
                   </span>
                 )}
                 {(recipient as any).mentalHandicapBook && (
-                  <span className="px-3 py-1 bg-purple-50 text-purple-800 text-sm rounded border border-purple-200">
+                  <span className="rounded border border-purple-200 bg-purple-50 px-3 py-1 text-sm text-purple-800">
                     精神障害者保健福祉手帳
-                    {(recipient as any).mentalHandicapGrade && ` ${(recipient as any).mentalHandicapGrade}級`}
+                    {(recipient as any).mentalHandicapGrade &&
+                      ` ${(recipient as any).mentalHandicapGrade}級`}
                   </span>
                 )}
               </div>
@@ -338,37 +378,44 @@ export default function RecipientDetailPage() {
           )}
 
           {/* 障害年金・各種手当 */}
-          {((recipient as any).disabilityPension || (recipient as any).specialChildAllowance ||
-            (recipient as any).disabilityAllowance || (recipient as any).specialDisabilityAllowance ||
+          {((recipient as any).disabilityPension ||
+            (recipient as any).specialChildAllowance ||
+            (recipient as any).disabilityAllowance ||
+            (recipient as any).specialDisabilityAllowance ||
             (recipient as any).nursingAllowance) && (
             <div className="mb-4">
-              <p className="text-sm font-medium text-muted-foreground mb-2">障害年金・各種手当</p>
+              <p className="text-muted-foreground mb-2 text-sm font-medium">
+                障害年金・各種手当
+              </p>
               <div className="flex flex-wrap gap-2">
                 {(recipient as any).disabilityPension && (
-                  <span className="px-3 py-1 bg-indigo-50 text-indigo-800 text-sm rounded border border-indigo-200">
+                  <span className="rounded border border-indigo-200 bg-indigo-50 px-3 py-1 text-sm text-indigo-800">
                     障害年金
-                    {(recipient as any).disabilityPensionGrade && ` ${(recipient as any).disabilityPensionGrade}級`}
-                    {(recipient as any).disabilityPensionType === "National" && "（基礎）"}
-                    {(recipient as any).disabilityPensionType === "Employee" && "（厚生）"}
+                    {(recipient as any).disabilityPensionGrade &&
+                      ` ${(recipient as any).disabilityPensionGrade}級`}
+                    {(recipient as any).disabilityPensionType === "National" &&
+                      "（基礎）"}
+                    {(recipient as any).disabilityPensionType === "Employee" &&
+                      "（厚生）"}
                   </span>
                 )}
                 {(recipient as any).specialChildAllowance && (
-                  <span className="px-3 py-1 bg-pink-50 text-pink-800 text-sm rounded border border-pink-200">
+                  <span className="rounded border border-pink-200 bg-pink-50 px-3 py-1 text-sm text-pink-800">
                     特別児童扶養手当
                   </span>
                 )}
                 {(recipient as any).disabilityAllowance && (
-                  <span className="px-3 py-1 bg-rose-50 text-rose-800 text-sm rounded border border-rose-200">
+                  <span className="rounded border border-rose-200 bg-rose-50 px-3 py-1 text-sm text-rose-800">
                     障害児福祉手当
                   </span>
                 )}
                 {(recipient as any).specialDisabilityAllowance && (
-                  <span className="px-3 py-1 bg-orange-50 text-orange-800 text-sm rounded border border-orange-200">
+                  <span className="rounded border border-orange-200 bg-orange-50 px-3 py-1 text-sm text-orange-800">
                     特別障害者手当
                   </span>
                 )}
                 {(recipient as any).nursingAllowance && (
-                  <span className="px-3 py-1 bg-yellow-50 text-yellow-800 text-sm rounded border border-yellow-200">
+                  <span className="rounded border border-yellow-200 bg-yellow-50 px-3 py-1 text-sm text-yellow-800">
                     介護手当
                   </span>
                 )}
@@ -377,51 +424,72 @@ export default function RecipientDetailPage() {
           )}
 
           {/* 精神科・発達障害 */}
-          {((recipient as any).psychiatricDiagnosis || (recipient as any).developmentalDiagnosis ||
-            (recipient as any).autismSpectrumLevel || (recipient as any).medicalProtectionAdmission ||
-            (recipient as any).outpatientMedication || (recipient as any).medicalFeeExemption) && (
+          {((recipient as any).psychiatricDiagnosis ||
+            (recipient as any).developmentalDiagnosis ||
+            (recipient as any).autismSpectrumLevel ||
+            (recipient as any).medicalProtectionAdmission ||
+            (recipient as any).outpatientMedication ||
+            (recipient as any).medicalFeeExemption) && (
             <div className="mb-4">
-              <p className="text-sm font-medium text-muted-foreground mb-2">精神科・発達障害関連</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <p className="text-muted-foreground mb-2 text-sm font-medium">
+                精神科・発達障害関連
+              </p>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 {(recipient as any).psychiatricDiagnosis && (
                   <div>
-                    <p className="text-xs text-muted-foreground">精神科診断名</p>
-                    <p className="text-sm font-medium">{(recipient as any).psychiatricDiagnosis}</p>
+                    <p className="text-muted-foreground text-xs">
+                      精神科診断名
+                    </p>
+                    <p className="text-sm font-medium">
+                      {(recipient as any).psychiatricDiagnosis}
+                    </p>
                   </div>
                 )}
                 {(recipient as any).developmentalDiagnosis && (
                   <div>
-                    <p className="text-xs text-muted-foreground">発達障害診断名</p>
-                    <p className="text-sm font-medium">{(recipient as any).developmentalDiagnosis}</p>
+                    <p className="text-muted-foreground text-xs">
+                      発達障害診断名
+                    </p>
+                    <p className="text-sm font-medium">
+                      {(recipient as any).developmentalDiagnosis}
+                    </p>
                   </div>
                 )}
                 {(recipient as any).autismSpectrumLevel && (
                   <div>
-                    <p className="text-xs text-muted-foreground">ASDレベル</p>
+                    <p className="text-muted-foreground text-xs">ASDレベル</p>
                     <p className="text-sm font-medium">
-                      {(recipient as any).autismSpectrumLevel === "Level1" ? "レベル1（支援を要する）"
-                        : (recipient as any).autismSpectrumLevel === "Level2" ? "レベル2（相当の支援を要する）"
-                        : (recipient as any).autismSpectrumLevel === "Level3" ? "レベル3（非常に多くの支援を要する）"
-                        : (recipient as any).autismSpectrumLevel}
+                      {(recipient as any).autismSpectrumLevel === "Level1"
+                        ? "レベル1（支援を要する）"
+                        : (recipient as any).autismSpectrumLevel === "Level2"
+                          ? "レベル2（相当の支援を要する）"
+                          : (recipient as any).autismSpectrumLevel === "Level3"
+                            ? "レベル3（非常に多くの支援を要する）"
+                            : (recipient as any).autismSpectrumLevel}
                     </p>
                   </div>
                 )}
-                {(recipient as any).medicalFeeExemption && (recipient as any).medicalFeeExemption !== "None" && (
-                  <div>
-                    <p className="text-xs text-muted-foreground">自立支援医療（精神通院）</p>
-                    <p className="text-sm font-medium">
-                      {(recipient as any).medicalFeeExemption === "Applied" ? "申請中" : "適用済み"}
-                    </p>
-                  </div>
-                )}
+                {(recipient as any).medicalFeeExemption &&
+                  (recipient as any).medicalFeeExemption !== "None" && (
+                    <div>
+                      <p className="text-muted-foreground text-xs">
+                        自立支援医療（精神通院）
+                      </p>
+                      <p className="text-sm font-medium">
+                        {(recipient as any).medicalFeeExemption === "Applied"
+                          ? "申請中"
+                          : "適用済み"}
+                      </p>
+                    </div>
+                  )}
                 <div className="flex gap-3">
                   {(recipient as any).medicalProtectionAdmission && (
-                    <span className="px-2 py-1 bg-red-50 text-red-700 text-xs rounded border border-red-200">
+                    <span className="rounded border border-red-200 bg-red-50 px-2 py-1 text-xs text-red-700">
                       医療保護入院歴あり
                     </span>
                   )}
                   {(recipient as any).outpatientMedication && (
-                    <span className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded border border-blue-200">
+                    <span className="rounded border border-blue-200 bg-blue-50 px-2 py-1 text-xs text-blue-700">
                       外来服薬中
                     </span>
                   )}
@@ -431,47 +499,72 @@ export default function RecipientDetailPage() {
           )}
 
           {/* 高齢障害者・介護保険 */}
-          {((recipient as any).isElderly || (recipient as any).careInsuranceCertified) && (
+          {((recipient as any).isElderly ||
+            (recipient as any).careInsuranceCertified) && (
             <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">高齢障害者・介護保険</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <p className="text-muted-foreground mb-2 text-sm font-medium">
+                高齢障害者・介護保険
+              </p>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 {(recipient as any).isElderly && (
-                  <span className="inline-flex items-center px-2 py-1 bg-amber-50 text-amber-800 text-xs rounded border border-amber-200 w-fit">
+                  <span className="inline-flex w-fit items-center rounded border border-amber-200 bg-amber-50 px-2 py-1 text-xs text-amber-800">
                     高齢障害者（65歳以上）
                   </span>
                 )}
                 {(recipient as any).careInsuranceCertified && (
                   <div>
-                    <p className="text-xs text-muted-foreground">介護保険認定</p>
+                    <p className="text-muted-foreground text-xs">
+                      介護保険認定
+                    </p>
                     <p className="text-sm font-medium">
-                      {(recipient as any).careInsuranceLevel === "Support1" ? "要支援1"
-                        : (recipient as any).careInsuranceLevel === "Support2" ? "要支援2"
-                        : (recipient as any).careInsuranceLevel === "Care1" ? "要介護1"
-                        : (recipient as any).careInsuranceLevel === "Care2" ? "要介護2"
-                        : (recipient as any).careInsuranceLevel === "Care3" ? "要介護3"
-                        : (recipient as any).careInsuranceLevel === "Care4" ? "要介護4"
-                        : (recipient as any).careInsuranceLevel === "Care5" ? "要介護5"
-                        : (recipient as any).careInsuranceLevel || "認定済み"}
+                      {(recipient as any).careInsuranceLevel === "Support1"
+                        ? "要支援1"
+                        : (recipient as any).careInsuranceLevel === "Support2"
+                          ? "要支援2"
+                          : (recipient as any).careInsuranceLevel === "Care1"
+                            ? "要介護1"
+                            : (recipient as any).careInsuranceLevel === "Care2"
+                              ? "要介護2"
+                              : (recipient as any).careInsuranceLevel ===
+                                  "Care3"
+                                ? "要介護3"
+                                : (recipient as any).careInsuranceLevel ===
+                                    "Care4"
+                                  ? "要介護4"
+                                  : (recipient as any).careInsuranceLevel ===
+                                      "Care5"
+                                    ? "要介護5"
+                                    : (recipient as any).careInsuranceLevel ||
+                                      "認定済み"}
                     </p>
                   </div>
                 )}
                 {(recipient as any).careInsuranceExpiry && (
                   <div>
-                    <p className="text-xs text-muted-foreground">介護保険有効期限</p>
-                    <p className={`text-sm font-medium ${
-                      new Date((recipient as any).careInsuranceExpiry) < new Date()
-                        ? "text-destructive"
-                        : new Date((recipient as any).careInsuranceExpiry) < new Date(+new Date() + 30 * 24 * 60 * 60 * 1000)
-                        ? "text-amber-600"
-                        : ""
-                    }`}>
-                      {new Date((recipient as any).careInsuranceExpiry).toLocaleDateString("ja-JP")}
-                      {new Date((recipient as any).careInsuranceExpiry) < new Date() && " (期限切れ)"}
+                    <p className="text-muted-foreground text-xs">
+                      介護保険有効期限
+                    </p>
+                    <p
+                      className={`text-sm font-medium ${
+                        new Date((recipient as any).careInsuranceExpiry) <
+                        new Date()
+                          ? "text-destructive"
+                          : new Date((recipient as any).careInsuranceExpiry) <
+                              new Date(+new Date() + 30 * 24 * 60 * 60 * 1000)
+                            ? "text-amber-600"
+                            : ""
+                      }`}
+                    >
+                      {new Date(
+                        (recipient as any).careInsuranceExpiry
+                      ).toLocaleDateString("ja-JP")}
+                      {new Date((recipient as any).careInsuranceExpiry) <
+                        new Date() && " (期限切れ)"}
                     </p>
                   </div>
                 )}
                 {(recipient as any).continuedDisabilityService && (
-                  <span className="inline-flex items-center px-2 py-1 bg-teal-50 text-teal-800 text-xs rounded border border-teal-200 w-fit">
+                  <span className="inline-flex w-fit items-center rounded border border-teal-200 bg-teal-50 px-2 py-1 text-xs text-teal-800">
                     障害福祉サービス継続利用
                   </span>
                 )}
@@ -482,42 +575,44 @@ export default function RecipientDetailPage() {
       )}
 
       {/* 連絡先・医療情報 */}
-      <div className="bg-card border rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">連絡先・医療情報</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-card mb-6 rounded-lg border p-6">
+        <h2 className="mb-4 text-xl font-semibold">連絡先・医療情報</h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {recipient.emergencyContact && (
             <div>
-              <p className="text-sm text-muted-foreground">緊急連絡先</p>
+              <p className="text-muted-foreground text-sm">緊急連絡先</p>
               <p className="font-medium">{recipient.emergencyContact}</p>
             </div>
           )}
           {recipient.doctor && (
             <div>
-              <p className="text-sm text-muted-foreground">主治医</p>
+              <p className="text-muted-foreground text-sm">主治医</p>
               <p className="font-medium">{recipient.doctor}</p>
             </div>
           )}
           {recipient.hospital && (
             <div>
-              <p className="text-sm text-muted-foreground">医療機関</p>
+              <p className="text-muted-foreground text-sm">医療機関</p>
               <p className="font-medium">{recipient.hospital}</p>
             </div>
           )}
           {recipient.allergies && (
             <div className="md:col-span-2">
-              <p className="text-sm text-muted-foreground">アレルギー情報</p>
-              <p className="font-medium text-destructive">{recipient.allergies}</p>
+              <p className="text-muted-foreground text-sm">アレルギー情報</p>
+              <p className="text-destructive font-medium">
+                {recipient.allergies}
+              </p>
             </div>
           )}
           {recipient.medicalHistory && (
             <div className="md:col-span-2">
-              <p className="text-sm text-muted-foreground">既往歴</p>
+              <p className="text-muted-foreground text-sm">既往歴</p>
               <p className="font-medium">{recipient.medicalHistory}</p>
             </div>
           )}
           {recipient.notes && (
             <div className="md:col-span-2">
-              <p className="text-sm text-muted-foreground">備考</p>
+              <p className="text-muted-foreground text-sm">備考</p>
               <p className="font-medium">{recipient.notes}</p>
             </div>
           )}
@@ -525,68 +620,60 @@ export default function RecipientDetailPage() {
       </div>
 
       {/* 機能メニュー */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Link href={`/recipients/${recipientId}/assessment`}>
-          <div className="bg-card border rounded-lg p-6 hover:bg-accent transition-colors cursor-pointer">
-            <FileText className="h-10 w-10 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">アセスメント</h3>
-            <p className="text-sm text-muted-foreground">
+          <div className="bg-card hover:bg-accent cursor-pointer rounded-lg border p-6 transition-colors">
+            <FileText className="text-primary mb-4 h-10 w-10" />
+            <h3 className="mb-2 text-lg font-semibold">アセスメント</h3>
+            <p className="text-muted-foreground text-sm">
               ADL・コミュニケーション・行動特性などの評価
             </p>
           </div>
         </Link>
 
         <Link href={`/recipients/${recipientId}/vpn`}>
-          <div className="bg-card border rounded-lg p-6 hover:bg-accent transition-colors cursor-pointer">
-            <Activity className="h-10 w-10 text-primary mb-4" />
-            <h3 className="text-lg font-semibold mb-2">VPN記録</h3>
-            <p className="text-sm text-muted-foreground">
+          <div className="bg-card hover:bg-accent cursor-pointer rounded-lg border p-6 transition-colors">
+            <Activity className="text-primary mb-4 h-10 w-10" />
+            <h3 className="mb-2 text-lg font-semibold">VPN記録</h3>
+            <p className="text-muted-foreground text-sm">
               バイタルサイン・身体状態・栄養状態の記録
             </p>
           </div>
         </Link>
 
-        <div className="bg-card border rounded-lg p-6 opacity-50">
-          <FileText className="h-10 w-10 text-primary mb-4" />
-          <h3 className="text-lg font-semibold mb-2">支援記録</h3>
-          <p className="text-sm text-muted-foreground">
-            日々の支援内容を記録
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">※実装予定</p>
+        <div className="bg-card rounded-lg border p-6 opacity-50">
+          <FileText className="text-primary mb-4 h-10 w-10" />
+          <h3 className="mb-2 text-lg font-semibold">支援記録</h3>
+          <p className="text-muted-foreground text-sm">日々の支援内容を記録</p>
+          <p className="text-muted-foreground mt-2 text-xs">※実装予定</p>
         </div>
 
-        <div className="bg-card border rounded-lg p-6 opacity-50">
-          <Pill className="h-10 w-10 text-primary mb-4" />
-          <h3 className="text-lg font-semibold mb-2">服薬管理</h3>
-          <p className="text-sm text-muted-foreground">
-            服薬記録・予定管理
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">※実装予定</p>
+        <div className="bg-card rounded-lg border p-6 opacity-50">
+          <Pill className="text-primary mb-4 h-10 w-10" />
+          <h3 className="mb-2 text-lg font-semibold">服薬管理</h3>
+          <p className="text-muted-foreground text-sm">服薬記録・予定管理</p>
+          <p className="text-muted-foreground mt-2 text-xs">※実装予定</p>
         </div>
 
-        <div className="bg-card border rounded-lg p-6 opacity-50">
-          <MessageSquare className="h-10 w-10 text-primary mb-4" />
-          <h3 className="text-lg font-semibold mb-2">申し送り</h3>
-          <p className="text-sm text-muted-foreground">
-            引継ぎ事項の管理
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">※実装予定</p>
+        <div className="bg-card rounded-lg border p-6 opacity-50">
+          <MessageSquare className="text-primary mb-4 h-10 w-10" />
+          <h3 className="mb-2 text-lg font-semibold">申し送り</h3>
+          <p className="text-muted-foreground text-sm">引継ぎ事項の管理</p>
+          <p className="text-muted-foreground mt-2 text-xs">※実装予定</p>
         </div>
 
-        <div className="bg-card border rounded-lg p-6 opacity-50">
-          <AlertTriangle className="h-10 w-10 text-primary mb-4" />
-          <h3 className="text-lg font-semibold mb-2">ヒヤリハット</h3>
-          <p className="text-sm text-muted-foreground">
-            事故報告・統計分析
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">※実装予定</p>
+        <div className="bg-card rounded-lg border p-6 opacity-50">
+          <AlertTriangle className="text-primary mb-4 h-10 w-10" />
+          <h3 className="mb-2 text-lg font-semibold">ヒヤリハット</h3>
+          <p className="text-muted-foreground text-sm">事故報告・統計分析</p>
+          <p className="text-muted-foreground mt-2 text-xs">※実装予定</p>
         </div>
       </div>
 
       {/* 最近のVPN記録 */}
       {recipient.vitalSigns && recipient.vitalSigns.length > 0 && (
-        <div className="bg-card border rounded-lg p-6">
-          <div className="flex justify-between items-center mb-4">
+        <div className="bg-card rounded-lg border p-6">
+          <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-semibold">最近のVPN記録</h2>
             <Link href={`/recipients/${recipientId}/vpn`}>
               <Button variant="outline" size="sm">
@@ -596,13 +683,18 @@ export default function RecipientDetailPage() {
           </div>
           <div className="space-y-4">
             {recipient.vitalSigns.slice(0, 5).map((record) => (
-              <div key={record.id} className="border-l-4 border-primary pl-4 py-2">
+              <div
+                key={record.id}
+                className="border-primary border-l-4 py-2 pl-4"
+              >
                 <p className="text-sm font-semibold">
                   {new Date(record.measuredAt).toLocaleString("ja-JP")}
                 </p>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   {record.temperature && `体温: ${record.temperature}℃ `}
-                  {record.systolic && record.diastolic && `血圧: ${record.systolic}/${record.diastolic} `}
+                  {record.systolic &&
+                    record.diastolic &&
+                    `血圧: ${record.systolic}/${record.diastolic} `}
                   {record.pulse && `脈拍: ${record.pulse} `}
                   {record.spo2 && `SpO2: ${record.spo2}% `}
                 </div>

@@ -12,7 +12,9 @@ import { useEffect, useRef } from "react";
 
 const assessmentSchema = z.object({
   // ADL
-  adlMovement: z.enum(["Independent", "Assisted", "Wheelchair", "Bedridden", ""]).optional(),
+  adlMovement: z
+    .enum(["Independent", "Assisted", "Wheelchair", "Bedridden", ""])
+    .optional(),
   adlEating: z.enum(["Independent", "Partial", "Full", ""]).optional(),
   adlToilet: z.enum(["Independent", "Partial", "Full", ""]).optional(),
   adlBathing: z.enum(["Independent", "Partial", "Full", ""]).optional(),
@@ -146,14 +148,14 @@ export default function AssessmentPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-lg">読み込み中...</div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
+    <div className="container mx-auto max-w-4xl px-4 py-8">
       <Link href={`/recipients/${recipientId}`}>
         <Button variant="ghost" className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -161,9 +163,9 @@ export default function AssessmentPage() {
         </Button>
       </Link>
 
-      <div className="flex justify-between items-start mb-8">
+      <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">アセスメント情報</h1>
+          <h1 className="mb-2 text-3xl font-bold">アセスメント情報</h1>
           {recipient && (
             <p className="text-muted-foreground">
               {recipient.name} さんのアセスメント情報
@@ -182,15 +184,15 @@ export default function AssessmentPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* ADL（日常生活動作） */}
-        <div className="bg-card border rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold mb-4">ADL（日常生活動作）</h2>
+        <div className="bg-card space-y-4 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">ADL（日常生活動作）</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium mb-2">移動</label>
+              <label className="mb-2 block text-sm font-medium">移動</label>
               <select
                 {...register("adlMovement")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">未設定</option>
                 <option value="Independent">自立</option>
@@ -201,10 +203,10 @@ export default function AssessmentPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">食事</label>
+              <label className="mb-2 block text-sm font-medium">食事</label>
               <select
                 {...register("adlEating")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">未設定</option>
                 <option value="Independent">自立</option>
@@ -214,10 +216,10 @@ export default function AssessmentPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">排泄</label>
+              <label className="mb-2 block text-sm font-medium">排泄</label>
               <select
                 {...register("adlToilet")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">未設定</option>
                 <option value="Independent">自立</option>
@@ -227,10 +229,10 @@ export default function AssessmentPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">入浴</label>
+              <label className="mb-2 block text-sm font-medium">入浴</label>
               <select
                 {...register("adlBathing")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">未設定</option>
                 <option value="Independent">自立</option>
@@ -240,10 +242,10 @@ export default function AssessmentPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">更衣</label>
+              <label className="mb-2 block text-sm font-medium">更衣</label>
               <select
                 {...register("adlDressing")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">未設定</option>
                 <option value="Independent">自立</option>
@@ -253,10 +255,10 @@ export default function AssessmentPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">整容</label>
+              <label className="mb-2 block text-sm font-medium">整容</label>
               <select
                 {...register("adlGrooming")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">未設定</option>
                 <option value="Independent">自立</option>
@@ -268,27 +270,27 @@ export default function AssessmentPage() {
         </div>
 
         {/* コミュニケーション */}
-        <div className="bg-card border rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold mb-4">コミュニケーション</h2>
+        <div className="bg-card space-y-4 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">コミュニケーション</h2>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="mb-2 block text-sm font-medium">
               意思疎通の方法
             </label>
             <textarea
               {...register("commMethod")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={3}
               placeholder="言葉、ジェスチャー、文字盤など"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
-              <label className="block text-sm font-medium mb-2">視覚</label>
+              <label className="mb-2 block text-sm font-medium">視覚</label>
               <select
                 {...register("commVision")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">未設定</option>
                 <option value="Normal">正常</option>
@@ -298,10 +300,10 @@ export default function AssessmentPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">聴覚</label>
+              <label className="mb-2 block text-sm font-medium">聴覚</label>
               <select
                 {...register("commHearing")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">未設定</option>
                 <option value="Normal">正常</option>
@@ -311,10 +313,10 @@ export default function AssessmentPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">発語</label>
+              <label className="mb-2 block text-sm font-medium">発語</label>
               <select
                 {...register("commSpeech")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">未設定</option>
                 <option value="Normal">可能</option>
@@ -326,34 +328,34 @@ export default function AssessmentPage() {
         </div>
 
         {/* 行動特性 */}
-        <div className="bg-card border rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold mb-4">行動特性</h2>
+        <div className="bg-card space-y-4 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">行動特性</h2>
 
           <div>
-            <label className="block text-sm font-medium mb-2">生活リズム</label>
+            <label className="mb-2 block text-sm font-medium">生活リズム</label>
             <textarea
               {...register("lifeRhythm")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={3}
               placeholder="起床・就寝時間、日中の過ごし方など"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">趣味・嗜好</label>
+            <label className="mb-2 block text-sm font-medium">趣味・嗜好</label>
             <textarea
               {...register("hobbies")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={3}
               placeholder="好きなこと、得意なこと、楽しみなど"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">性格・特徴</label>
+            <label className="mb-2 block text-sm font-medium">性格・特徴</label>
             <textarea
               {...register("personality")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={3}
               placeholder="性格、行動の特徴など"
             />
@@ -361,16 +363,16 @@ export default function AssessmentPage() {
         </div>
 
         {/* 医療・服薬情報 */}
-        <div className="bg-card border rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold mb-4">医療・服薬情報</h2>
+        <div className="bg-card space-y-4 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">医療・服薬情報</h2>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="mb-2 block text-sm font-medium">
               服薬内容詳細
             </label>
             <textarea
               {...register("medicationDetails")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={4}
               placeholder="定期薬、頓服薬の詳細"
             />
@@ -378,28 +380,26 @@ export default function AssessmentPage() {
         </div>
 
         {/* 注意事項 */}
-        <div className="bg-card border rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold mb-4">注意事項</h2>
+        <div className="bg-card space-y-4 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">注意事項</h2>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="mb-2 block text-sm font-medium">
               特記事項・注意事項
             </label>
             <textarea
               {...register("cautions")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={4}
               placeholder="支援時の注意点、配慮事項など"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
-              緊急時対応
-            </label>
+            <label className="mb-2 block text-sm font-medium">緊急時対応</label>
             <textarea
               {...register("emergencyNote")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={4}
               placeholder="緊急時の対応方法、連絡先など"
             />
@@ -407,24 +407,24 @@ export default function AssessmentPage() {
         </div>
 
         {/* その他 */}
-        <div className="bg-card border rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold mb-4">その他</h2>
+        <div className="bg-card space-y-4 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">その他</h2>
 
           <div>
-            <label className="block text-sm font-medium mb-2">家族構成</label>
+            <label className="mb-2 block text-sm font-medium">家族構成</label>
             <textarea
               {...register("familyStructure")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={3}
               placeholder="家族関係、同居状況など"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">支援体制</label>
+            <label className="mb-2 block text-sm font-medium">支援体制</label>
             <textarea
               {...register("supportSystem")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={3}
               placeholder="ケアマネージャー、サービス事業所など"
             />
@@ -443,7 +443,12 @@ export default function AssessmentPage() {
             {upsertMutation.isPending ? "保存中..." : "保存"}
           </Button>
           <Link href={`/recipients/${recipientId}`} className="flex-1">
-            <Button type="button" variant="outline" size="lg" className="w-full">
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="w-full"
+            >
               キャンセル
             </Button>
           </Link>

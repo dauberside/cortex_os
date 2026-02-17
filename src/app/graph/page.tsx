@@ -45,9 +45,9 @@ export default function GraphPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="mx-auto max-w-[1800px]">
-        <div className="mb-4 sm:mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-4 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-            <h1 className="text-2xl sm:text-3xl font-bold text-black">
+            <h1 className="text-2xl font-bold text-black sm:text-3xl">
               Cortex OS - グラフビュー
             </h1>
             <div className="flex gap-2">
@@ -70,7 +70,7 @@ export default function GraphPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <span className="text-xs sm:text-sm text-black truncate max-w-[150px] sm:max-w-none">
+            <span className="max-w-[150px] truncate text-xs text-black sm:max-w-none sm:text-sm">
               {session.user.email}
             </span>
             <Button variant="outline" size="sm" onClick={() => signOut()}>
@@ -115,9 +115,7 @@ export default function GraphPage() {
             />
             {selectedNoteId && (
               <div className="mt-4 flex justify-center">
-                <Button onClick={handleViewNote}>
-                  選択中のノートを表示
-                </Button>
+                <Button onClick={handleViewNote}>選択中のノートを表示</Button>
               </div>
             )}
           </>
@@ -126,9 +124,7 @@ export default function GraphPage() {
             <p className="mb-4 text-lg text-black">
               まだノートが作成されていません
             </p>
-            <Button onClick={() => router.push("/")}>
-              ノートを作成する
-            </Button>
+            <Button onClick={() => router.push("/")}>ノートを作成する</Button>
           </div>
         )}
       </div>

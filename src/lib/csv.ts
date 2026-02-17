@@ -161,7 +161,10 @@ export function csvRowToRecipient(row: RecipientCSVRow) {
     その他: "Other",
   };
 
-  const disabilityTypeMap: Record<string, "Physical" | "Intellectual" | "Mental"> = {
+  const disabilityTypeMap: Record<
+    string,
+    "Physical" | "Intellectual" | "Mental"
+  > = {
     身体: "Physical",
     知的: "Intellectual",
     精神: "Mental",
@@ -242,16 +245,34 @@ export function csvRowToRecipient(row: RecipientCSVRow) {
     return {
       ...recipient,
       assessment: {
-        adlMovement: row.ADL移動 ? adlReverseMap[row.ADL移動] || undefined : undefined,
-        adlEating: row.ADL食事 ? adlReverseMap[row.ADL食事] || undefined : undefined,
-        adlToilet: row.ADL排泄 ? adlReverseMap[row.ADL排泄] || undefined : undefined,
-        adlBathing: row.ADL入浴 ? adlReverseMap[row.ADL入浴] || undefined : undefined,
-        adlDressing: row.ADL更衣 ? adlReverseMap[row.ADL更衣] || undefined : undefined,
-        adlGrooming: row.ADL整容 ? adlReverseMap[row.ADL整容] || undefined : undefined,
+        adlMovement: row.ADL移動
+          ? adlReverseMap[row.ADL移動] || undefined
+          : undefined,
+        adlEating: row.ADL食事
+          ? adlReverseMap[row.ADL食事] || undefined
+          : undefined,
+        adlToilet: row.ADL排泄
+          ? adlReverseMap[row.ADL排泄] || undefined
+          : undefined,
+        adlBathing: row.ADL入浴
+          ? adlReverseMap[row.ADL入浴] || undefined
+          : undefined,
+        adlDressing: row.ADL更衣
+          ? adlReverseMap[row.ADL更衣] || undefined
+          : undefined,
+        adlGrooming: row.ADL整容
+          ? adlReverseMap[row.ADL整容] || undefined
+          : undefined,
         commMethod: row.意思疎通方法 || undefined,
-        commVision: row.視覚 ? visionReverseMap[row.視覚] || undefined : undefined,
-        commHearing: row.聴覚 ? hearingReverseMap[row.聴覚] || undefined : undefined,
-        commSpeech: row.発語 ? speechReverseMap[row.発語] || undefined : undefined,
+        commVision: row.視覚
+          ? visionReverseMap[row.視覚] || undefined
+          : undefined,
+        commHearing: row.聴覚
+          ? hearingReverseMap[row.聴覚] || undefined
+          : undefined,
+        commSpeech: row.発語
+          ? speechReverseMap[row.発語] || undefined
+          : undefined,
         lifeRhythm: row.生活リズム || undefined,
         hobbies: row.趣味嗜好 || undefined,
         personality: row.性格特徴 || undefined,
@@ -273,20 +294,22 @@ export function csvRowToRecipient(row: RecipientCSVRow) {
 export function generateCSV(recipients: RecipientCSVRow[]): string {
   if (recipients.length === 0) {
     // Return header only
-    return Object.keys({
-      氏名: "",
-      氏名カナ: "",
-      生年月日: "",
-      性別: "",
-      障害種別: "",
-      障害支援区分: "",
-      緊急連絡先: "",
-      主治医: "",
-      医療機関: "",
-      アレルギー情報: "",
-      既往歴: "",
-      備考: "",
-    } as unknown as RecipientCSVRow).join(",") + "\n";
+    return (
+      Object.keys({
+        氏名: "",
+        氏名カナ: "",
+        生年月日: "",
+        性別: "",
+        障害種別: "",
+        障害支援区分: "",
+        緊急連絡先: "",
+        主治医: "",
+        医療機関: "",
+        アレルギー情報: "",
+        既往歴: "",
+        備考: "",
+      } as unknown as RecipientCSVRow).join(",") + "\n"
+    );
   }
 
   const headers = Object.keys(recipients[0]).join(",");
@@ -295,7 +318,11 @@ export function generateCSV(recipients: RecipientCSVRow[]): string {
       .map((value) => {
         // Escape commas and quotes in values
         const stringValue = String(value);
-        if (stringValue.includes(",") || stringValue.includes('"') || stringValue.includes("\n")) {
+        if (
+          stringValue.includes(",") ||
+          stringValue.includes('"') ||
+          stringValue.includes("\n")
+        ) {
           return `"${stringValue.replace(/"/g, '""')}"`;
         }
         return stringValue;

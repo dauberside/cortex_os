@@ -13,18 +13,38 @@ const vpnSchema = z.object({
   measuredAt: z.string(),
   // V - Vital signs
   temperature: z.coerce.number().min(30).max(45).optional().or(z.literal("")),
-  systolic: z.coerce.number().int().min(50).max(250).optional().or(z.literal("")),
-  diastolic: z.coerce.number().int().min(30).max(150).optional().or(z.literal("")),
+  systolic: z.coerce
+    .number()
+    .int()
+    .min(50)
+    .max(250)
+    .optional()
+    .or(z.literal("")),
+  diastolic: z.coerce
+    .number()
+    .int()
+    .min(30)
+    .max(150)
+    .optional()
+    .or(z.literal("")),
   pulse: z.coerce.number().int().min(30).max(200).optional().or(z.literal("")),
   spo2: z.coerce.number().int().min(50).max(100).optional().or(z.literal("")),
   weight: z.coerce.number().min(0).max(300).optional().or(z.literal("")),
   // P - Physical status
   consciousness: z.enum(["Clear", "Drowsy", "Stupor", "Coma", ""]).optional(),
-  mobility: z.enum(["Independent", "Assisted", "Wheelchair", "Bedridden", ""]).optional(),
-  skinCondition: z.enum(["Normal", "Dry", "Rash", "Wound", "Pressure", ""]).optional(),
-  excretion: z.enum(["Normal", "Constipation", "Diarrhea", "Urinary", ""]).optional(),
+  mobility: z
+    .enum(["Independent", "Assisted", "Wheelchair", "Bedridden", ""])
+    .optional(),
+  skinCondition: z
+    .enum(["Normal", "Dry", "Rash", "Wound", "Pressure", ""])
+    .optional(),
+  excretion: z
+    .enum(["Normal", "Constipation", "Diarrhea", "Urinary", ""])
+    .optional(),
   // N - Nutrition
-  mealIntake: z.enum(["Full", "ThreeQuarters", "Half", "Quarter", "None", ""]).optional(),
+  mealIntake: z
+    .enum(["Full", "ThreeQuarters", "Half", "Quarter", "None", ""])
+    .optional(),
   waterIntake: z.enum(["Adequate", "Insufficient", "Excessive", ""]).optional(),
   nutritionNote: z.string().optional(),
   notes: z.string().optional(),
@@ -85,7 +105,7 @@ export default function NewVPNPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-4xl">
+    <div className="container mx-auto max-w-4xl px-4 py-8">
       <Link href={`/recipients/${recipientId}/vpn`}>
         <Button variant="ghost" className="mb-4">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -93,7 +113,7 @@ export default function NewVPNPage() {
         </Button>
       </Link>
 
-      <h1 className="text-3xl font-bold mb-2">VPN記録登録</h1>
+      <h1 className="mb-2 text-3xl font-bold">VPN記録登録</h1>
       {recipient && (
         <p className="text-muted-foreground mb-8">
           {recipient.name} さんのVPN記録を登録します
@@ -102,19 +122,19 @@ export default function NewVPNPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* 測定日時 */}
-        <div className="bg-card border rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">測定日時</h2>
+        <div className="bg-card rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">測定日時</h2>
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="mb-2 block text-sm font-medium">
               測定日時 <span className="text-destructive">*</span>
             </label>
             <input
               type="datetime-local"
               {...register("measuredAt")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
             />
             {errors.measuredAt && (
-              <p className="text-sm text-destructive mt-1">
+              <p className="text-destructive mt-1 text-sm">
                 {errors.measuredAt.message}
               </p>
             )}
@@ -122,101 +142,111 @@ export default function NewVPNPage() {
         </div>
 
         {/* V - Vital signs（バイタルサイン） */}
-        <div className="bg-card border rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold mb-4">V - Vital signs（バイタルサイン）</h2>
+        <div className="bg-card space-y-4 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">
+            V - Vital signs（バイタルサイン）
+          </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium mb-2">体温（℃）</label>
+              <label className="mb-2 block text-sm font-medium">
+                体温（℃）
+              </label>
               <input
                 type="number"
                 step="0.1"
                 {...register("temperature")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
                 placeholder="36.5"
               />
               {errors.temperature && (
-                <p className="text-sm text-destructive mt-1">
+                <p className="text-destructive mt-1 text-sm">
                   {errors.temperature.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">体重（kg）</label>
+              <label className="mb-2 block text-sm font-medium">
+                体重（kg）
+              </label>
               <input
                 type="number"
                 step="0.1"
                 {...register("weight")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
                 placeholder="60.0"
               />
               {errors.weight && (
-                <p className="text-sm text-destructive mt-1">
+                <p className="text-destructive mt-1 text-sm">
                   {errors.weight.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="mb-2 block text-sm font-medium">
                 血圧（収縮期/mmHg）
               </label>
               <input
                 type="number"
                 {...register("systolic")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
                 placeholder="120"
               />
               {errors.systolic && (
-                <p className="text-sm text-destructive mt-1">
+                <p className="text-destructive mt-1 text-sm">
                   {errors.systolic.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="mb-2 block text-sm font-medium">
                 血圧（拡張期/mmHg）
               </label>
               <input
                 type="number"
                 {...register("diastolic")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
                 placeholder="80"
               />
               {errors.diastolic && (
-                <p className="text-sm text-destructive mt-1">
+                <p className="text-destructive mt-1 text-sm">
                   {errors.diastolic.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">脈拍（回/分）</label>
+              <label className="mb-2 block text-sm font-medium">
+                脈拍（回/分）
+              </label>
               <input
                 type="number"
                 {...register("pulse")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
                 placeholder="72"
               />
               {errors.pulse && (
-                <p className="text-sm text-destructive mt-1">
+                <p className="text-destructive mt-1 text-sm">
                   {errors.pulse.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">SpO2（%）</label>
+              <label className="mb-2 block text-sm font-medium">
+                SpO2（%）
+              </label>
               <input
                 type="number"
                 {...register("spo2")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
                 placeholder="98"
               />
               {errors.spo2 && (
-                <p className="text-sm text-destructive mt-1">
+                <p className="text-destructive mt-1 text-sm">
                   {errors.spo2.message}
                 </p>
               )}
@@ -225,15 +255,19 @@ export default function NewVPNPage() {
         </div>
 
         {/* P - Physical status（身体状態） */}
-        <div className="bg-card border rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold mb-4">P - Physical status（身体状態）</h2>
+        <div className="bg-card space-y-4 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">
+            P - Physical status（身体状態）
+          </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium mb-2">意識レベル</label>
+              <label className="mb-2 block text-sm font-medium">
+                意識レベル
+              </label>
               <select
                 {...register("consciousness")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">選択してください</option>
                 <option value="Clear">清明</option>
@@ -244,10 +278,10 @@ export default function NewVPNPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">移動能力</label>
+              <label className="mb-2 block text-sm font-medium">移動能力</label>
               <select
                 {...register("mobility")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">選択してください</option>
                 <option value="Independent">自立</option>
@@ -258,10 +292,10 @@ export default function NewVPNPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">皮膚状態</label>
+              <label className="mb-2 block text-sm font-medium">皮膚状態</label>
               <select
                 {...register("skinCondition")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">選択してください</option>
                 <option value="Normal">正常</option>
@@ -273,10 +307,10 @@ export default function NewVPNPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">排泄状態</label>
+              <label className="mb-2 block text-sm font-medium">排泄状態</label>
               <select
                 {...register("excretion")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">選択してください</option>
                 <option value="Normal">正常</option>
@@ -289,15 +323,19 @@ export default function NewVPNPage() {
         </div>
 
         {/* N - Nutrition（栄養状態） */}
-        <div className="bg-card border rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold mb-4">N - Nutrition（栄養状態）</h2>
+        <div className="bg-card space-y-4 rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">
+            N - Nutrition（栄養状態）
+          </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium mb-2">食事摂取量</label>
+              <label className="mb-2 block text-sm font-medium">
+                食事摂取量
+              </label>
               <select
                 {...register("mealIntake")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">選択してください</option>
                 <option value="Full">全量摂取</option>
@@ -309,10 +347,12 @@ export default function NewVPNPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">水分摂取量</label>
+              <label className="mb-2 block text-sm font-medium">
+                水分摂取量
+              </label>
               <select
                 {...register("waterIntake")}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full rounded-md border px-3 py-2"
               >
                 <option value="">選択してください</option>
                 <option value="Adequate">適切</option>
@@ -323,12 +363,12 @@ export default function NewVPNPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="mb-2 block text-sm font-medium">
               栄養に関する特記事項
             </label>
             <textarea
               {...register("nutritionNote")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={3}
               placeholder="食事内容、嗜好、アレルギー対応など"
             />
@@ -336,13 +376,15 @@ export default function NewVPNPage() {
         </div>
 
         {/* 備考 */}
-        <div className="bg-card border rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">備考</h2>
+        <div className="bg-card rounded-lg border p-6">
+          <h2 className="mb-4 text-xl font-semibold">備考</h2>
           <div>
-            <label className="block text-sm font-medium mb-2">その他の特記事項</label>
+            <label className="mb-2 block text-sm font-medium">
+              その他の特記事項
+            </label>
             <textarea
               {...register("notes")}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full rounded-md border px-3 py-2"
               rows={4}
               placeholder="その他気になることなど"
             />
@@ -360,7 +402,12 @@ export default function NewVPNPage() {
             {createMutation.isPending ? "登録中..." : "VPN記録を登録"}
           </Button>
           <Link href={`/recipients/${recipientId}/vpn`} className="flex-1">
-            <Button type="button" variant="outline" size="lg" className="w-full">
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="w-full"
+            >
               キャンセル
             </Button>
           </Link>

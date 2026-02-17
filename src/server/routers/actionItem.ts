@@ -22,7 +22,10 @@ export const updateActionItemSchema = z.object({
 
 export const listActionItemsSchema = z.object({
   noteId: z.string().cuid(),
-  status: z.enum(["Open", "InProgress", "Done", "all"]).optional().default("all"),
+  status: z
+    .enum(["Open", "InProgress", "Done", "all"])
+    .optional()
+    .default("all"),
 });
 
 // ActionItem Router
@@ -66,7 +69,9 @@ export const actionItemRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
 
-      const actionItem = await (ctx.prisma as any).incidentActionItem.findUnique({
+      const actionItem = await (
+        ctx.prisma as any
+      ).incidentActionItem.findUnique({
         where: { id },
         include: { note: true },
       });
@@ -111,10 +116,12 @@ export const actionItemRouter = router({
         where.status = input.status;
       }
 
-      const actionItems = await (ctx.prisma as any).incidentActionItem.findMany({
-        where,
-        orderBy: { createdAt: "desc" },
-      });
+      const actionItems = await (ctx.prisma as any).incidentActionItem.findMany(
+        {
+          where,
+          orderBy: { createdAt: "desc" },
+        }
+      );
 
       return actionItems;
     }),

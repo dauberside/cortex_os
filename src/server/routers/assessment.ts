@@ -5,7 +5,9 @@ import { router, protectedProcedure } from "../trpc";
 const upsertAssessmentSchema = z.object({
   recipientId: z.string(),
   // ADL
-  adlMovement: z.enum(["Independent", "Assisted", "Wheelchair", "Bedridden", ""]).optional(),
+  adlMovement: z
+    .enum(["Independent", "Assisted", "Wheelchair", "Bedridden", ""])
+    .optional(),
   adlEating: z.enum(["Independent", "Partial", "Full", ""]).optional(),
   adlToilet: z.enum(["Independent", "Partial", "Full", ""]).optional(),
   adlBathing: z.enum(["Independent", "Partial", "Full", ""]).optional(),

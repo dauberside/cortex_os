@@ -43,9 +43,7 @@ export const eventRouter = router({
           eventType: input.eventType,
           content: input.content,
           createdBy:
-            input.createdBy ||
-            ctx.session.user.name ||
-            ctx.session.user.email,
+            input.createdBy || ctx.session.user.name || ctx.session.user.email,
         },
       });
 

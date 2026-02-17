@@ -215,9 +215,7 @@ export default function IncidentsPage() {
                 disabled={!title.trim() || createIncident.isPending}
                 className="w-full bg-red-600 hover:bg-red-700"
               >
-                {createIncident.isPending
-                  ? "作成中..."
-                  : "インシデント作成"}
+                {createIncident.isPending ? "作成中..." : "インシデント作成"}
               </Button>
             </div>
           </div>
@@ -229,7 +227,9 @@ export default function IncidentsPage() {
             <label className="mb-1 block text-sm font-medium">重大度</label>
             <select
               value={severityFilter}
-              onChange={(e) => setSeverityFilter(e.target.value as SeverityFilter)}
+              onChange={(e) =>
+                setSeverityFilter(e.target.value as SeverityFilter)
+              }
               className="rounded border p-2"
             >
               <option value="all">全て</option>
@@ -295,14 +295,16 @@ export default function IncidentsPage() {
                   {incident.affectedServices &&
                     incident.affectedServices.length > 0 && (
                       <div className="mb-2 flex flex-wrap gap-1">
-                        {incident.affectedServices.map((service: string, idx: number) => (
-                          <span
-                            key={idx}
-                            className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700"
-                          >
-                            {service}
-                          </span>
-                        ))}
+                        {incident.affectedServices.map(
+                          (service: string, idx: number) => (
+                            <span
+                              key={idx}
+                              className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700"
+                            >
+                              {service}
+                            </span>
+                          )
+                        )}
                       </div>
                     )}
 

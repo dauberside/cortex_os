@@ -57,7 +57,7 @@ export function NoteCard({
   });
 
   return (
-    <div className="rounded-lg bg-white p-4 sm:p-6 shadow">
+    <div className="rounded-lg bg-white p-4 shadow sm:p-6">
       <h3 className="mb-2 text-lg font-semibold text-black">
         {searchQuery ? (
           <HighlightedText text={note.title} query={searchQuery} />
@@ -83,9 +83,7 @@ export function NoteCard({
         <div className="mb-4 rounded border border-gray-200 bg-gray-50 p-3">
           {links.outgoing.length > 0 && (
             <div className="mb-2">
-              <p className="mb-1 text-xs font-semibold text-black">
-                リンク先:
-              </p>
+              <p className="mb-1 text-xs font-semibold text-black">リンク先:</p>
               <div className="flex flex-wrap gap-1">
                 {links.outgoing.map(
                   (link: { id: string; note: { title: string } }) => (
@@ -108,9 +106,7 @@ export function NoteCard({
           )}
           {links.incoming.length > 0 && (
             <div>
-              <p className="mb-1 text-xs font-semibold text-black">
-                被リンク:
-              </p>
+              <p className="mb-1 text-xs font-semibold text-black">被リンク:</p>
               <div className="flex flex-wrap gap-1">
                 {links.incoming.map(
                   (link: { id: string; note: { title: string } }) => (
@@ -118,9 +114,7 @@ export function NoteCard({
                       key={link.id}
                       className="group flex items-center gap-1 rounded border border-gray-400 bg-gray-200 px-2 py-1 text-xs"
                     >
-                      <span className="text-black">
-                        ← {link.note.title}
-                      </span>
+                      <span className="text-black">← {link.note.title}</span>
                       <button
                         onClick={() => deleteLink.mutate({ id: link.id })}
                         className="text-black opacity-0 transition-opacity group-hover:opacity-100 hover:text-black"
@@ -163,7 +157,9 @@ export function NoteCard({
       {/* リンク追加UI */}
       {selectedNoteForLink && (
         <div className="mt-3 rounded border border-gray-300 bg-gray-100 p-3">
-          <p className="mb-2 text-sm font-medium text-black">リンク先ノートを選択:</p>
+          <p className="mb-2 text-sm font-medium text-black">
+            リンク先ノートを選択:
+          </p>
           <div className="flex gap-2">
             <select
               value={linkTargetNoteId}

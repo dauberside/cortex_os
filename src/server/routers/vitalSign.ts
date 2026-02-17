@@ -14,11 +14,19 @@ const createVitalSignSchema = z.object({
   weight: z.number().min(0).max(300).optional(),
   // P - Physical status
   consciousness: z.enum(["Clear", "Drowsy", "Stupor", "Coma"]).optional(),
-  mobility: z.enum(["Independent", "Assisted", "Wheelchair", "Bedridden"]).optional(),
-  skinCondition: z.enum(["Normal", "Dry", "Rash", "Wound", "Pressure"]).optional(),
-  excretion: z.enum(["Normal", "Constipation", "Diarrhea", "Urinary"]).optional(),
+  mobility: z
+    .enum(["Independent", "Assisted", "Wheelchair", "Bedridden"])
+    .optional(),
+  skinCondition: z
+    .enum(["Normal", "Dry", "Rash", "Wound", "Pressure"])
+    .optional(),
+  excretion: z
+    .enum(["Normal", "Constipation", "Diarrhea", "Urinary"])
+    .optional(),
   // N - Nutrition
-  mealIntake: z.enum(["Full", "ThreeQuarters", "Half", "Quarter", "None"]).optional(),
+  mealIntake: z
+    .enum(["Full", "ThreeQuarters", "Half", "Quarter", "None"])
+    .optional(),
   waterIntake: z.enum(["Adequate", "Insufficient", "Excessive"]).optional(),
   nutritionNote: z.string().optional(),
   notes: z.string().optional(),
@@ -234,7 +242,8 @@ export const vitalSignRouter = router({
       // 異常値の判定基準
       const abnormals = recentVitals.filter((vs) => {
         return (
-          (vs.temperature && (vs.temperature < 35.0 || vs.temperature > 38.5)) ||
+          (vs.temperature &&
+            (vs.temperature < 35.0 || vs.temperature > 38.5)) ||
           (vs.systolic && (vs.systolic < 90 || vs.systolic > 160)) ||
           (vs.diastolic && (vs.diastolic < 60 || vs.diastolic > 100)) ||
           (vs.pulse && (vs.pulse < 50 || vs.pulse > 100)) ||

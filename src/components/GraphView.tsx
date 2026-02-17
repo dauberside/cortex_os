@@ -104,7 +104,7 @@ export function GraphView({ nodes, links, onNodeClick }: GraphViewProps) {
   return (
     <div className="relative">
       {/* コントロールボタン */}
-      <div className="absolute right-4 top-4 z-10 flex gap-2">
+      <div className="absolute top-4 right-4 z-10 flex gap-2">
         <Button size="sm" variant="outline" onClick={handleZoomToFit}>
           全体表示
         </Button>
@@ -115,7 +115,7 @@ export function GraphView({ nodes, links, onNodeClick }: GraphViewProps) {
 
       {/* 選択中のノード情報 */}
       {selectedNode && (
-        <div className="absolute left-4 top-4 z-10 max-w-xs rounded-lg bg-white p-4 shadow-lg">
+        <div className="absolute top-4 left-4 z-10 max-w-xs rounded-lg bg-white p-4 shadow-lg">
           <h3 className="mb-2 text-lg font-semibold text-black">
             {selectedNode.title}
           </h3>

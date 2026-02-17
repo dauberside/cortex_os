@@ -3,7 +3,17 @@
 import { useState, useRef } from "react";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
-import { Plus, UserPlus, Users, Download, Upload, Trash2, Filter, X, Edit } from "lucide-react";
+import {
+  Plus,
+  UserPlus,
+  Users,
+  Download,
+  Upload,
+  Trash2,
+  Filter,
+  X,
+  Edit,
+} from "lucide-react";
 import Link from "next/link";
 
 const SERVICE_TYPE_LABELS: Record<string, string> = {
@@ -71,10 +81,18 @@ export default function RecipientsPage() {
     },
   });
 
-  const handleDelete = (recipientId: string, recipientName: string, e: React.MouseEvent) => {
+  const handleDelete = (
+    recipientId: string,
+    recipientName: string,
+    e: React.MouseEvent
+  ) => {
     e.preventDefault();
     e.stopPropagation();
-    if (window.confirm(`${recipientName} さんを削除してもよろしいですか？\n\n※論理削除のため、後から復元可能です。`)) {
+    if (
+      window.confirm(
+        `${recipientName} さんを削除してもよろしいですか？\n\n※論理削除のため、後から復元可能です。`
+      )
+    ) {
       deleteMutation.mutate({ id: recipientId });
     }
   };
@@ -141,21 +159,22 @@ export default function RecipientsPage() {
     setFilterStatus("");
   };
 
-  const hasActiveFilters = filterServiceType || filterSupportLevel || filterStatus;
+  const hasActiveFilters =
+    filterServiceType || filterSupportLevel || filterStatus;
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-lg">読み込み中...</div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">利用者管理</h1>
+          <h1 className="mb-2 text-3xl font-bold">利用者管理</h1>
           <p className="text-muted-foreground">
             重度障害者支援の利用者情報を管理します
           </p>
@@ -197,27 +216,30 @@ export default function RecipientsPage() {
 
       {/* 統計情報 */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-card border rounded-lg p-4">
+        <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="bg-card rounded-lg border p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">総利用者数</p>
-                <p className="text-3xl font-bold mt-1">{stats.total}</p>
+                <p className="text-muted-foreground text-sm">総利用者数</p>
+                <p className="mt-1 text-3xl font-bold">{stats.total}</p>
               </div>
-              <Users className="h-8 w-8 text-muted-foreground" />
+              <Users className="text-muted-foreground h-8 w-8" />
             </div>
           </div>
           {stats.bySupportLevel
             .sort((a, b) => (b.supportLevel ?? 0) - (a.supportLevel ?? 0))
             .slice(0, 3)
             .map((level) => (
-              <div key={level.supportLevel} className="bg-card border rounded-lg p-4">
+              <div
+                key={level.supportLevel}
+                className="bg-card rounded-lg border p-4"
+              >
                 <div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     障害支援区分{level.supportLevel}
                   </p>
-                  <p className="text-3xl font-bold mt-1">{level._count}</p>
-                  <p className="text-xs text-muted-foreground mt-1">名</p>
+                  <p className="mt-1 text-3xl font-bold">{level._count}</p>
+                  <p className="text-muted-foreground mt-1 text-xs">名</p>
                 </div>
               </div>
             ))}
@@ -226,11 +248,13 @@ export default function RecipientsPage() {
 
       {/* サービス種別クイックフィルター */}
       <div className="mb-4">
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-sm text-muted-foreground font-medium">サービス種別:</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-muted-foreground text-sm font-medium">
+            サービス種別:
+          </span>
           <button
             onClick={() => setFilterServiceType("")}
-            className={`px-3 py-1 rounded-full text-sm transition-colors ${
+            className={`rounded-full px-3 py-1 text-sm transition-colors ${
               !filterServiceType
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-muted-foreground hover:bg-accent"
@@ -241,8 +265,10 @@ export default function RecipientsPage() {
           {Object.entries(SERVICE_TYPE_LABELS).map(([key, label]) => (
             <button
               key={key}
-              onClick={() => setFilterServiceType(filterServiceType === key ? "" : key)}
-              className={`px-3 py-1 rounded-full text-sm transition-colors ${
+              onClick={() =>
+                setFilterServiceType(filterServiceType === key ? "" : key)
+              }
+              className={`rounded-full px-3 py-1 text-sm transition-colors ${
                 filterServiceType === key
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:bg-accent"
@@ -256,15 +282,15 @@ export default function RecipientsPage() {
 
       {/* 詳細フィルター */}
       <div className="mb-6">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="mb-2 flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="text-muted-foreground hover:text-foreground flex items-center gap-1 text-sm transition-colors"
           >
             <Filter className="h-4 w-4" />
             詳細フィルター
             {hasActiveFilters && (
-              <span className="ml-1 px-1.5 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
+              <span className="bg-primary text-primary-foreground ml-1 rounded-full px-1.5 py-0.5 text-xs">
                 適用中
               </span>
             )}
@@ -272,7 +298,7 @@ export default function RecipientsPage() {
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="flex items-center gap-1 text-sm text-destructive hover:text-destructive/80 transition-colors"
+              className="text-destructive hover:text-destructive/80 flex items-center gap-1 text-sm transition-colors"
             >
               <X className="h-3 w-3" />
               クリア
@@ -281,13 +307,15 @@ export default function RecipientsPage() {
         </div>
 
         {showFilters && (
-          <div className="bg-card border rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-card grid grid-cols-1 gap-4 rounded-lg border p-4 md:grid-cols-3">
             <div>
-              <label className="block text-sm font-medium mb-2">障害支援区分</label>
+              <label className="mb-2 block text-sm font-medium">
+                障害支援区分
+              </label>
               <select
                 value={filterSupportLevel}
                 onChange={(e) => setFilterSupportLevel(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md text-sm"
+                className="w-full rounded-md border px-3 py-2 text-sm"
               >
                 <option value="">すべての区分</option>
                 {[1, 2, 3, 4, 5, 6].map((level) => (
@@ -298,22 +326,24 @@ export default function RecipientsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">利用状況</label>
+              <label className="mb-2 block text-sm font-medium">利用状況</label>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md text-sm"
+                className="w-full rounded-md border px-3 py-2 text-sm"
               >
                 <option value="">すべての状況</option>
-                {Object.entries(UTILIZATION_STATUS_LABELS).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
+                {Object.entries(UTILIZATION_STATUS_LABELS).map(
+                  ([key, label]) => (
+                    <option key={key} value={key}>
+                      {label}
+                    </option>
+                  )
+                )}
               </select>
             </div>
             <div className="flex items-end">
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <label className="flex cursor-pointer items-center gap-2 text-sm">
                 <input
                   type="checkbox"
                   checked={includeDeleted}
@@ -328,13 +358,13 @@ export default function RecipientsPage() {
       </div>
 
       {/* 利用者一覧 */}
-      <div className="bg-card border rounded-lg">
-        <div className="p-4 border-b">
+      <div className="bg-card rounded-lg border">
+        <div className="border-b p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">
               利用者一覧
               {recipients && (
-                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                <span className="text-muted-foreground ml-2 text-sm font-normal">
                   {recipients.length}名
                 </span>
               )}
@@ -344,9 +374,11 @@ export default function RecipientsPage() {
 
         {recipients && recipients.length === 0 ? (
           <div className="p-12 text-center">
-            <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <p className="text-lg text-muted-foreground mb-4">
-              {hasActiveFilters ? "条件に一致する利用者がいません" : "登録されている利用者がいません"}
+            <Users className="text-muted-foreground mx-auto mb-4 h-16 w-16" />
+            <p className="text-muted-foreground mb-4 text-lg">
+              {hasActiveFilters
+                ? "条件に一致する利用者がいません"
+                : "登録されている利用者がいません"}
             </p>
             {hasActiveFilters ? (
               <Button variant="outline" onClick={clearFilters}>
@@ -367,39 +399,43 @@ export default function RecipientsPage() {
               <Link
                 key={recipient.id}
                 href={`/recipients/${recipient.id}`}
-                className="block p-5 hover:bg-accent transition-colors"
+                className="hover:bg-accent block p-5 transition-colors"
               >
                 <div className="flex items-start justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <h3 className="text-lg font-semibold">{recipient.name}</h3>
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <h3 className="text-lg font-semibold">
+                        {recipient.name}
+                      </h3>
                       {recipient.nameKana && (
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-muted-foreground text-sm">
                           ({recipient.nameKana})
                         </span>
                       )}
                       {recipient.supportLevel && (
-                        <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-medium rounded-full border">
+                        <span className="rounded-full border bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
                           区分{recipient.supportLevel}
                         </span>
                       )}
                       {recipient.deletedAt && (
-                        <span className="px-2 py-0.5 bg-destructive/10 text-destructive text-xs rounded-full">
+                        <span className="bg-destructive/10 text-destructive rounded-full px-2 py-0.5 text-xs">
                           削除済み
                         </span>
                       )}
                     </div>
 
-                    <div className="flex flex-wrap gap-3 text-sm text-muted-foreground mb-2">
+                    <div className="text-muted-foreground mb-2 flex flex-wrap gap-3 text-sm">
                       <span>
-                        {new Date(recipient.birthDate).toLocaleDateString("ja-JP")}
+                        {new Date(recipient.birthDate).toLocaleDateString(
+                          "ja-JP"
+                        )}
                       </span>
                       <span>
                         {recipient.gender === "Male"
                           ? "男性"
                           : recipient.gender === "Female"
-                          ? "女性"
-                          : "その他"}
+                            ? "女性"
+                            : "その他"}
                       </span>
                       {recipient.disabilityType.length > 0 && (
                         <span>
@@ -408,83 +444,98 @@ export default function RecipientsPage() {
                               t === "Physical"
                                 ? "身体障害"
                                 : t === "Intellectual"
-                                ? "知的障害"
-                                : "精神障害"
+                                  ? "知的障害"
+                                  : "精神障害"
                             )
                             .join(" / ")}
                         </span>
                       )}
                       {(recipient as any).utilizationStatus && (
                         <span>
-                          {UTILIZATION_STATUS_LABELS[(recipient as any).utilizationStatus] || (recipient as any).utilizationStatus}
+                          {UTILIZATION_STATUS_LABELS[
+                            (recipient as any).utilizationStatus
+                          ] || (recipient as any).utilizationStatus}
                         </span>
                       )}
                     </div>
 
                     {/* サービス種別バッジ */}
-                    {(recipient as any).serviceTypes && (recipient as any).serviceTypes.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {(recipient as any).serviceTypes.map((type: string) => (
-                          <span
-                            key={type}
-                            className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                              SERVICE_TYPE_COLORS[type] || "bg-gray-100 text-gray-700"
-                            }`}
-                          >
-                            {SERVICE_TYPE_LABELS[type] || type}
-                          </span>
-                        ))}
-                        {(recipient as any).behaviorSupportNeeded && (
-                          <span className="px-2 py-0.5 bg-red-50 text-red-700 text-xs font-medium rounded-full border border-red-200">
-                            行動援護対象
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    {(recipient as any).serviceTypes &&
+                      (recipient as any).serviceTypes.length > 0 && (
+                        <div className="mb-2 flex flex-wrap gap-1">
+                          {(recipient as any).serviceTypes.map(
+                            (type: string) => (
+                              <span
+                                key={type}
+                                className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                                  SERVICE_TYPE_COLORS[type] ||
+                                  "bg-gray-100 text-gray-700"
+                                }`}
+                              >
+                                {SERVICE_TYPE_LABELS[type] || type}
+                              </span>
+                            )
+                          )}
+                          {(recipient as any).behaviorSupportNeeded && (
+                            <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700">
+                              行動援護対象
+                            </span>
+                          )}
+                        </div>
+                      )}
 
                     {/* 加算バッジ */}
-                    {(recipient as any).allowances && (recipient as any).allowances.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-1">
-                        {(recipient as any).allowances.slice(0, 3).map((allowance: string) => (
-                          <span
-                            key={allowance}
-                            className="px-2 py-0.5 bg-amber-50 text-amber-700 text-xs rounded border border-amber-200"
-                          >
-                            {ALLOWANCE_LABELS[allowance] || allowance}
-                          </span>
-                        ))}
-                        {(recipient as any).allowances.length > 3 && (
-                          <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded">
-                            +{(recipient as any).allowances.length - 3}件
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    {(recipient as any).allowances &&
+                      (recipient as any).allowances.length > 0 && (
+                        <div className="mb-1 flex flex-wrap gap-1">
+                          {(recipient as any).allowances
+                            .slice(0, 3)
+                            .map((allowance: string) => (
+                              <span
+                                key={allowance}
+                                className="rounded border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-700"
+                              >
+                                {ALLOWANCE_LABELS[allowance] || allowance}
+                              </span>
+                            ))}
+                          {(recipient as any).allowances.length > 3 && (
+                            <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+                              +{(recipient as any).allowances.length - 3}件
+                            </span>
+                          )}
+                        </div>
+                      )}
 
                     {recipient.allergies && (
                       <div className="mt-1 text-sm">
-                        <span className="font-medium text-destructive">アレルギー:</span>{" "}
-                        <span className="text-destructive/80">{recipient.allergies}</span>
+                        <span className="text-destructive font-medium">
+                          アレルギー:
+                        </span>{" "}
+                        <span className="text-destructive/80">
+                          {recipient.allergies}
+                        </span>
                       </div>
                     )}
                   </div>
                   {!recipient.deletedAt && (
-                    <div className="flex items-center gap-1 ml-4 shrink-0">
+                    <div className="ml-4 flex shrink-0 items-center gap-1">
                       <Link
                         href={`/recipients/${recipient.id}/edit`}
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Button variant="ghost" size="sm">
-                          <Edit className="h-4 w-4 text-muted-foreground" />
+                          <Edit className="text-muted-foreground h-4 w-4" />
                         </Button>
                       </Link>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={(e) => handleDelete(recipient.id, recipient.name, e)}
+                        onClick={(e) =>
+                          handleDelete(recipient.id, recipient.name, e)
+                        }
                         disabled={deleteMutation.isPending}
                       >
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <Trash2 className="text-destructive h-4 w-4" />
                       </Button>
                     </div>
                   )}

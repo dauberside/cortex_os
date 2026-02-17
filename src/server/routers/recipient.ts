@@ -299,7 +299,8 @@ export const recipientRouter = router({
           } catch (error) {
             errors.push({
               row: i + 2, // +2 for header and 0-index
-              error: error instanceof Error ? error.message : "バリデーションエラー",
+              error:
+                error instanceof Error ? error.message : "バリデーションエラー",
             });
           }
         }

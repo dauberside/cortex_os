@@ -30,7 +30,9 @@ export default function Home() {
   const [newTagName, setNewTagName] = useState("");
   const [filterTagId, setFilterTagId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"custom" | "title" | "createdAt" | "updatedAt">("updatedAt");
+  const [sortBy, setSortBy] = useState<
+    "custom" | "title" | "createdAt" | "updatedAt"
+  >("updatedAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [showAllNotes, setShowAllNotes] = useState(false);
 
@@ -145,13 +147,22 @@ export default function Home() {
     e.preventDefault();
 
     if (editingId) {
-      updateNote.mutate({ id: editingId, title, content, tagIds: selectedTags });
+      updateNote.mutate({
+        id: editingId,
+        title,
+        content,
+        tagIds: selectedTags,
+      });
     } else {
       createNote.mutate({ title, content });
     }
   };
 
-  const handleEdit = async (note: { id: string; title: string; content: string }) => {
+  const handleEdit = async (note: {
+    id: string;
+    title: string;
+    content: string;
+  }) => {
     setEditingId(note.id);
     setTitle(note.title);
     setContent(note.content);
@@ -264,7 +275,9 @@ export default function Home() {
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
-      alert("テンプレートのダウンロードに失敗しました: " + (error as Error).message);
+      alert(
+        "テンプレートのダウンロードに失敗しました: " + (error as Error).message
+      );
     }
   };
 
@@ -304,7 +317,9 @@ export default function Home() {
         }
         const base64 = btoa(binary);
 
-        const result = await utils.client.excel.importNotes.mutate({ fileData: base64 });
+        const result = await utils.client.excel.importNotes.mutate({
+          fileData: base64,
+        });
 
         if (result.errors.length > 0) {
           alert(
@@ -354,9 +369,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-4 sm:mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-4 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-            <h1 className="text-2xl sm:text-3xl font-bold text-black">Cortex OS - ノート管理</h1>
+            <h1 className="text-2xl font-bold text-black sm:text-3xl">
+              Cortex OS - ノート管理
+            </h1>
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -385,7 +402,9 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <span className="text-xs sm:text-sm text-black truncate max-w-[150px] sm:max-w-none">{session.user.email}</span>
+            <span className="max-w-[150px] truncate text-xs text-black sm:max-w-none sm:text-sm">
+              {session.user.email}
+            </span>
             <Button variant="outline" size="sm" onClick={() => signOut()}>
               ログアウト
             </Button>
@@ -396,7 +415,7 @@ export default function Home() {
           {/* メインコンテンツ */}
           <div className="space-y-4 sm:space-y-8 lg:col-span-2">
             {/* ノート作成・編集フォーム */}
-            <div className="rounded-lg bg-white p-4 sm:p-6 shadow">
+            <div className="rounded-lg bg-white p-4 shadow sm:p-6">
               <h2 className="mb-4 text-xl font-semibold text-black">
                 {editingId ? "ノートを編集" : "新規ノート"}
               </h2>
@@ -414,7 +433,9 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-black">内容</label>
+                  <label className="mb-2 block text-sm font-medium text-black">
+                    内容
+                  </label>
                   <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
@@ -469,7 +490,7 @@ export default function Home() {
             </div>
 
             {/* 検索・ソート */}
-            <div className="rounded-lg bg-white p-4 sm:p-6 shadow">
+            <div className="rounded-lg bg-white p-4 shadow sm:p-6">
               <h2 className="mb-4 text-lg font-semibold text-black">
                 検索・並び替え
               </h2>
@@ -518,7 +539,9 @@ export default function Home() {
                   </select>
                   <select
                     value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
+                    onChange={(e) =>
+                      setSortOrder(e.target.value as "asc" | "desc")
+                    }
                     className="rounded border p-2 text-sm text-black"
                   >
                     <option value="desc">降順</option>
@@ -539,9 +562,7 @@ export default function Home() {
                       : "ノート一覧"}
                 </h2>
                 {sortBy === "custom" && (
-                  <p className="text-sm text-black">
-                    ドラッグして並び替え可能
-                  </p>
+                  <p className="text-sm text-black">ドラッグして並び替え可能</p>
                 )}
               </div>
               {isLoading && <p className="text-black">読み込み中...</p>}
@@ -554,7 +575,10 @@ export default function Home() {
                   items={displayNotes?.map((n: any) => n.id) || []}
                   strategy={verticalListSortingStrategy}
                 >
-                  {(showAllNotes ? displayNotes : displayNotes?.slice(0, 3))?.map(
+                  {(showAllNotes
+                    ? displayNotes
+                    : displayNotes?.slice(0, 3)
+                  )?.map(
                     (note: {
                       id: string;
                       title: string;
@@ -583,13 +607,9 @@ export default function Home() {
                     onClick={() => setShowAllNotes(!showAllNotes)}
                   >
                     {showAllNotes ? (
-                      <>
-                        閉じる（{displayNotes.length - 3}件を非表示）
-                      </>
+                      <>閉じる（{displayNotes.length - 3}件を非表示）</>
                     ) : (
-                      <>
-                        もっと見る（残り{displayNotes.length - 3}件）
-                      </>
+                      <>もっと見る（残り{displayNotes.length - 3}件）</>
                     )}
                   </Button>
                 </div>
@@ -604,8 +624,10 @@ export default function Home() {
           {/* サイドバー：タグ管理 */}
           <div className="space-y-4 sm:space-y-6">
             {/* タグ作成 */}
-            <div className="rounded-lg bg-white p-4 sm:p-6 shadow">
-              <h2 className="mb-4 text-lg font-semibold text-black">新規タグ</h2>
+            <div className="rounded-lg bg-white p-4 shadow sm:p-6">
+              <h2 className="mb-4 text-lg font-semibold text-black">
+                新規タグ
+              </h2>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -631,7 +653,7 @@ export default function Home() {
             </div>
 
             {/* タグ一覧 */}
-            <div className="rounded-lg bg-white p-4 sm:p-6 shadow">
+            <div className="rounded-lg bg-white p-4 shadow sm:p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-black">タグ一覧</h2>
                 {filterTagId && (
@@ -696,7 +718,7 @@ export default function Home() {
             </div>
 
             {/* エクスポート・インポート */}
-            <div className="rounded-lg bg-white p-4 sm:p-6 shadow">
+            <div className="rounded-lg bg-white p-4 shadow sm:p-6">
               <h2 className="mb-4 text-lg font-semibold text-black">
                 データ管理
               </h2>

@@ -25,7 +25,11 @@ export async function generateExcelTemplate(): Promise<Buffer> {
     { header: "Title", key: "title", width: 30 },
     { header: "Content", key: "content", width: 50 },
     { header: "Tags (comma-separated)", key: "tags", width: 30 },
-    { header: "Linked Notes (comma-separated titles)", key: "linkedNotes", width: 30 },
+    {
+      header: "Linked Notes (comma-separated titles)",
+      key: "linkedNotes",
+      width: 30,
+    },
   ];
 
   worksheet.getRow(1).font = { bold: true };
@@ -46,9 +50,7 @@ export async function generateExcelTemplate(): Promise<Buffer> {
   return Buffer.from(buffer);
 }
 
-export async function exportNotesToExcel(
-  userId: string
-): Promise<Buffer> {
+export async function exportNotesToExcel(userId: string): Promise<Buffer> {
   const notes = await prisma.note.findMany({
     where: {
       userId,

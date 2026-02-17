@@ -9,10 +9,7 @@ export interface HighlightedText {
  * @param query 検索クエリ
  * @returns ハイライト情報付きのテキスト配列
  */
-export function highlightText(
-  text: string,
-  query: string
-): HighlightedText[] {
+export function highlightText(text: string, query: string): HighlightedText[] {
   if (!query || query.trim() === "") {
     return [{ text, isHighlight: false }];
   }
