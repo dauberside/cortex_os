@@ -269,14 +269,14 @@ export default function RecipientDetailPage() {
                   <p className={`font-medium ${
                     new Date((recipient as any).validUntil) < new Date()
                       ? "text-destructive"
-                      : new Date((recipient as any).validUntil) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                      : new Date((recipient as any).validUntil) < new Date(+new Date() + 30 * 24 * 60 * 60 * 1000)
                       ? "text-amber-600"
                       : ""
                   }`}>
                     {new Date((recipient as any).validUntil).toLocaleDateString("ja-JP")}
                     {new Date((recipient as any).validUntil) < new Date() && " (期限切れ)"}
                     {new Date((recipient as any).validUntil) >= new Date() &&
-                      new Date((recipient as any).validUntil) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) &&
+                      new Date((recipient as any).validUntil) < new Date(+new Date() + 30 * 24 * 60 * 60 * 1000) &&
                       " (間もなく期限切れ)"}
                   </p>
                 </div>
@@ -461,7 +461,7 @@ export default function RecipientDetailPage() {
                     <p className={`text-sm font-medium ${
                       new Date((recipient as any).careInsuranceExpiry) < new Date()
                         ? "text-destructive"
-                        : new Date((recipient as any).careInsuranceExpiry) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                        : new Date((recipient as any).careInsuranceExpiry) < new Date(+new Date() + 30 * 24 * 60 * 60 * 1000)
                         ? "text-amber-600"
                         : ""
                     }`}>
