@@ -286,7 +286,7 @@ export function generateCSV(recipients: RecipientCSVRow[]): string {
       アレルギー情報: "",
       既往歴: "",
       備考: "",
-    } as RecipientCSVRow).join(",") + "\n";
+    } as unknown as RecipientCSVRow).join(",") + "\n";
   }
 
   const headers = Object.keys(recipients[0]).join(",");

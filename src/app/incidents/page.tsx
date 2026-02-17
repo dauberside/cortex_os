@@ -267,7 +267,7 @@ export default function IncidentsPage() {
             </div>
           )}
 
-          {incidents?.map((incident) => (
+          {incidents?.map((incident: any) => (
             <div
               key={incident.id}
               onClick={() => router.push(`/incidents/${incident.id}`)}
@@ -295,7 +295,7 @@ export default function IncidentsPage() {
                   {incident.affectedServices &&
                     incident.affectedServices.length > 0 && (
                       <div className="mb-2 flex flex-wrap gap-1">
-                        {incident.affectedServices.map((service, idx) => (
+                        {incident.affectedServices.map((service: string, idx: number) => (
                           <span
                             key={idx}
                             className="rounded bg-gray-100 px-2 py-1 text-xs text-gray-700"
@@ -331,7 +331,7 @@ export default function IncidentsPage() {
                   {incident.incidentRoles &&
                     incident.incidentRoles.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {incident.incidentRoles.map((role) => (
+                        {incident.incidentRoles.map((role: any) => (
                           <span
                             key={role.id}
                             className="rounded bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700"

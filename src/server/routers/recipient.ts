@@ -289,8 +289,8 @@ export const recipientRouter = router({
         const recipients = csvRows.map((row) => csvRowToRecipient(row));
 
         // バリデーション
-        const validRecipients = [];
-        const errors = [];
+        const validRecipients: any[] = [];
+        const errors: any[] = [];
 
         for (let i = 0; i < recipients.length; i++) {
           try {

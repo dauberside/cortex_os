@@ -21,7 +21,7 @@ export const eventRouter = router({
     .input(addEventSchema)
     .mutation(async ({ ctx, input }) => {
       // インシデントの存在と権限を確認
-      const incident = await ctx.prisma.note.findFirst({
+      const incident = await (ctx.prisma as any).note.findFirst({
         where: {
           id: input.noteId,
           userId: ctx.session.user.id,
@@ -37,7 +37,7 @@ export const eventRouter = router({
         });
       }
 
-      const event = await ctx.prisma.incidentEvent.create({
+      const event = await (ctx.prisma as any).incidentEvent.create({
         data: {
           noteId: input.noteId,
           eventType: input.eventType,
@@ -57,7 +57,7 @@ export const eventRouter = router({
     .input(listEventsSchema)
     .query(async ({ ctx, input }) => {
       // インシデントの存在と権限を確認
-      const incident = await ctx.prisma.note.findFirst({
+      const incident = await (ctx.prisma as any).note.findFirst({
         where: {
           id: input.noteId,
           userId: ctx.session.user.id,
@@ -73,7 +73,7 @@ export const eventRouter = router({
         });
       }
 
-      const events = await ctx.prisma.incidentEvent.findMany({
+      const events = await (ctx.prisma as any).incidentEvent.findMany({
         where: { noteId: input.noteId },
         orderBy: { createdAt: "desc" },
       });

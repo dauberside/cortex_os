@@ -116,7 +116,7 @@ export default function AIPage() {
                 </Button>
               </div>
               <div className="space-y-2">
-                {conversations?.map((conv) => (
+                {conversations?.map((conv: { conversationId: string; previewText: string; messageCount: number; lastMessageAt: string | Date }) => (
                   <div
                     key={conv.conversationId}
                     className={`rounded border p-3 hover:bg-gray-50 ${

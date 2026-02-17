@@ -45,7 +45,7 @@ export default function NewVPNPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<VPNFormData>({
-    resolver: zodResolver(vpnSchema),
+    resolver: zodResolver(vpnSchema) as any,
     defaultValues: {
       measuredAt: new Date().toISOString().slice(0, 16),
       consciousness: "",

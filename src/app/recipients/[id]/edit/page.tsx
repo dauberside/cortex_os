@@ -304,7 +304,7 @@ export default function EditRecipientPage() {
     reset,
     formState: { errors },
   } = useForm<RecipientFormData>({
-    resolver: zodResolver(recipientSchema),
+    resolver: zodResolver(recipientSchema) as any,
     defaultValues: {
       gender: "Male",
       disabilityType: [],

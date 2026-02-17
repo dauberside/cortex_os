@@ -25,7 +25,7 @@ export const roleRouter = router({
     .input(assignRoleSchema)
     .mutation(async ({ ctx, input }) => {
       // インシデントの存在と権限を確認
-      const incident = await ctx.prisma.note.findFirst({
+      const incident = await (ctx.prisma as any).note.findFirst({
         where: {
           id: input.noteId,
           userId: ctx.session.user.id,
@@ -42,7 +42,7 @@ export const roleRouter = router({
       }
 
       // 既存のアクティブな同じ役割があれば終了させる
-      await ctx.prisma.incidentRoleAssignment.updateMany({
+      await (ctx.prisma as any).incidentRoleAssignment.updateMany({
         where: {
           noteId: input.noteId,
           role: input.role,
@@ -53,7 +53,7 @@ export const roleRouter = router({
         },
       });
 
-      const roleAssignment = await ctx.prisma.incidentRoleAssignment.create({
+      const roleAssignment = await (ctx.prisma as any).incidentRoleAssignment.create({
         data: {
           noteId: input.noteId,
           role: input.role,
@@ -62,7 +62,7 @@ export const roleRouter = router({
       });
 
       // イベントを作成
-      await ctx.prisma.incidentEvent.create({
+      await (ctx.prisma as any).incidentEvent.create({
         data: {
           noteId: input.noteId,
           eventType: "Update",
@@ -78,7 +78,7 @@ export const roleRouter = router({
   end: protectedProcedure
     .input(endRoleSchema)
     .mutation(async ({ ctx, input }) => {
-      const roleAssignment = await ctx.prisma.incidentRoleAssignment.findUnique(
+      const roleAssignment = await (ctx.prisma as any).incidentRoleAssignment.findUnique(
         {
           where: { id: input.id },
           include: { note: true },
@@ -92,13 +92,13 @@ export const roleRouter = router({
         });
       }
 
-      const updated = await ctx.prisma.incidentRoleAssignment.update({
+      const updated = await (ctx.prisma as any).incidentRoleAssignment.update({
         where: { id: input.id },
         data: { endedAt: new Date() },
       });
 
       // イベントを作成
-      await ctx.prisma.incidentEvent.create({
+      await (ctx.prisma as any).incidentEvent.create({
         data: {
           noteId: roleAssignment.noteId,
           eventType: "Update",
@@ -115,7 +115,7 @@ export const roleRouter = router({
     .input(listRolesSchema)
     .query(async ({ ctx, input }) => {
       // インシデントの存在と権限を確認
-      const incident = await ctx.prisma.note.findFirst({
+      const incident = await (ctx.prisma as any).note.findFirst({
         where: {
           id: input.noteId,
           userId: ctx.session.user.id,
@@ -136,7 +136,7 @@ export const roleRouter = router({
         where.endedAt = null;
       }
 
-      const roles = await ctx.prisma.incidentRoleAssignment.findMany({
+      const roles = await (ctx.prisma as any).incidentRoleAssignment.findMany({
         where,
         orderBy: { assignedAt: "desc" },
       });

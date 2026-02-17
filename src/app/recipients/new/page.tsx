@@ -325,7 +325,7 @@ export default function NewRecipientPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<RecipientFormData>({
-    resolver: zodResolver(recipientSchema),
+    resolver: zodResolver(recipientSchema) as any,
     defaultValues: {
       gender: "Male",
       disabilityType: [],

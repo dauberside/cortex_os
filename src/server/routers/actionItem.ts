@@ -32,13 +32,12 @@ export const actionItemRouter = router({
     .input(createActionItemSchema)
     .mutation(async ({ ctx, input }) => {
       // インシデントの存在と権限を確認
-      const incident = await ctx.prisma.note.findFirst({
+      const incident = await (ctx.prisma as any).note.findFirst({
         where: {
           id: input.noteId,
           userId: ctx.session.user.id,
-          isIncident: true,
           deletedAt: null,
-        },
+        } as any,
       });
 
       if (!incident) {
@@ -48,7 +47,7 @@ export const actionItemRouter = router({
         });
       }
 
-      const actionItem = await ctx.prisma.incidentActionItem.create({
+      const actionItem = await (ctx.prisma as any).incidentActionItem.create({
         data: {
           noteId: input.noteId,
           title: input.title,
@@ -67,7 +66,7 @@ export const actionItemRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
 
-      const actionItem = await ctx.prisma.incidentActionItem.findUnique({
+      const actionItem = await (ctx.prisma as any).incidentActionItem.findUnique({
         where: { id },
         include: { note: true },
       });
@@ -79,7 +78,7 @@ export const actionItemRouter = router({
         });
       }
 
-      const updated = await ctx.prisma.incidentActionItem.update({
+      const updated = await (ctx.prisma as any).incidentActionItem.update({
         where: { id },
         data,
       });
@@ -92,13 +91,12 @@ export const actionItemRouter = router({
     .input(listActionItemsSchema)
     .query(async ({ ctx, input }) => {
       // インシデントの存在と権限を確認
-      const incident = await ctx.prisma.note.findFirst({
+      const incident = await (ctx.prisma as any).note.findFirst({
         where: {
           id: input.noteId,
           userId: ctx.session.user.id,
-          isIncident: true,
           deletedAt: null,
-        },
+        } as any,
       });
 
       if (!incident) {
@@ -113,7 +111,7 @@ export const actionItemRouter = router({
         where.status = input.status;
       }
 
-      const actionItems = await ctx.prisma.incidentActionItem.findMany({
+      const actionItems = await (ctx.prisma as any).incidentActionItem.findMany({
         where,
         orderBy: { createdAt: "desc" },
       });

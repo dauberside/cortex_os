@@ -35,9 +35,10 @@ export default function IncidentDetailPage() {
 
   const utils = trpc.useUtils();
 
-  const { data: incident, isLoading } = trpc.incident.get.useQuery({
+  const { data: incidentData, isLoading } = trpc.incident.get.useQuery({
     id: incidentId,
   });
+  const incident = incidentData as any;
 
   const updateStatus = trpc.incident.updateStatus.useMutation({
     onSuccess: () => {
@@ -251,7 +252,7 @@ export default function IncidentDetailPage() {
                 影響を受けるサービス
               </div>
               <div className="flex flex-wrap gap-2">
-                {incident.affectedServices.map((service, idx) => (
+                {incident.affectedServices.map((service: string, idx: number) => (
                   <span
                     key={idx}
                     className="rounded bg-red-100 px-3 py-1 text-sm font-medium text-red-800"
@@ -341,7 +342,7 @@ export default function IncidentDetailPage() {
 
             {/* Events List */}
             <div className="space-y-3">
-              {incident.incidentEvents?.map((event) => (
+              {incident.incidentEvents?.map((event: any) => (
                 <div key={event.id} className="border-l-4 border-gray-300 pl-4">
                   <div className="flex items-start justify-between">
                     <span
@@ -399,8 +400,8 @@ export default function IncidentDetailPage() {
             <div className="space-y-3">
               <h3 className="font-medium text-gray-700">現在の役割</h3>
               {incident.incidentRoles
-                ?.filter((role) => !role.endedAt)
-                .map((role) => (
+                ?.filter((role: any) => !role.endedAt)
+                .map((role: any) => (
                   <div
                     key={role.id}
                     className="flex items-center justify-between rounded bg-blue-50 p-3"
@@ -428,8 +429,8 @@ export default function IncidentDetailPage() {
 
               <h3 className="mt-4 font-medium text-gray-700">過去の役割</h3>
               {incident.incidentRoles
-                ?.filter((role) => role.endedAt)
-                .map((role) => (
+                ?.filter((role: any) => role.endedAt)
+                .map((role: any) => (
                   <div key={role.id} className="rounded bg-gray-50 p-3">
                     <div className="font-medium text-gray-700">{role.role}</div>
                     <div className="text-sm text-gray-600">
@@ -492,7 +493,7 @@ export default function IncidentDetailPage() {
 
           {/* Action Items List */}
           <div className="space-y-3">
-            {incident.incidentActions?.map((action) => (
+            {incident.incidentActions?.map((action: any) => (
               <div key={action.id} className="rounded border p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

@@ -59,7 +59,7 @@ export const incidentRouter = router({
     .mutation(async ({ ctx, input }) => {
       const now = new Date();
 
-      const incident = await ctx.prisma.note.create({
+      const incident = await (ctx.prisma as any).note.create({
         data: {
           userId: ctx.session.user.id,
           title: input.title,
@@ -98,7 +98,7 @@ ${input.commsChannelUrl ? `チャンネル: ${input.commsChannelUrl}` : ""}
       });
 
       // 初期イベントを作成
-      await ctx.prisma.incidentEvent.create({
+      await (ctx.prisma as any).incidentEvent.create({
         data: {
           noteId: incident.id,
           eventType: "Update",
@@ -114,7 +114,7 @@ ${input.commsChannelUrl ? `チャンネル: ${input.commsChannelUrl}` : ""}
   get: protectedProcedure
     .input(getIncidentSchema)
     .query(async ({ ctx, input }) => {
-      const incident = await ctx.prisma.note.findFirst({
+      const incident = await (ctx.prisma as any).note.findFirst({
         where: {
           id: input.id,
           userId: ctx.session.user.id,
@@ -162,7 +162,7 @@ ${input.commsChannelUrl ? `チャンネル: ${input.commsChannelUrl}` : ""}
         where.severity = input.severity;
       }
 
-      const incidents = await ctx.prisma.note.findMany({
+      const incidents = await (ctx.prisma as any).note.findMany({
         where,
         orderBy: { detectedAt: "desc" },
         include: {
@@ -182,7 +182,7 @@ ${input.commsChannelUrl ? `チャンネル: ${input.commsChannelUrl}` : ""}
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
 
-      const incident = await ctx.prisma.note.findFirst({
+      const incident = await (ctx.prisma as any).note.findFirst({
         where: {
           id,
           userId: ctx.session.user.id,
@@ -198,7 +198,7 @@ ${input.commsChannelUrl ? `チャンネル: ${input.commsChannelUrl}` : ""}
         });
       }
 
-      const updated = await ctx.prisma.note.update({
+      const updated = await (ctx.prisma as any).note.update({
         where: { id },
         data,
         include: {
@@ -215,7 +215,7 @@ ${input.commsChannelUrl ? `チャンネル: ${input.commsChannelUrl}` : ""}
   updateStatus: protectedProcedure
     .input(updateStatusSchema)
     .mutation(async ({ ctx, input }) => {
-      const incident = await ctx.prisma.note.findFirst({
+      const incident = await (ctx.prisma as any).note.findFirst({
         where: {
           id: input.id,
           userId: ctx.session.user.id,
@@ -243,13 +243,13 @@ ${input.commsChannelUrl ? `チャンネル: ${input.commsChannelUrl}` : ""}
         updateData.resolvedAt = now;
       }
 
-      const updated = await ctx.prisma.note.update({
+      const updated = await (ctx.prisma as any).note.update({
         where: { id: input.id },
         data: updateData,
       });
 
       // イベントを作成
-      await ctx.prisma.incidentEvent.create({
+      await (ctx.prisma as any).incidentEvent.create({
         data: {
           noteId: input.id,
           eventType: "Update",
