@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-const { PrismaClient } = require("@prisma/client");
-const { PrismaPg } = require("@prisma/adapter-pg");
-const { Pool } = require("pg");
+// @ts-ignore - PrismaClient type export changed in Prisma v7
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 
 const globalForPrisma = globalThis as unknown as {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prisma: any;
 };
 
@@ -17,7 +18,8 @@ function createPrismaClient() {
   const pool = new Pool({ connectionString });
   const adapter = new PrismaPg(pool);
 
-  return new PrismaClient({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new (PrismaClient as any)({
     adapter,
     log:
       process.env.NODE_ENV === "development"
