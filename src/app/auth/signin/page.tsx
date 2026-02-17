@@ -11,7 +11,7 @@ export default function SignInPage() {
     await signIn("credentials", {
       email,
       password: "dummy",
-      callbackUrl: "/",
+      callbackUrl: "/dashboard",
     });
   };
 
