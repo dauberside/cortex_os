@@ -201,7 +201,7 @@ export default function AIPage() {
 
               {/* メッセージ一覧 */}
               <div className="mb-4 space-y-4" style={{ minHeight: "300px" }}>
-                {currentConversation?.map((msg) => (
+                {currentConversation?.map((msg: any) => (
                   <div
                     key={msg.id}
                     className={`rounded-lg p-3 sm:p-4 ${
