@@ -1,323 +1,330 @@
-2026-02-17T06:48:42.7444598Z Current runner version: '2.331.0'
-2026-02-17T06:48:42.7469639Z ##[group]Runner Image Provisioner
-2026-02-17T06:48:42.7470542Z Hosted Compute Agent
-2026-02-17T06:48:42.7471085Z Version: 20260123.484
-2026-02-17T06:48:42.7471769Z Commit: 6bd6555ca37d84114959e1c76d2c01448ff61c5d
-2026-02-17T06:48:42.7472430Z Build Date: 2026-01-23T19:41:17Z
-2026-02-17T06:48:42.7473077Z Worker ID: {75ccb24a-0296-4b21-af81-c541653af392}
-2026-02-17T06:48:42.7474015Z Azure Region: centralus
-2026-02-17T06:48:42.7474631Z ##[endgroup]
-2026-02-17T06:48:42.7476079Z ##[group]Operating System
-2026-02-17T06:48:42.7476720Z Ubuntu
-2026-02-17T06:48:42.7477226Z 24.04.3
-2026-02-17T06:48:42.7477653Z LTS
-2026-02-17T06:48:42.7478192Z ##[endgroup]
-2026-02-17T06:48:42.7478677Z ##[group]Runner Image
-2026-02-17T06:48:42.7479235Z Image: ubuntu-24.04
-2026-02-17T06:48:42.7479698Z Version: 20260209.23.1
-2026-02-17T06:48:42.7480965Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260209.23/images/ubuntu/Ubuntu2404-Readme.md
-2026-02-17T06:48:42.7482471Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260209.23
-2026-02-17T06:48:42.7483638Z ##[endgroup]
-2026-02-17T06:48:42.7484701Z ##[group]GITHUB_TOKEN Permissions
-2026-02-17T06:48:42.7486561Z Contents: read
-2026-02-17T06:48:42.7487136Z Metadata: read
-2026-02-17T06:48:42.7487667Z Packages: read
-2026-02-17T06:48:42.7488244Z ##[endgroup]
-2026-02-17T06:48:42.7490532Z Secret source: Actions
-2026-02-17T06:48:42.7491221Z Prepare workflow directory
-2026-02-17T06:48:42.7836907Z Prepare all required actions
-2026-02-17T06:48:42.7875565Z Getting action download info
-2026-02-17T06:48:43.1438006Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
-2026-02-17T06:48:43.2687983Z Download action repository 'pnpm/action-setup@v4' (SHA:41ff72655975bd51cab0327fa583b6e92b6d3061)
-2026-02-17T06:48:43.8683689Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
-2026-02-17T06:48:44.0692990Z Complete job name: lint-typecheck-test
-2026-02-17T06:48:44.1395585Z ##[group]Run actions/checkout@v4
-2026-02-17T06:48:44.1396411Z with:
-2026-02-17T06:48:44.1396808Z   repository: dauberside/cortex_os
-2026-02-17T06:48:44.1397457Z   token: ***
-2026-02-17T06:48:44.1397830Z   ssh-strict: true
-2026-02-17T06:48:44.1398211Z   ssh-user: git
-2026-02-17T06:48:44.1398604Z   persist-credentials: true
-2026-02-17T06:48:44.1399042Z   clean: true
-2026-02-17T06:48:44.1399430Z   sparse-checkout-cone-mode: true
-2026-02-17T06:48:44.1399892Z   fetch-depth: 1
-2026-02-17T06:48:44.1400261Z   fetch-tags: false
-2026-02-17T06:48:44.1400644Z   show-progress: true
-2026-02-17T06:48:44.1401032Z   lfs: false
-2026-02-17T06:48:44.1401392Z   submodules: false
-2026-02-17T06:48:44.1401776Z   set-safe-directory: true
-2026-02-17T06:48:44.1402411Z ##[endgroup]
-2026-02-17T06:48:44.2495900Z Syncing repository: dauberside/cortex_os
-2026-02-17T06:48:44.2497696Z ##[group]Getting Git version info
-2026-02-17T06:48:44.2498397Z Working directory is '/home/runner/work/cortex_os/cortex_os'
-2026-02-17T06:48:44.2499444Z [command]/usr/bin/git version
-2026-02-17T06:48:44.2505346Z git version 2.52.0
-2026-02-17T06:48:44.2531462Z ##[endgroup]
-2026-02-17T06:48:44.2554497Z Temporarily overriding HOME='/home/runner/work/_temp/f7c36505-085c-416e-a840-84e217d4d500' before making global git config changes
-2026-02-17T06:48:44.2555873Z Adding repository directory to the temporary git global config as a safe directory
-2026-02-17T06:48:44.2559706Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cortex_os/cortex_os
-2026-02-17T06:48:44.2601759Z Deleting the contents of '/home/runner/work/cortex_os/cortex_os'
-2026-02-17T06:48:44.2606117Z ##[group]Initializing the repository
-2026-02-17T06:48:44.2611230Z [command]/usr/bin/git init /home/runner/work/cortex_os/cortex_os
-2026-02-17T06:48:44.2736480Z hint: Using 'master' as the name for the initial branch. This default branch name
-2026-02-17T06:48:44.2737827Z hint: will change to "main" in Git 3.0. To configure the initial branch name
-2026-02-17T06:48:44.2739053Z hint: to use in all of your new repositories, which will suppress this warning,
-2026-02-17T06:48:44.2740016Z hint: call:
-2026-02-17T06:48:44.2740680Z hint:
-2026-02-17T06:48:44.2741320Z hint: 	git config --global init.defaultBranch <name>
-2026-02-17T06:48:44.2741990Z hint:
-2026-02-17T06:48:44.2742945Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
-2026-02-17T06:48:44.2744804Z hint: 'development'. The just-created branch can be renamed via this command:
-2026-02-17T06:48:44.2746078Z hint:
-2026-02-17T06:48:44.2746751Z hint: 	git branch -m <name>
-2026-02-17T06:48:44.2747544Z hint:
-2026-02-17T06:48:44.2748598Z hint: Disable this message with "git config set advice.defaultBranchName false"
-2026-02-17T06:48:44.2750364Z Initialized empty Git repository in /home/runner/work/cortex_os/cortex_os/.git/
-2026-02-17T06:48:44.2756115Z [command]/usr/bin/git remote add origin https://github.com/dauberside/cortex_os
-2026-02-17T06:48:44.2793859Z ##[endgroup]
-2026-02-17T06:48:44.2795097Z ##[group]Disabling automatic garbage collection
-2026-02-17T06:48:44.2799024Z [command]/usr/bin/git config --local gc.auto 0
-2026-02-17T06:48:44.2829995Z ##[endgroup]
-2026-02-17T06:48:44.2831159Z ##[group]Setting up auth
-2026-02-17T06:48:44.2838060Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-02-17T06:48:44.2871045Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-02-17T06:48:44.3274926Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-02-17T06:48:44.3305669Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-02-17T06:48:44.3546741Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-02-17T06:48:44.3578155Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-02-17T06:48:44.3818352Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
-2026-02-17T06:48:44.3854202Z ##[endgroup]
-2026-02-17T06:48:44.3855387Z ##[group]Fetching the repository
-2026-02-17T06:48:44.3864494Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +0a455892cbcadd26ba2e48ab3f11a5bd88245981:refs/remotes/origin/master
-2026-02-17T06:48:44.7311471Z From https://github.com/dauberside/cortex_os
-2026-02-17T06:48:44.7312681Z  * [new ref]         0a455892cbcadd26ba2e48ab3f11a5bd88245981 -> origin/master
-2026-02-17T06:48:44.7346860Z ##[endgroup]
-2026-02-17T06:48:44.7347616Z ##[group]Determining the checkout info
-2026-02-17T06:48:44.7349341Z ##[endgroup]
-2026-02-17T06:48:44.7355017Z [command]/usr/bin/git sparse-checkout disable
-2026-02-17T06:48:44.7398147Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
-2026-02-17T06:48:44.7426429Z ##[group]Checking out the ref
-2026-02-17T06:48:44.7431029Z [command]/usr/bin/git checkout --progress --force -B master refs/remotes/origin/master
-2026-02-17T06:48:44.7544515Z Reset branch 'master'
-2026-02-17T06:48:44.7548013Z branch 'master' set up to track 'origin/master'.
-2026-02-17T06:48:44.7555018Z ##[endgroup]
-2026-02-17T06:48:44.7589150Z [command]/usr/bin/git log -1 --format=%H
-2026-02-17T06:48:44.7613008Z 0a455892cbcadd26ba2e48ab3f11a5bd88245981
-2026-02-17T06:48:44.7866396Z ##[group]Run pnpm/action-setup@v4
-2026-02-17T06:48:44.7866985Z with:
-2026-02-17T06:48:44.7867352Z   version: 9
-2026-02-17T06:48:44.7867743Z   dest: ~/setup-pnpm
-2026-02-17T06:48:44.7868160Z   run_install: null
-2026-02-17T06:48:44.7868606Z   package_json_file: package.json
-2026-02-17T06:48:44.7869099Z   standalone: false
-2026-02-17T06:48:44.7869506Z ##[endgroup]
-2026-02-17T06:48:44.8439483Z ##[group]Running self-installer...
-2026-02-17T06:48:45.4692999Z Progress: resolved 1, reused 0, downloaded 0, added 0
-2026-02-17T06:48:45.4824913Z Packages: +1
-2026-02-17T06:48:45.4826417Z +
-2026-02-17T06:48:45.8919635Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
-2026-02-17T06:48:45.9162010Z 
-2026-02-17T06:48:45.9162381Z dependencies:
-2026-02-17T06:48:45.9163693Z + pnpm 9.15.9 (10.29.3 is available)
-2026-02-17T06:48:45.9164516Z 
-2026-02-17T06:48:45.9193109Z Done in 903ms
-2026-02-17T06:48:45.9396140Z ##[endgroup]
-2026-02-17T06:48:45.9401312Z Installation Completed!
-2026-02-17T06:48:45.9655919Z ##[group]Run actions/setup-node@v4
-2026-02-17T06:48:45.9657048Z with:
-2026-02-17T06:48:45.9657824Z   node-version: 20
-2026-02-17T06:48:45.9658675Z   cache: pnpm
-2026-02-17T06:48:45.9659493Z   always-auth: false
-2026-02-17T06:48:45.9660406Z   check-latest: false
-2026-02-17T06:48:45.9661601Z   token: ***
-2026-02-17T06:48:45.9662384Z env:
-2026-02-17T06:48:45.9663504Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
-2026-02-17T06:48:45.9664876Z ##[endgroup]
-2026-02-17T06:48:46.1452776Z Found in cache @ /opt/hostedtoolcache/node/20.20.0/x64
-2026-02-17T06:48:46.1460808Z ##[group]Environment details
-2026-02-17T06:48:46.5317169Z node: v20.20.0
-2026-02-17T06:48:46.5318680Z npm: 10.8.2
-2026-02-17T06:48:46.5319966Z yarn: 1.22.22
-2026-02-17T06:48:46.5322287Z ##[endgroup]
-2026-02-17T06:48:46.5346551Z [command]/home/runner/setup-pnpm/node_modules/.bin/pnpm store path --silent
-2026-02-17T06:48:46.9252062Z /home/runner/setup-pnpm/node_modules/.bin/store/v3
-2026-02-17T06:48:47.1283623Z pnpm cache is not found
-2026-02-17T06:48:47.1398540Z ##[group]Run pnpm install --frozen-lockfile
-2026-02-17T06:48:47.1398948Z [36;1mpnpm install --frozen-lockfile[0m
-2026-02-17T06:48:47.1459896Z shell: /usr/bin/bash -e {0}
-2026-02-17T06:48:47.1460146Z env:
-2026-02-17T06:48:47.1460391Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
-2026-02-17T06:48:47.1460703Z ##[endgroup]
-2026-02-17T06:48:47.5961987Z Lockfile is up to date, resolution step is skipped
-2026-02-17T06:48:47.6890266Z Progress: resolved 1, reused 0, downloaded 0, added 0
-2026-02-17T06:48:47.8051134Z Packages: +725
-2026-02-17T06:48:47.8052172Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-2026-02-17T06:48:48.6922655Z Progress: resolved 725, reused 0, downloaded 38, added 28
-2026-02-17T06:48:49.6925385Z Progress: resolved 725, reused 0, downloaded 123, added 121
-2026-02-17T06:48:50.6909990Z Progress: resolved 725, reused 0, downloaded 191, added 184
-2026-02-17T06:48:51.6901617Z Progress: resolved 725, reused 0, downloaded 271, added 264
-2026-02-17T06:48:52.6903824Z Progress: resolved 725, reused 0, downloaded 391, added 389
-2026-02-17T06:48:53.6917276Z Progress: resolved 725, reused 0, downloaded 664, added 658
-2026-02-17T06:48:53.9619581Z Progress: resolved 725, reused 0, downloaded 725, added 725, done
-2026-02-17T06:48:54.2074408Z .../node_modules/@prisma/engines postinstall$ node scripts/postinstall.js
-2026-02-17T06:48:54.2296145Z .../sharp@0.34.5/node_modules/sharp install$ node install/check.js || npm run build
-2026-02-17T06:48:54.2300041Z .../node_modules/unrs-resolver postinstall$ napi-postinstall unrs-resolver 1.11.1 check
-2026-02-17T06:48:54.2714750Z .../esbuild@0.27.3/node_modules/esbuild postinstall$ node install.js
-2026-02-17T06:48:54.3091219Z .../node_modules/unrs-resolver postinstall: Done
-2026-02-17T06:48:54.3403649Z .../esbuild@0.27.3/node_modules/esbuild postinstall: Done
-2026-02-17T06:48:54.6371381Z .../sharp@0.34.5/node_modules/sharp install: Done
-2026-02-17T06:48:54.8946256Z .../node_modules/@prisma/engines postinstall: Done
-2026-02-17T06:48:54.9557641Z .../node_modules/prisma preinstall$ node scripts/preinstall-entry.js
-2026-02-17T06:48:55.0139670Z .../node_modules/prisma preinstall: Done
-2026-02-17T06:48:55.2795955Z 
-2026-02-17T06:48:55.2796415Z dependencies:
-2026-02-17T06:48:55.2796772Z + @auth/prisma-adapter 2.11.1
-2026-02-17T06:48:55.2797056Z + @dnd-kit/core 6.3.1
-2026-02-17T06:48:55.2797286Z + @dnd-kit/sortable 10.0.0
-2026-02-17T06:48:55.2797861Z + @dnd-kit/utilities 3.2.2
-2026-02-17T06:48:55.2798144Z + @hookform/resolvers 5.2.2
-2026-02-17T06:48:55.2798401Z + @prisma/adapter-pg 7.4.0
-2026-02-17T06:48:55.2798646Z + @prisma/client 7.4.0
-2026-02-17T06:48:55.2798932Z + @prisma/extension-accelerate 3.0.1
-2026-02-17T06:48:55.2799213Z + @radix-ui/react-slot 1.2.4
-2026-02-17T06:48:55.2799479Z + @tanstack/react-query 5.90.21
-2026-02-17T06:48:55.2799740Z + @trpc/client 11.0.0
-2026-02-17T06:48:55.2800111Z + @trpc/next 11.0.0
-2026-02-17T06:48:55.2800489Z + @trpc/react-query 11.0.0
-2026-02-17T06:48:55.2800894Z + @trpc/server 11.0.0
-2026-02-17T06:48:55.2801281Z + class-variance-authority 0.7.1
-2026-02-17T06:48:55.2801517Z + clsx 2.1.1
-2026-02-17T06:48:55.2801693Z + exceljs 4.4.0
-2026-02-17T06:48:55.2802118Z + force-graph 1.51.1
-2026-02-17T06:48:55.2802511Z + lucide-react 0.564.0
-2026-02-17T06:48:55.2802914Z + next 16.1.6
-2026-02-17T06:48:55.2803433Z + next-auth 5.0.0-beta.30
-2026-02-17T06:48:55.2803813Z + openai 6.22.0
-2026-02-17T06:48:55.2804149Z + pg 8.18.0
-2026-02-17T06:48:55.2804369Z + react 19.2.3
-2026-02-17T06:48:55.2804564Z + react-dom 19.2.3
-2026-02-17T06:48:55.2804795Z + react-force-graph-2d 1.29.1
-2026-02-17T06:48:55.2805058Z + react-hook-form 7.71.1
-2026-02-17T06:48:55.2805283Z + superjson 2.2.6
-2026-02-17T06:48:55.2805496Z + tailwind-merge 3.4.0
-2026-02-17T06:48:55.2805698Z + zod 4.3.6
-2026-02-17T06:48:55.2805920Z 
-2026-02-17T06:48:55.2806003Z devDependencies:
-2026-02-17T06:48:55.2806232Z + @tailwindcss/postcss 4.1.18
-2026-02-17T06:48:55.2806546Z + @testing-library/jest-dom 6.9.1
-2026-02-17T06:48:55.2807080Z + @testing-library/react 16.3.2
-2026-02-17T06:48:55.2807358Z + @types/node 20.19.33
-2026-02-17T06:48:55.2807570Z + @types/pg 8.16.0
-2026-02-17T06:48:55.2807785Z + @types/react 19.2.14
-2026-02-17T06:48:55.2808013Z + @types/react-dom 19.2.3
-2026-02-17T06:48:55.2808419Z + @vitejs/plugin-react 5.1.4
-2026-02-17T06:48:55.2808839Z + @vitest/ui 4.0.18
-2026-02-17T06:48:55.2809109Z + concurrently 9.2.1
-2026-02-17T06:48:55.2809500Z + dotenv 17.3.1
-2026-02-17T06:48:55.2809831Z + eslint 9.39.2
-2026-02-17T06:48:55.2810233Z + eslint-config-next 16.1.6
-2026-02-17T06:48:55.2810678Z + eslint-config-prettier 10.1.8
-2026-02-17T06:48:55.2811163Z + jsdom 28.0.0
-2026-02-17T06:48:55.2811535Z + local-ssl-proxy 2.0.5
-2026-02-17T06:48:55.2811927Z + prettier 3.8.1
-2026-02-17T06:48:55.2812349Z + prettier-plugin-tailwindcss 0.7.2
-2026-02-17T06:48:55.2812835Z + prisma 7.4.0
-2026-02-17T06:48:55.2813368Z + tailwindcss 4.1.18
-2026-02-17T06:48:55.2813804Z + typescript 5.9.3
-2026-02-17T06:48:55.2814209Z + vitest 4.0.18
-2026-02-17T06:48:55.2814404Z 
-2026-02-17T06:48:55.3331283Z Done in 8.1s using pnpm v9.15.9
-2026-02-17T06:48:55.3979869Z ##[group]Run pnpm lint
-2026-02-17T06:48:55.3980137Z [36;1mpnpm lint[0m
-2026-02-17T06:48:55.4030813Z shell: /usr/bin/bash -e {0}
-2026-02-17T06:48:55.4031050Z env:
-2026-02-17T06:48:55.4031278Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
-2026-02-17T06:48:55.4031574Z ##[endgroup]
-2026-02-17T06:48:55.7911403Z 
-2026-02-17T06:48:55.7912285Z > cortex_os@0.1.0 lint /home/runner/work/cortex_os/cortex_os
-2026-02-17T06:48:55.7915447Z > eslint
-2026-02-17T06:48:55.7915657Z 
-2026-02-17T06:49:02.4643620Z 
-2026-02-17T06:49:02.4644462Z /home/runner/work/cortex_os/cortex_os/src/app/incidents/[id]/page.tsx
-2026-02-17T06:49:02.4675228Z ##[warning]  14:17  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
-2026-02-17T06:49:02.4684817Z 
-2026-02-17T06:49:02.4685152Z /home/runner/work/cortex_os/cortex_os/src/app/incidents/page.tsx
-2026-02-17T06:49:02.4686256Z ##[warning]  19:17  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
-2026-02-17T06:49:02.4687167Z 
-2026-02-17T06:49:02.4687500Z /home/runner/work/cortex_os/cortex_os/src/app/recipients/[id]/assessment/page.tsx
-2026-02-17T06:49:02.4688707Z ##[warning]   9:27  warning  'Upload' is defined but never used                 @typescript-eslint/no-unused-vars
-2026-02-17T06:49:02.4690207Z ##[warning]  44:9   warning  'router' is assigned a value but never used        @typescript-eslint/no-unused-vars
-2026-02-17T06:49:02.4692083Z ##[warning]  47:9   warning  'fileInputRef' is assigned a value but never used  @typescript-eslint/no-unused-vars
-2026-02-17T06:49:02.4693785Z ##[warning]  94:18  warning  'errors' is assigned a value but never used        @typescript-eslint/no-unused-vars
-2026-02-17T06:49:02.4694682Z 
-2026-02-17T06:49:02.4694995Z /home/runner/work/cortex_os/cortex_os/src/app/recipients/[id]/page.tsx
-2026-02-17T06:49:02.4696034Z ##[warning]  62:10  warning  'showDeleteConfirm' is assigned a value but never used     @typescript-eslint/no-unused-vars
-2026-02-17T06:49:02.4697641Z ##[warning]  62:29  warning  'setShowDeleteConfirm' is assigned a value but never used  @typescript-eslint/no-unused-vars
-2026-02-17T06:49:02.4698525Z 
-2026-02-17T06:49:02.4698754Z /home/runner/work/cortex_os/cortex_os/src/lib/excel.ts
-2026-02-17T06:49:02.4699615Z ##[warning]  228:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
-2026-02-17T06:49:02.4700468Z 
-2026-02-17T06:49:02.4700885Z ✖ 9 problems (0 errors, 9 warnings)
-2026-02-17T06:49:02.4701061Z 
-2026-02-17T06:49:02.5293145Z ##[group]Run pnpm format:check
-2026-02-17T06:49:02.5293786Z [36;1mpnpm format:check[0m
-2026-02-17T06:49:02.5343049Z shell: /usr/bin/bash -e {0}
-2026-02-17T06:49:02.5343532Z env:
-2026-02-17T06:49:02.5343762Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
-2026-02-17T06:49:02.5344043Z ##[endgroup]
-2026-02-17T06:49:02.9759626Z 
-2026-02-17T06:49:02.9760464Z > cortex_os@0.1.0 format:check /home/runner/work/cortex_os/cortex_os
-2026-02-17T06:49:02.9761252Z > prettier --check .
-2026-02-17T06:49:02.9761454Z 
-2026-02-17T06:49:03.0737416Z Checking formatting...
-2026-02-17T06:49:03.8226961Z [[33mwarn[39m] PROPOSAL_CARE_JOURNAL.md
-2026-02-17T06:49:03.9905424Z [[33mwarn[39m] PROPOSAL_WORK_JOURNAL.md
-2026-02-17T06:49:04.2174211Z [[33mwarn[39m] REQUIREMENTS.md
-2026-02-17T06:49:04.2394440Z [[33mwarn[39m] server.js
-2026-02-17T06:49:04.3473453Z [[33mwarn[39m] src/app/ai/page.tsx
-2026-02-17T06:49:04.4334379Z [[33mwarn[39m] src/app/dashboard/page.tsx
-2026-02-17T06:49:04.4723092Z [[33mwarn[39m] src/app/graph/page.tsx
-2026-02-17T06:49:04.5594655Z [[33mwarn[39m] src/app/incidents/[id]/page.tsx
-2026-02-17T06:49:04.6140503Z [[33mwarn[39m] src/app/incidents/page.tsx
-2026-02-17T06:49:04.7131601Z [[33mwarn[39m] src/app/page.tsx
-2026-02-17T06:49:04.7795227Z [[33mwarn[39m] src/app/recipients/[id]/assessment/page.tsx
-2026-02-17T06:49:04.8807915Z [[33mwarn[39m] src/app/recipients/[id]/edit/page.tsx
-2026-02-17T06:49:04.9682525Z [[33mwarn[39m] src/app/recipients/[id]/page.tsx
-2026-02-17T06:49:05.0237891Z [[33mwarn[39m] src/app/recipients/[id]/vpn/new/page.tsx
-2026-02-17T06:49:05.0593344Z [[33mwarn[39m] src/app/recipients/[id]/vpn/page.tsx
-2026-02-17T06:49:05.1303098Z [[33mwarn[39m] src/app/recipients/new/page.tsx
-2026-02-17T06:49:05.1892786Z [[33mwarn[39m] src/app/recipients/page.tsx
-2026-02-17T06:49:05.2250884Z [[33mwarn[39m] src/components/GraphView.tsx
-2026-02-17T06:49:05.2795985Z [[33mwarn[39m] src/components/NoteCard.tsx
-2026-02-17T06:49:05.3176530Z [[33mwarn[39m] src/components/ui/button.tsx
-2026-02-17T06:49:05.3860373Z [[33mwarn[39m] src/lib/csv.ts
-2026-02-17T06:49:05.4144947Z [[33mwarn[39m] src/lib/excel.ts
-2026-02-17T06:49:05.4328219Z [[33mwarn[39m] src/lib/searchHighlight.ts
-2026-02-17T06:49:05.4914644Z [[33mwarn[39m] src/server/routers/actionItem.ts
-2026-02-17T06:49:05.5338161Z [[33mwarn[39m] src/server/routers/assessment.ts
-2026-02-17T06:49:05.5640204Z [[33mwarn[39m] src/server/routers/careIncident.ts
-2026-02-17T06:49:05.6010582Z [[33mwarn[39m] src/server/routers/event.ts
-2026-02-17T06:49:05.7806565Z [[33mwarn[39m] src/server/routers/recipient.ts
-2026-02-17T06:49:05.7964116Z [[33mwarn[39m] src/server/routers/role.ts
-2026-02-17T06:49:05.8476873Z [[33mwarn[39m] src/server/routers/vitalSign.ts
-2026-02-17T06:49:05.9044826Z [[33mwarn[39m] test-care-system.md
-2026-02-17T06:49:05.9187648Z [[33mwarn[39m] Code style issues found in 31 files. Run Prettier with --write to fix.
-2026-02-17T06:49:05.9403526Z  ELIFECYCLE  Command failed with exit code 1.
-2026-02-17T06:49:05.9579454Z ##[error]Process completed with exit code 1.
-2026-02-17T06:49:05.9633433Z Post job cleanup.
-2026-02-17T06:49:06.0171197Z Pruning is unnecessary.
-2026-02-17T06:49:06.0270955Z Post job cleanup.
-2026-02-17T06:49:06.1236587Z [command]/usr/bin/git version
-2026-02-17T06:49:06.1274645Z git version 2.52.0
-2026-02-17T06:49:06.1320463Z Temporarily overriding HOME='/home/runner/work/_temp/2e33f0ce-b79a-421a-b45d-41837fcbd48e' before making global git config changes
-2026-02-17T06:49:06.1322067Z Adding repository directory to the temporary git global config as a safe directory
-2026-02-17T06:49:06.1335081Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cortex_os/cortex_os
-2026-02-17T06:49:06.1372752Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-02-17T06:49:06.1408115Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-02-17T06:49:06.1667803Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-02-17T06:49:06.1690778Z http.https://github.com/.extraheader
-2026-02-17T06:49:06.1703792Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
-2026-02-17T06:49:06.1736537Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-02-17T06:49:06.1976732Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-02-17T06:49:06.2010109Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-02-17T06:49:06.2359424Z Cleaning up orphan processes
+2026-02-17T06:50:45.8170159Z Current runner version: '2.331.0'
+2026-02-17T06:50:45.8193308Z ##[group]Runner Image Provisioner
+2026-02-17T06:50:45.8194155Z Hosted Compute Agent
+2026-02-17T06:50:45.8194733Z Version: 20260123.484
+2026-02-17T06:50:45.8195350Z Commit: 6bd6555ca37d84114959e1c76d2c01448ff61c5d
+2026-02-17T06:50:45.8196081Z Build Date: 2026-01-23T19:41:17Z
+2026-02-17T06:50:45.8196774Z Worker ID: {24113dd1-fd43-4956-a1ab-2b5333f77af2}
+2026-02-17T06:50:45.8197476Z Azure Region: westcentralus
+2026-02-17T06:50:45.8198279Z ##[endgroup]
+2026-02-17T06:50:45.8199647Z ##[group]Operating System
+2026-02-17T06:50:45.8200332Z Ubuntu
+2026-02-17T06:50:45.8200797Z 24.04.3
+2026-02-17T06:50:45.8201304Z LTS
+2026-02-17T06:50:45.8201715Z ##[endgroup]
+2026-02-17T06:50:45.8202295Z ##[group]Runner Image
+2026-02-17T06:50:45.8202853Z Image: ubuntu-24.04
+2026-02-17T06:50:45.8203313Z Version: 20260209.23.1
+2026-02-17T06:50:45.8204508Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260209.23/images/ubuntu/Ubuntu2404-Readme.md
+2026-02-17T06:50:45.8206158Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260209.23
+2026-02-17T06:50:45.8207054Z ##[endgroup]
+2026-02-17T06:50:45.8208279Z ##[group]GITHUB_TOKEN Permissions
+2026-02-17T06:50:45.8210337Z Contents: read
+2026-02-17T06:50:45.8210949Z Metadata: read
+2026-02-17T06:50:45.8211430Z Packages: read
+2026-02-17T06:50:45.8212029Z ##[endgroup]
+2026-02-17T06:50:45.8214037Z Secret source: Actions
+2026-02-17T06:50:45.8214761Z Prepare workflow directory
+2026-02-17T06:50:45.8552323Z Prepare all required actions
+2026-02-17T06:50:45.8590027Z Getting action download info
+2026-02-17T06:50:46.2696649Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-02-17T06:50:46.4197430Z Download action repository 'pnpm/action-setup@v4' (SHA:41ff72655975bd51cab0327fa583b6e92b6d3061)
+2026-02-17T06:50:47.1335510Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-02-17T06:50:47.3460644Z Complete job name: lint-typecheck-test
+2026-02-17T06:50:47.4300598Z ##[group]Run actions/checkout@v4
+2026-02-17T06:50:47.4301871Z with:
+2026-02-17T06:50:47.4302625Z   repository: dauberside/cortex_os
+2026-02-17T06:50:47.4303841Z   token: ***
+2026-02-17T06:50:47.4304569Z   ssh-strict: true
+2026-02-17T06:50:47.4305323Z   ssh-user: git
+2026-02-17T06:50:47.4306089Z   persist-credentials: true
+2026-02-17T06:50:47.4306949Z   clean: true
+2026-02-17T06:50:47.4307896Z   sparse-checkout-cone-mode: true
+2026-02-17T06:50:47.4308840Z   fetch-depth: 1
+2026-02-17T06:50:47.4309618Z   fetch-tags: false
+2026-02-17T06:50:47.4310401Z   show-progress: true
+2026-02-17T06:50:47.4311183Z   lfs: false
+2026-02-17T06:50:47.4311905Z   submodules: false
+2026-02-17T06:50:47.4312687Z   set-safe-directory: true
+2026-02-17T06:50:47.4313791Z ##[endgroup]
+2026-02-17T06:50:47.5439182Z Syncing repository: dauberside/cortex_os
+2026-02-17T06:50:47.5442293Z ##[group]Getting Git version info
+2026-02-17T06:50:47.5443653Z Working directory is '/home/runner/work/cortex_os/cortex_os'
+2026-02-17T06:50:47.5445631Z [command]/usr/bin/git version
+2026-02-17T06:50:47.5446539Z git version 2.52.0
+2026-02-17T06:50:47.5469159Z ##[endgroup]
+2026-02-17T06:50:47.5493353Z Temporarily overriding HOME='/home/runner/work/_temp/a39cebf5-87ea-4cc7-a211-4af897d35e3b' before making global git config changes
+2026-02-17T06:50:47.5498384Z Adding repository directory to the temporary git global config as a safe directory
+2026-02-17T06:50:47.5502267Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cortex_os/cortex_os
+2026-02-17T06:50:47.5541069Z Deleting the contents of '/home/runner/work/cortex_os/cortex_os'
+2026-02-17T06:50:47.5544627Z ##[group]Initializing the repository
+2026-02-17T06:50:47.5550158Z [command]/usr/bin/git init /home/runner/work/cortex_os/cortex_os
+2026-02-17T06:50:47.5661530Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-02-17T06:50:47.5664101Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-02-17T06:50:47.5667199Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-02-17T06:50:47.5669922Z hint: call:
+2026-02-17T06:50:47.5671173Z hint:
+2026-02-17T06:50:47.5672877Z hint: 	git config --global init.defaultBranch <name>
+2026-02-17T06:50:47.5674797Z hint:
+2026-02-17T06:50:47.5676674Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-02-17T06:50:47.5680074Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-02-17T06:50:47.5682485Z hint:
+2026-02-17T06:50:47.5683663Z hint: 	git branch -m <name>
+2026-02-17T06:50:47.5685286Z hint:
+2026-02-17T06:50:47.5686478Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-02-17T06:50:47.5688724Z Initialized empty Git repository in /home/runner/work/cortex_os/cortex_os/.git/
+2026-02-17T06:50:47.5693021Z [command]/usr/bin/git remote add origin https://github.com/dauberside/cortex_os
+2026-02-17T06:50:47.5715482Z ##[endgroup]
+2026-02-17T06:50:47.5718098Z ##[group]Disabling automatic garbage collection
+2026-02-17T06:50:47.5720347Z [command]/usr/bin/git config --local gc.auto 0
+2026-02-17T06:50:47.5751790Z ##[endgroup]
+2026-02-17T06:50:47.5753977Z ##[group]Setting up auth
+2026-02-17T06:50:47.5759425Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-02-17T06:50:47.5793972Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-02-17T06:50:47.6113531Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-02-17T06:50:47.6146552Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-02-17T06:50:47.6375856Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-02-17T06:50:47.6407536Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-02-17T06:50:47.6645504Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-02-17T06:50:47.6680630Z ##[endgroup]
+2026-02-17T06:50:47.6682004Z ##[group]Fetching the repository
+2026-02-17T06:50:47.6690361Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +fb1a69938d7d0e9dbd6ab0624a589dd095714ba5:refs/remotes/origin/master
+2026-02-17T06:50:48.1482516Z From https://github.com/dauberside/cortex_os
+2026-02-17T06:50:48.1484950Z  * [new ref]         fb1a69938d7d0e9dbd6ab0624a589dd095714ba5 -> origin/master
+2026-02-17T06:50:48.1517034Z ##[endgroup]
+2026-02-17T06:50:48.1519212Z ##[group]Determining the checkout info
+2026-02-17T06:50:48.1521576Z ##[endgroup]
+2026-02-17T06:50:48.1524681Z [command]/usr/bin/git sparse-checkout disable
+2026-02-17T06:50:48.1565737Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-02-17T06:50:48.1592821Z ##[group]Checking out the ref
+2026-02-17T06:50:48.1596457Z [command]/usr/bin/git checkout --progress --force -B master refs/remotes/origin/master
+2026-02-17T06:50:48.1705051Z Reset branch 'master'
+2026-02-17T06:50:48.1708272Z branch 'master' set up to track 'origin/master'.
+2026-02-17T06:50:48.1715945Z ##[endgroup]
+2026-02-17T06:50:48.1750194Z [command]/usr/bin/git log -1 --format=%H
+2026-02-17T06:50:48.1772909Z fb1a69938d7d0e9dbd6ab0624a589dd095714ba5
+2026-02-17T06:50:48.2019995Z ##[group]Run pnpm/action-setup@v4
+2026-02-17T06:50:48.2020930Z with:
+2026-02-17T06:50:48.2021556Z   version: 9
+2026-02-17T06:50:48.2022245Z   dest: ~/setup-pnpm
+2026-02-17T06:50:48.2022989Z   run_install: null
+2026-02-17T06:50:48.2023761Z   package_json_file: package.json
+2026-02-17T06:50:48.2024655Z   standalone: false
+2026-02-17T06:50:48.2025360Z ##[endgroup]
+2026-02-17T06:50:48.2584823Z ##[group]Running self-installer...
+2026-02-17T06:50:48.8797203Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-02-17T06:50:48.8886898Z Packages: +1
+2026-02-17T06:50:48.8888241Z +
+2026-02-17T06:50:49.3271235Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+2026-02-17T06:50:49.3541607Z 
+2026-02-17T06:50:49.3541932Z dependencies:
+2026-02-17T06:50:49.3542446Z + pnpm 9.15.9 (10.29.3 is available)
+2026-02-17T06:50:49.3542829Z 
+2026-02-17T06:50:49.3572320Z Done in 935ms
+2026-02-17T06:50:49.3729844Z ##[endgroup]
+2026-02-17T06:50:49.3733854Z Installation Completed!
+2026-02-17T06:50:49.3883549Z ##[group]Run actions/setup-node@v4
+2026-02-17T06:50:49.3883901Z with:
+2026-02-17T06:50:49.3884149Z   node-version: 20
+2026-02-17T06:50:49.3884393Z   cache: pnpm
+2026-02-17T06:50:49.3884638Z   always-auth: false
+2026-02-17T06:50:49.3884901Z   check-latest: false
+2026-02-17T06:50:49.3885343Z   token: ***
+2026-02-17T06:50:49.3885584Z env:
+2026-02-17T06:50:49.3885896Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-02-17T06:50:49.3886345Z ##[endgroup]
+2026-02-17T06:50:49.5644784Z Found in cache @ /opt/hostedtoolcache/node/20.20.0/x64
+2026-02-17T06:50:49.5651299Z ##[group]Environment details
+2026-02-17T06:50:49.9049614Z node: v20.20.0
+2026-02-17T06:50:49.9050296Z npm: 10.8.2
+2026-02-17T06:50:49.9050751Z yarn: 1.22.22
+2026-02-17T06:50:49.9051744Z ##[endgroup]
+2026-02-17T06:50:49.9076917Z [command]/home/runner/setup-pnpm/node_modules/.bin/pnpm store path --silent
+2026-02-17T06:50:50.2940869Z /home/runner/setup-pnpm/node_modules/.bin/store/v3
+2026-02-17T06:50:50.5488619Z pnpm cache is not found
+2026-02-17T06:50:50.5648685Z ##[group]Run pnpm install --frozen-lockfile
+2026-02-17T06:50:50.5649104Z [36;1mpnpm install --frozen-lockfile[0m
+2026-02-17T06:50:50.5709704Z shell: /usr/bin/bash -e {0}
+2026-02-17T06:50:50.5709964Z env:
+2026-02-17T06:50:50.5710212Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-02-17T06:50:50.5710515Z ##[endgroup]
+2026-02-17T06:50:51.0223547Z Lockfile is up to date, resolution step is skipped
+2026-02-17T06:50:51.1161737Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-02-17T06:50:51.2350835Z Packages: +725
+2026-02-17T06:50:51.2353877Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2026-02-17T06:50:52.1169005Z Progress: resolved 725, reused 0, downloaded 47, added 36
+2026-02-17T06:50:53.1399453Z Progress: resolved 725, reused 0, downloaded 126, added 119
+2026-02-17T06:50:54.1361646Z Progress: resolved 725, reused 0, downloaded 224, added 219
+2026-02-17T06:50:55.1365757Z Progress: resolved 725, reused 0, downloaded 289, added 287
+2026-02-17T06:50:56.1368948Z Progress: resolved 725, reused 0, downloaded 395, added 390
+2026-02-17T06:50:57.1363268Z Progress: resolved 725, reused 0, downloaded 684, added 681
+2026-02-17T06:50:57.3131455Z Progress: resolved 725, reused 0, downloaded 725, added 725, done
+2026-02-17T06:50:57.5558970Z .../node_modules/@prisma/engines postinstall$ node scripts/postinstall.js
+2026-02-17T06:50:57.5774908Z .../sharp@0.34.5/node_modules/sharp install$ node install/check.js || npm run build
+2026-02-17T06:50:57.5780716Z .../node_modules/unrs-resolver postinstall$ napi-postinstall unrs-resolver 1.11.1 check
+2026-02-17T06:50:57.5790562Z .../esbuild@0.27.3/node_modules/esbuild postinstall$ node install.js
+2026-02-17T06:50:57.6504032Z .../node_modules/unrs-resolver postinstall: Done
+2026-02-17T06:50:57.6897388Z .../esbuild@0.27.3/node_modules/esbuild postinstall: Done
+2026-02-17T06:50:57.7035169Z .../sharp@0.34.5/node_modules/sharp install: Done
+2026-02-17T06:50:58.2287405Z .../node_modules/@prisma/engines postinstall: Done
+2026-02-17T06:50:58.2884139Z .../node_modules/prisma preinstall$ node scripts/preinstall-entry.js
+2026-02-17T06:50:58.3715660Z .../node_modules/prisma preinstall: Done
+2026-02-17T06:50:58.6411395Z 
+2026-02-17T06:50:58.6412185Z dependencies:
+2026-02-17T06:50:58.6412615Z + @auth/prisma-adapter 2.11.1
+2026-02-17T06:50:58.6413033Z + @dnd-kit/core 6.3.1
+2026-02-17T06:50:58.6413399Z + @dnd-kit/sortable 10.0.0
+2026-02-17T06:50:58.6414355Z + @dnd-kit/utilities 3.2.2
+2026-02-17T06:50:58.6414827Z + @hookform/resolvers 5.2.2
+2026-02-17T06:50:58.6415116Z + @prisma/adapter-pg 7.4.0
+2026-02-17T06:50:58.6415376Z + @prisma/client 7.4.0
+2026-02-17T06:50:58.6415665Z + @prisma/extension-accelerate 3.0.1
+2026-02-17T06:50:58.6415943Z + @radix-ui/react-slot 1.2.4
+2026-02-17T06:50:58.6416387Z + @tanstack/react-query 5.90.21
+2026-02-17T06:50:58.6416834Z + @trpc/client 11.0.0
+2026-02-17T06:50:58.6417219Z + @trpc/next 11.0.0
+2026-02-17T06:50:58.6417475Z + @trpc/react-query 11.0.0
+2026-02-17T06:50:58.6417922Z + @trpc/server 11.0.0
+2026-02-17T06:50:58.6418435Z + class-variance-authority 0.7.1
+2026-02-17T06:50:58.6418883Z + clsx 2.1.1
+2026-02-17T06:50:58.6419194Z + exceljs 4.4.0
+2026-02-17T06:50:58.6419543Z + force-graph 1.51.1
+2026-02-17T06:50:58.6419929Z + lucide-react 0.564.0
+2026-02-17T06:50:58.6420283Z + next 16.1.6
+2026-02-17T06:50:58.6420492Z + next-auth 5.0.0-beta.30
+2026-02-17T06:50:58.6420703Z + openai 6.22.0
+2026-02-17T06:50:58.6420938Z + pg 8.18.0
+2026-02-17T06:50:58.6421115Z + react 19.2.3
+2026-02-17T06:50:58.6421302Z + react-dom 19.2.3
+2026-02-17T06:50:58.6421528Z + react-force-graph-2d 1.29.1
+2026-02-17T06:50:58.6421771Z + react-hook-form 7.71.1
+2026-02-17T06:50:58.6421995Z + superjson 2.2.6
+2026-02-17T06:50:58.6422201Z + tailwind-merge 3.4.0
+2026-02-17T06:50:58.6422389Z + zod 4.3.6
+2026-02-17T06:50:58.6422496Z 
+2026-02-17T06:50:58.6422580Z devDependencies:
+2026-02-17T06:50:58.6422797Z + @tailwindcss/postcss 4.1.18
+2026-02-17T06:50:58.6423079Z + @testing-library/jest-dom 6.9.1
+2026-02-17T06:50:58.6423583Z + @testing-library/react 16.3.2
+2026-02-17T06:50:58.6424013Z + @types/node 20.19.33
+2026-02-17T06:50:58.6424437Z + @types/pg 8.16.0
+2026-02-17T06:50:58.6424824Z + @types/react 19.2.14
+2026-02-17T06:50:58.6425230Z + @types/react-dom 19.2.3
+2026-02-17T06:50:58.6425713Z + @vitejs/plugin-react 5.1.4
+2026-02-17T06:50:58.6426134Z + @vitest/ui 4.0.18
+2026-02-17T06:50:58.6426538Z + concurrently 9.2.1
+2026-02-17T06:50:58.6426966Z + dotenv 17.3.1
+2026-02-17T06:50:58.6427325Z + eslint 9.39.2
+2026-02-17T06:50:58.6427705Z + eslint-config-next 16.1.6
+2026-02-17T06:50:58.6428417Z + eslint-config-prettier 10.1.8
+2026-02-17T06:50:58.6428899Z + jsdom 28.0.0
+2026-02-17T06:50:58.6429268Z + local-ssl-proxy 2.0.5
+2026-02-17T06:50:58.6429657Z + prettier 3.8.1
+2026-02-17T06:50:58.6430170Z + prettier-plugin-tailwindcss 0.7.2
+2026-02-17T06:50:58.6430597Z + prisma 7.4.0
+2026-02-17T06:50:58.6430974Z + tailwindcss 4.1.18
+2026-02-17T06:50:58.6431418Z + typescript 5.9.3
+2026-02-17T06:50:58.6431746Z + vitest 4.0.18
+2026-02-17T06:50:58.6431945Z 
+2026-02-17T06:50:58.7125268Z Done in 8.1s using pnpm v9.15.9
+2026-02-17T06:50:58.7568793Z ##[group]Run pnpm lint
+2026-02-17T06:50:58.7569087Z [36;1mpnpm lint[0m
+2026-02-17T06:50:58.7618059Z shell: /usr/bin/bash -e {0}
+2026-02-17T06:50:58.7618300Z env:
+2026-02-17T06:50:58.7618537Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-02-17T06:50:58.7618838Z ##[endgroup]
+2026-02-17T06:50:59.1682484Z 
+2026-02-17T06:50:59.1683073Z > cortex_os@0.1.0 lint /home/runner/work/cortex_os/cortex_os
+2026-02-17T06:50:59.1683672Z > eslint
+2026-02-17T06:50:59.1683874Z 
+2026-02-17T06:51:05.9793253Z 
+2026-02-17T06:51:05.9794607Z /home/runner/work/cortex_os/cortex_os/src/app/incidents/[id]/page.tsx
+2026-02-17T06:51:05.9830735Z ##[warning]  14:17  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+2026-02-17T06:51:05.9838917Z 
+2026-02-17T06:51:05.9839282Z /home/runner/work/cortex_os/cortex_os/src/app/incidents/page.tsx
+2026-02-17T06:51:05.9840515Z ##[warning]  19:17  warning  'session' is assigned a value but never used  @typescript-eslint/no-unused-vars
+2026-02-17T06:51:05.9841453Z 
+2026-02-17T06:51:05.9841816Z /home/runner/work/cortex_os/cortex_os/src/app/recipients/[id]/assessment/page.tsx
+2026-02-17T06:51:05.9843063Z ##[warning]   9:27  warning  'Upload' is defined but never used                 @typescript-eslint/no-unused-vars
+2026-02-17T06:51:05.9844523Z ##[warning]  46:9   warning  'router' is assigned a value but never used        @typescript-eslint/no-unused-vars
+2026-02-17T06:51:05.9846407Z ##[warning]  49:9   warning  'fileInputRef' is assigned a value but never used  @typescript-eslint/no-unused-vars
+2026-02-17T06:51:05.9848145Z ##[warning]  96:18  warning  'errors' is assigned a value but never used        @typescript-eslint/no-unused-vars
+2026-02-17T06:51:05.9849028Z 
+2026-02-17T06:51:05.9849343Z /home/runner/work/cortex_os/cortex_os/src/app/recipients/[id]/page.tsx
+2026-02-17T06:51:05.9850402Z ##[warning]  62:10  warning  'showDeleteConfirm' is assigned a value but never used     @typescript-eslint/no-unused-vars
+2026-02-17T06:51:05.9852011Z ##[warning]  62:29  warning  'setShowDeleteConfirm' is assigned a value but never used  @typescript-eslint/no-unused-vars
+2026-02-17T06:51:05.9852925Z 
+2026-02-17T06:51:05.9853151Z /home/runner/work/cortex_os/cortex_os/src/lib/excel.ts
+2026-02-17T06:51:05.9854009Z ##[warning]  230:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+2026-02-17T06:51:05.9854960Z 
+2026-02-17T06:51:05.9855369Z ✖ 9 problems (0 errors, 9 warnings)
+2026-02-17T06:51:05.9855569Z 
+2026-02-17T06:51:06.0452262Z ##[group]Run pnpm format:check
+2026-02-17T06:51:06.0452553Z [36;1mpnpm format:check[0m
+2026-02-17T06:51:06.0500811Z shell: /usr/bin/bash -e {0}
+2026-02-17T06:51:06.0501043Z env:
+2026-02-17T06:51:06.0501275Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-02-17T06:51:06.0501578Z ##[endgroup]
+2026-02-17T06:51:06.4345740Z 
+2026-02-17T06:51:06.4346450Z > cortex_os@0.1.0 format:check /home/runner/work/cortex_os/cortex_os
+2026-02-17T06:51:06.4347067Z > prettier --check .
+2026-02-17T06:51:06.4347222Z 
+2026-02-17T06:51:06.5304734Z Checking formatting...
+2026-02-17T06:51:09.3763324Z All matched files use Prettier code style!
+2026-02-17T06:51:09.4078971Z ##[group]Run pnpm typecheck
+2026-02-17T06:51:09.4079267Z [36;1mpnpm typecheck[0m
+2026-02-17T06:51:09.4128281Z shell: /usr/bin/bash -e {0}
+2026-02-17T06:51:09.4128531Z env:
+2026-02-17T06:51:09.4128766Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-02-17T06:51:09.4129073Z ##[endgroup]
+2026-02-17T06:51:09.7958388Z 
+2026-02-17T06:51:09.7959000Z > cortex_os@0.1.0 typecheck /home/runner/work/cortex_os/cortex_os
+2026-02-17T06:51:09.7959670Z > tsc --noEmit
+2026-02-17T06:51:09.7959888Z 
+2026-02-17T06:51:15.6861569Z ##[error]src/app/recipients/[id]/page.tsx(204,25): error TS7006: Parameter 't' implicitly has an 'any' type.
+2026-02-17T06:51:15.6864494Z ##[error]src/app/recipients/[id]/page.tsx(685,52): error TS7006: Parameter 'record' implicitly has an 'any' type.
+2026-02-17T06:51:15.6867057Z ##[error]src/app/recipients/[id]/vpn/page.tsx(107,31): error TS7006: Parameter 'record' implicitly has an 'any' type.
+2026-02-17T06:51:15.6869665Z ##[error]src/app/recipients/page.tsx(230,20): error TS7006: Parameter 'a' implicitly has an 'any' type.
+2026-02-17T06:51:15.6871832Z ##[error]src/app/recipients/page.tsx(230,23): error TS7006: Parameter 'b' implicitly has an 'any' type.
+2026-02-17T06:51:15.6874194Z ##[error]src/app/recipients/page.tsx(232,19): error TS7006: Parameter 'level' implicitly has an 'any' type.
+2026-02-17T06:51:15.6876486Z ##[error]src/app/recipients/page.tsx(398,31): error TS7006: Parameter 'recipient' implicitly has an 'any' type.
+2026-02-17T06:51:15.6880017Z ##[error]src/app/recipients/page.tsx(443,35): error TS7006: Parameter 't' implicitly has an 'any' type.
+2026-02-17T06:51:15.6881541Z ##[error]src/lib/excel.ts(91,18): error TS7006: Parameter 'note' implicitly has an 'any' type.
+2026-02-17T06:51:15.6882803Z ##[error]src/lib/excel.ts(92,37): error TS7006: Parameter 'nt' implicitly has an 'any' type.
+2026-02-17T06:51:15.6884172Z ##[error]src/lib/prisma.ts(1,10): error TS2305: Module '"@prisma/client"' has no exported member 'PrismaClient'.
+2026-02-17T06:51:15.6886149Z ##[error]src/server/routers/ai.ts(112,41): error TS7006: Parameter 'msg' implicitly has an 'any' type.
+2026-02-17T06:51:15.6888422Z ##[error]src/server/routers/ai.ts(211,32): error TS7006: Parameter 'conv' implicitly has an 'any' type.
+2026-02-17T06:51:15.6891108Z ##[error]src/server/routers/careIncident.ts(307,26): error TS7006: Parameter 'incident' implicitly has an 'any' type.
+2026-02-17T06:51:15.6893390Z ##[error]src/server/routers/link.ts(55,25): error TS7006: Parameter 'note' implicitly has an 'any' type.
+2026-02-17T06:51:15.6895602Z ##[error]src/server/routers/link.ts(59,34): error TS7006: Parameter 'nt' implicitly has an 'any' type.
+2026-02-17T06:51:15.6897902Z ##[error]src/server/routers/link.ts(64,25): error TS7006: Parameter 'link' implicitly has an 'any' type.
+2026-02-17T06:51:15.6900107Z ##[error]src/server/routers/link.ts(131,34): error TS7006: Parameter 'link' implicitly has an 'any' type.
+2026-02-17T06:51:15.6902337Z ##[error]src/server/routers/link.ts(137,32): error TS7006: Parameter 'link' implicitly has an 'any' type.
+2026-02-17T06:51:15.6904377Z ##[error]src/server/routers/note.ts(108,32): error TS7006: Parameter 'nt' implicitly has an 'any' type.
+2026-02-17T06:51:15.6906433Z ##[error]src/server/routers/note.ts(254,25): error TS7006: Parameter 'note' implicitly has an 'any' type.
+2026-02-17T06:51:15.6908744Z ##[error]src/server/routers/recipient.ts(243,37): error TS7006: Parameter 'r' implicitly has an 'any' type.
+2026-02-17T06:51:15.6910928Z ##[error]src/server/routers/recipient.ts(309,58): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+2026-02-17T06:51:15.6913050Z ##[error]src/server/routers/tag.ts(54,22): error TS7006: Parameter 'tag' implicitly has an 'any' type.
+2026-02-17T06:51:15.6915128Z ##[error]src/server/routers/tag.ts(212,28): error TS7006: Parameter 'nt' implicitly has an 'any' type.
+2026-02-17T06:51:15.6917197Z ##[error]src/server/routers/tag.ts(242,28): error TS7006: Parameter 'nt' implicitly has an 'any' type.
+2026-02-17T06:51:15.6919791Z ##[error]src/server/routers/vitalSign.ts(217,30): error TS7006: Parameter 'vs' implicitly has an 'any' type.
+2026-02-17T06:51:15.6922130Z ##[error]src/server/routers/vitalSign.ts(243,46): error TS7006: Parameter 'vs' implicitly has an 'any' type.
+2026-02-17T06:51:15.7300128Z  ELIFECYCLE  Command failed with exit code 2.
+2026-02-17T06:51:15.7483842Z ##[error]Process completed with exit code 2.
+2026-02-17T06:51:15.7540608Z Post job cleanup.
+2026-02-17T06:51:15.8091559Z Pruning is unnecessary.
+2026-02-17T06:51:15.8205919Z Post job cleanup.
+2026-02-17T06:51:15.9174407Z [command]/usr/bin/git version
+2026-02-17T06:51:15.9212507Z git version 2.52.0
+2026-02-17T06:51:15.9256656Z Temporarily overriding HOME='/home/runner/work/_temp/86b95eeb-2db2-4ce8-be97-0004b0593e4b' before making global git config changes
+2026-02-17T06:51:15.9258457Z Adding repository directory to the temporary git global config as a safe directory
+2026-02-17T06:51:15.9272569Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cortex_os/cortex_os
+2026-02-17T06:51:15.9309300Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-02-17T06:51:15.9343895Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-02-17T06:51:15.9581515Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-02-17T06:51:15.9603222Z http.https://github.com/.extraheader
+2026-02-17T06:51:15.9615586Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-02-17T06:51:15.9646761Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-02-17T06:51:15.9876915Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-02-17T06:51:15.9911737Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-02-17T06:51:16.0258730Z Cleaning up orphan processes

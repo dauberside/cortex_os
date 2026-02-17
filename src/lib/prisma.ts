@@ -1,9 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+/* eslint-disable @typescript-eslint/no-require-imports */
+const { PrismaClient } = require("@prisma/client");
+const { PrismaPg } = require("@prisma/adapter-pg");
+const { Pool } = require("pg");
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  prisma: any;
 };
 
 function createPrismaClient() {
@@ -13,7 +14,6 @@ function createPrismaClient() {
     throw new Error("DATABASE_URL is not defined");
   }
 
-  // PostgreSQL接続用のPoolとAdapterを作成
   const pool = new Pool({ connectionString });
   const adapter = new PrismaPg(pool);
 

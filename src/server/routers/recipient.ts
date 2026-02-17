@@ -307,7 +307,7 @@ export const recipientRouter = router({
 
         // データベースに保存（アセスメント情報も含む）
         const created = await ctx.db.$transaction(async (tx) => {
-          const createdRecipients = [];
+          const createdRecipients: any[] = [];
 
           for (const recipientData of validRecipients) {
             const { assessment, ...recipientFields } = recipientData as any;
