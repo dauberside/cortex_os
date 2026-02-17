@@ -1,0 +1,531 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// User - NextAuth.js managed
+// ============================================
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts       Account[]
+  sessions       Session[]
+  notes          Note[]
+  tags           Tag[]
+  links          Link[]
+  aiMessages     AIMessage[]
+  careRecipients CareRecipient[]
+  assessments    Assessment[]
+  careRecords    CareRecord[]
+  vitalSigns     VitalSign[]
+  medications    Medication[]
+  handovers      Handover[]
+  careIncidents  CareIncident[]
+  serviceRecords ServiceRecord[]
+
+  @@index([email])
+  @@map("users")
+}
+
+// NextAuth.js models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================
+// Core Data Models
+// ============================================
+
+// Note - ノート
+model Note {
+  id        String    @id @default(cuid())
+  userId    String
+  title     String
+  content   String    @db.Text
+  sortOrder Int       @default(0) // カスタム並び順
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // 論理削除
+
+  // Relations
+  user              User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  noteTags          NoteTag[]
+  linksFrom         Link[]                      @relation("LinkFrom")
+  linksTo           Link[]                      @relation("LinkTo")
+  aiMessages        AIMessage[]
+
+  @@index([userId])
+  @@index([userId, deletedAt])
+  @@index([userId, sortOrder])
+  @@index([createdAt])
+  @@map("notes")
+}
+
+// Tag - タグ
+model Tag {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  noteTags NoteTag[]
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("tags")
+}
+
+// NoteTag - ノートとタグの中間テーブル
+model NoteTag {
+  noteId    String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  // Relations
+  note Note @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([noteId, tagId])
+  @@index([noteId])
+  @@index([tagId])
+  @@map("note_tags")
+}
+
+// Link - ノート間リンク
+model Link {
+  id         String   @id @default(cuid())
+  userId     String
+  fromNoteId String
+  toNoteId   String
+  type       String?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fromNote Note @relation("LinkFrom", fields: [fromNoteId], references: [id], onDelete: Cascade)
+  toNote   Note @relation("LinkTo", fields: [toNoteId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([fromNoteId])
+  @@index([toNoteId])
+  @@index([userId, fromNoteId])
+  @@map("links")
+}
+
+// AIMessage - AI会話履歴
+model AIMessage {
+  id             String   @id @default(cuid())
+  userId         String
+  conversationId String?
+  noteId         String?
+  role           String // 'user' | 'assistant'
+  content        String   @db.Text
+  metadata       Json?    @db.JsonB
+  createdAt      DateTime @default(now())
+
+  // Relations
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note Note? @relation(fields: [noteId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([conversationId])
+  @@index([userId, conversationId])
+  @@index([noteId])
+  @@index([createdAt])
+  @@map("ai_messages")
+}
+
+// ============================================
+// Care Management Models - 福祉・介護管理
+// ============================================
+
+// CareRecipient - 利用者（重度障害者）
+model CareRecipient {
+  id              String    @id @default(cuid())
+  userId          String    // 施設・事業所のユーザーID
+  name            String
+  nameKana        String?
+  birthDate       DateTime
+  gender          String    // Male/Female/Other
+
+  // 障害情報
+  disabilityType  String[]  @default([]) // Physical/Intellectual/Mental
+  supportLevel    Int?      // 障害支援区分 1-6
+
+  // サービス情報
+  serviceTypes    String[]  @default([]) // HomeHelp/VisitingCare/BehaviorSupport/MobilitySupport/DayCare/ShortStay/GroupHome
+  utilizationStatus String? // Home/Facility/DayCare/GroupHome
+  receivedDate    DateTime? // 受給者証交付日
+  validUntil      DateTime? // 受給者証有効期限
+  recipientNumber String?   // 受給者番号
+
+  // 行動援護関連
+  behaviorSupportNeeded Boolean @default(false) // 行動援護が必要か
+  behaviorScore   Int?      // 行動関連項目の合計点数（10点以上で行動援護対象）
+
+  // 加算情報
+  allowances      String[]  @default([]) // IntensiveBehaviorSupport/EmergencySupport/SpecialArea/EarlyMorning/LateNight/DeafBlindSupport など
+
+  // 障害者手帳情報
+  physicalHandicapBook Boolean @default(false) // 身体障害者手帳 所持
+  physicalHandicapGrade String? // 身体障害者手帳 等級 (1〜6級)
+  intellectualHandicapBook Boolean @default(false) // 療育手帳 所持
+  intellectualHandicapGrade String? // 療育手帳 等級 (A1/A2/B1/B2)
+  mentalHandicapBook Boolean @default(false) // 精神障害者保健福祉手帳 所持
+  mentalHandicapGrade String? // 精神障害者保健福祉手帳 等級 (1〜3級)
+
+  // 手当・給付
+  specialChildAllowance Boolean @default(false) // 特別児童扶養手当（20歳未満）
+  disabilityAllowance Boolean @default(false) // 障害児福祉手当（20歳未満・重度）
+  specialDisabilityAllowance Boolean @default(false) // 特別障害者手当（20歳以上・重度在宅）
+  nursingAllowance Boolean @default(false) // 障害者特別給付金等
+  disabilityPension Boolean @default(false) // 障害年金 受給
+  disabilityPensionGrade String? // 障害年金 等級 (1級/2級/3級)
+  disabilityPensionType String? // 年金種別 (National/Employee/Employee3rd)
+
+  // 精神科・発達障害関連
+  psychiatricDiagnosis String? // 精神科診断名
+  developmentalDiagnosis String? // 発達障害診断名 (ASD/ADHD/LD等)
+  autismSpectrumLevel String? // 自閉スペクトラム症の程度
+  medicalProtectionAdmission Boolean @default(false) // 医療保護入院歴
+  outpatientMedication Boolean @default(false) // 精神科通院・服薬中
+  medicalFeeExemption String? // 自立支援医療（精神通院）制度利用 (None/Applied/Approved)
+
+  // 高齢障害者関連
+  isElderly Boolean @default(false) // 65歳以上（介護保険優先適用）
+  careInsuranceCertified Boolean @default(false) // 介護保険認定済み
+  careInsuranceLevel String? // 介護保険 要介護度 (Support1/Support2/Care1〜Care5)
+  careInsuranceExpiry DateTime? // 介護保険 有効期限
+  continuedDisabilityService Boolean @default(false) // 高齢障害者の障害福祉サービス継続利用
+
+  // 連絡先
+  emergencyContact String?
+  doctor          String?
+  hospital        String?
+
+  // その他
+  allergies       String?
+  medicalHistory  String?   @db.Text
+  notes           String?   @db.Text
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime? // 論理削除
+
+  // リレーション
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessment      Assessment?
+  careRecords     CareRecord[]
+  vitalSigns      VitalSign[]
+  medications     Medication[]
+  handovers       Handover[]
+  incidents       CareIncident[]
+  serviceRecords  ServiceRecord[] // サービス提供記録
+
+  @@index([userId])
+  @@index([userId, deletedAt])
+  @@index([userId, serviceTypes])
+  @@map("care_recipients")
+}
+
+// Assessment - アセスメント（利用者詳細情報）
+model Assessment {
+  id            String   @id @default(cuid())
+  recipientId   String   @unique
+  userId        String
+
+  // ADL（日常生活動作）
+  adlMovement   String?  // 移動: Independent/Assisted/Wheelchair/Bedridden
+  adlEating     String?  // 食事: Independent/Partial/Full
+  adlToilet     String?  // 排泄: Independent/Partial/Full
+  adlBathing    String?  // 入浴: Independent/Partial/Full
+  adlDressing   String?  // 更衣: Independent/Partial/Full
+  adlGrooming   String?  // 整容: Independent/Partial/Full
+
+  // コミュニケーション
+  commMethod    String?  @db.Text // 意思疎通の方法
+  commVision    String?  // 視覚: Normal/Weak/Blind
+  commHearing   String?  // 聴覚: Normal/Weak/Deaf
+  commSpeech    String?  // 発語: Normal/Difficult/None
+
+  // 行動特性
+  lifeRhythm    String?  @db.Text // 生活リズム
+  hobbies       String?  @db.Text // 趣味・嗜好
+  personality   String?  @db.Text // 性格・特徴
+
+  // 注意事項
+  cautions      String?  @db.Text // 特記事項・注意事項
+  emergencyNote String?  @db.Text // 緊急時対応
+
+  // 服薬情報詳細
+  medicationDetails String? @db.Text // 定期薬・頓服薬の詳細
+
+  // その他
+  familyStructure String? @db.Text // 家族構成
+  supportSystem   String? @db.Text // 支援体制
+
+  updatedAt     DateTime @updatedAt
+  createdAt     DateTime @default(now())
+
+  // リレーション
+  recipient     CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId])
+  @@index([userId])
+  @@map("assessments")
+}
+
+// CareRecord - 支援記録（業務日誌）
+model CareRecord {
+  id            String   @id @default(cuid())
+  recipientId   String
+  userId        String   // 記録者
+
+  recordDate    DateTime // 記録日時
+  category      String   // Meal/Excretion/Bath/Medical/Communication/Activity
+  content       String   @db.Text
+  notes         String?  @db.Text
+
+  // 食事記録用
+  mealAmount    String?  // 全量/半量/少量
+  mealTexture   String?  // 常食/刻み/ミキサー
+
+  // 排泄記録用
+  excretionType String?  // Urine/Feces
+  excretionForm String?  // 正常/軟便/下痢/便秘
+
+  // 入浴記録用
+  bathType      String?  // 入浴/シャワー/清拭
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // リレーション
+  recipient     CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, recordDate])
+  @@index([userId])
+  @@map("care_records")
+}
+
+// VitalSign - バイタルサイン記録
+model VitalSign {
+  id            String   @id @default(cuid())
+  recipientId   String
+  userId        String   // 測定者
+
+  measuredAt    DateTime
+
+  // V - Vital signs（バイタルサイン）
+  temperature   Float?   // 体温（℃）
+  systolic      Int?     // 収縮期血圧（mmHg）
+  diastolic     Int?     // 拡張期血圧（mmHg）
+  pulse         Int?     // 脈拍（回/分）
+  spo2          Int?     // SpO2（%）
+  weight        Float?   // 体重（kg）
+
+  // P - Physical status（身体状態）
+  consciousness String?  // 意識レベル: Clear/Drowsy/Stupor/Coma
+  mobility      String?  // 移動能力: Independent/Assisted/Wheelchair/Bedridden
+  skinCondition String?  // 皮膚状態: Normal/Dry/Rash/Wound/Pressure
+  excretion     String?  // 排泄状態: Normal/Constipation/Diarrhea/Urinary
+
+  // N - Nutrition（栄養状態）
+  mealIntake    String?  // 食事摂取量: Full/ThreeQuarters/Half/Quarter/None
+  waterIntake   String?  // 水分摂取量: Adequate/Insufficient/Excessive
+  nutritionNote String?  @db.Text // 栄養に関する特記事項
+
+  notes         String?  @db.Text
+
+  createdAt     DateTime @default(now())
+
+  // リレーション
+  recipient     CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, measuredAt])
+  @@index([userId])
+  @@map("vital_signs")
+}
+
+// Medication - 服薬記録
+model Medication {
+  id             String   @id @default(cuid())
+  recipientId    String
+  userId         String   // 実施者
+
+  medicatedAt    DateTime // 服薬日時
+  medicationName String
+  dosage         String
+  method         String?  // Oral/Injection/Tube
+
+  status         String   @default("Completed") // Completed/Refused/Error
+  notes          String?  @db.Text
+
+  createdAt      DateTime @default(now())
+
+  // リレーション
+  recipient      CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, medicatedAt])
+  @@index([userId])
+  @@map("medications")
+}
+
+// Handover - 申し送り事項
+model Handover {
+  id            String    @id @default(cuid())
+  recipientId   String?   // NULL = 全体への申し送り
+  userId        String    // 記録者
+
+  content       String    @db.Text
+  priority      String    @default("Normal") // High/Normal/Low
+  dueDate       DateTime? // 対応期限
+
+  confirmedBy   String?   // 確認者ID
+  confirmedAt   DateTime?
+
+  createdAt     DateTime  @default(now())
+
+  // リレーション
+  recipient     CareRecipient? @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId])
+  @@index([userId])
+  @@index([confirmedBy, confirmedAt])
+  @@map("handovers")
+}
+
+// CareIncident - ヒヤリハット・事故報告
+model CareIncident {
+  id            String   @id @default(cuid())
+  recipientId   String
+  userId        String   // 報告者
+
+  occurredAt    DateTime // 発生日時
+  discoveredBy  String   // 発見者名
+  location      String   // 発生場所
+
+  incidentType  String   // Fall/Medication/Wandering/Injury/Other
+  severityLevel Int      // 0-5
+
+  situation     String   @db.Text // 発生状況
+  cause         String?  @db.Text // 発生要因
+  response      String?  @db.Text // 対応内容
+  prevention    String?  @db.Text // 再発防止策
+
+  reportedAt    DateTime @default(now())
+
+  // リレーション
+  recipient     CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, occurredAt])
+  @@index([userId])
+  @@index([severityLevel])
+  @@map("care_incidents")
+}
+
+// ServiceRecord - サービス提供記録（行動援護・ガイドヘルプなど）
+model ServiceRecord {
+  id            String   @id @default(cuid())
+  recipientId   String
+  userId        String   // サービス提供者
+
+  serviceType   String   // BehaviorSupport/MobilitySupport/HomeHelp/VisitingCare
+  serviceDate   DateTime // サービス提供日
+  startTime     DateTime // 開始時刻
+  endTime       DateTime // 終了時刻
+  duration      Int      // 所要時間（分）
+
+  // サービス内容
+  destination   String?  // 行き先（外出支援の場合）
+  purpose       String?  // 目的
+  serviceDetail String   @db.Text // サービス内容詳細
+
+  // 利用者の状態
+  userCondition String?  @db.Text // 利用者の様子
+  incidents     String?  @db.Text // 特記事項・インシデント
+
+  // 加算適用
+  appliedAllowances String[] @default([]) // 適用した加算
+
+  // 同行者
+  staff1        String?  // 提供者1
+  staff2        String?  // 提供者2（複数人対応の場合）
+
+  // 承認
+  isApproved    Boolean  @default(false)
+  approvedBy    String?
+  approvedAt    DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // リレーション
+  recipient     CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId, serviceDate])
+  @@index([userId])
+  @@index([serviceType])
+  @@map("service_records")
+}
