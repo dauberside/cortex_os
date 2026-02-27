@@ -26,6 +26,28 @@ export const assessmentRouter = router({
       return assessment;
     }),
 
+  // 後方互換性のためのエイリアス（deprecated: getByRecipientを使用してください）
+  get: protectedProcedure
+    .input(z.object({ recipientId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const assessment = await ctx.prisma.assessment.findUnique({
+        where: { recipientId: input.recipientId },
+        include: {
+          recipient: {
+            select: {
+              id: true,
+              name: true,
+              nameKana: true,
+              birthDate: true,
+              gender: true,
+            },
+          },
+        },
+      });
+
+      return assessment;
+    }),
+
   // アセスメント作成または更新
   upsert: protectedProcedure
     .input(assessmentSchema)
