@@ -10,12 +10,17 @@ import { roleRouter } from "./role";
 import { actionItemRouter } from "./actionItem";
 // 福祉システム用ルーター
 import { recipientRouter } from "./recipient";
-import { assessmentRouter } from "./assessment";
 import { careRecordRouter } from "./careRecord";
 import { vitalSignRouter } from "./vitalSign";
 import { medicationRouter } from "./medication";
 import { handoverRouter } from "./handover";
 import { careIncidentRouter } from "./careIncident";
+import { guideRecordRouter } from "./guideRecord";
+import { unitRouter } from "./unit";
+import { dailyLogRouter } from "./dailyLog";
+import { auditLogRouter } from "./auditLog";
+import { serviceRecordRouter } from "./serviceRecord";
+import { assessmentRouter } from "./assessment";
 
 export const appRouter = router({
   note: noteRouter,
@@ -29,12 +34,17 @@ export const appRouter = router({
   actionItem: actionItemRouter,
   // 福祉システム用
   recipient: recipientRouter,
-  assessment: assessmentRouter,
   careRecord: careRecordRouter,
   vitalSign: vitalSignRouter,
   medication: medicationRouter,
   handover: handoverRouter,
   careIncident: careIncidentRouter,
+  guideRecord: guideRecordRouter,
+  unit: unitRouter,
+  dailyLog: dailyLogRouter,
+  auditLog: auditLogRouter,
+  serviceRecord: serviceRecordRouter,
+  assessment: assessmentRouter,
 });
 
 export type AppRouter = typeof appRouter;

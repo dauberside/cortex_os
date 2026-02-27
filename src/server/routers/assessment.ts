@@ -1,116 +1,146 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
-
-// バリデーションスキーマ
-const upsertAssessmentSchema = z.object({
-  recipientId: z.string(),
-  // ADL
-  adlMovement: z
-    .enum(["Independent", "Assisted", "Wheelchair", "Bedridden", ""])
-    .optional(),
-  adlEating: z.enum(["Independent", "Partial", "Full", ""]).optional(),
-  adlToilet: z.enum(["Independent", "Partial", "Full", ""]).optional(),
-  adlBathing: z.enum(["Independent", "Partial", "Full", ""]).optional(),
-  adlDressing: z.enum(["Independent", "Partial", "Full", ""]).optional(),
-  adlGrooming: z.enum(["Independent", "Partial", "Full", ""]).optional(),
-  // コミュニケーション
-  commMethod: z.string().optional(),
-  commVision: z.enum(["Normal", "Weak", "Blind", ""]).optional(),
-  commHearing: z.enum(["Normal", "Weak", "Deaf", ""]).optional(),
-  commSpeech: z.enum(["Normal", "Difficult", "None", ""]).optional(),
-  // 行動特性
-  lifeRhythm: z.string().optional(),
-  hobbies: z.string().optional(),
-  personality: z.string().optional(),
-  // 注意事項
-  cautions: z.string().optional(),
-  emergencyNote: z.string().optional(),
-  // 服薬情報詳細
-  medicationDetails: z.string().optional(),
-  // その他
-  familyStructure: z.string().optional(),
-  supportSystem: z.string().optional(),
-});
+import { TRPCError } from "@trpc/server";
+import { assessmentSchema, assessmentUpdateSchema } from "@/lib/validations/assessment";
 
 export const assessmentRouter = router({
-  // アセスメント取得
-  get: protectedProcedure
+  // アセスメント取得（利用者IDで）
+  getByRecipient: protectedProcedure
     .input(z.object({ recipientId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const assessment = await ctx.db.assessment.findUnique({
-        where: {
-          recipientId: input.recipientId,
-        },
+      const assessment = await ctx.prisma.assessment.findUnique({
+        where: { recipientId: input.recipientId },
         include: {
-          recipient: true,
+          recipient: {
+            select: {
+              id: true,
+              name: true,
+              nameKana: true,
+              birthDate: true,
+              gender: true,
+            },
+          },
         },
       });
-
-      // 権限チェック
-      if (assessment && assessment.recipient.userId !== ctx.session.user.id) {
-        throw new Error("アクセス権限がありません");
-      }
 
       return assessment;
     }),
 
-  // アセスメント作成・更新（Upsert）
+  // アセスメント作成または更新
   upsert: protectedProcedure
-    .input(upsertAssessmentSchema)
+    .input(assessmentSchema)
     .mutation(async ({ ctx, input }) => {
       const { recipientId, ...data } = input;
 
-      // 利用者の存在確認・権限チェック
-      const recipient = await ctx.db.careRecipient.findFirst({
-        where: {
-          id: recipientId,
-          userId: ctx.session.user.id,
-          deletedAt: null,
-        },
+      // 利用者の存在確認
+      const recipient = await ctx.prisma.careRecipient.findUnique({
+        where: { id: recipientId },
       });
 
       if (!recipient) {
-        throw new Error("利用者が見つかりません");
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "利用者が見つかりません",
+        });
       }
 
-      // 空文字列をundefinedに変換
-      const cleanedData: any = {};
-      for (const [key, value] of Object.entries(data)) {
-        if (value !== "") {
-          cleanedData[key] = value;
-        }
-      }
-
-      return ctx.db.assessment.upsert({
+      // 既存のアセスメント確認
+      const existing = await ctx.prisma.assessment.findUnique({
         where: { recipientId },
-        create: {
-          recipientId,
-          userId: ctx.session.user.id,
-          ...cleanedData,
-        },
-        update: cleanedData,
-        include: {
-          recipient: true,
-        },
       });
+
+      if (existing) {
+        // 更新
+        const updated = await ctx.prisma.assessment.update({
+          where: { id: existing.id },
+          data: {
+            ...data,
+            userId: ctx.session.user.id,
+          },
+        });
+
+        // 監査ログ記録
+        await ctx.prisma.auditLog.create({
+          data: {
+            userId: ctx.session.user.id,
+            action: "Edit",
+            resourceType: "Assessment",
+            resourceId: updated.id,
+            metadata: {
+              recipientId,
+              recipientName: recipient.name,
+            },
+          },
+        });
+
+        return updated;
+      } else {
+        // 新規作成
+        const created = await ctx.prisma.assessment.create({
+          data: {
+            recipientId,
+            userId: ctx.session.user.id,
+            ...data,
+          },
+        });
+
+        // 監査ログ記録
+        await ctx.prisma.auditLog.create({
+          data: {
+            userId: ctx.session.user.id,
+            action: "Create",
+            resourceType: "Assessment",
+            resourceId: created.id,
+            metadata: {
+              recipientId,
+              recipientName: recipient.name,
+            },
+          },
+        });
+
+        return created;
+      }
     }),
 
   // アセスメント削除
   delete: protectedProcedure
-    .input(z.object({ recipientId: z.string() }))
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // 権限チェック
-      const assessment = await ctx.db.assessment.findUnique({
-        where: { recipientId: input.recipientId },
-        include: { recipient: true },
+      const assessment = await ctx.prisma.assessment.findUnique({
+        where: { id: input.id },
+        include: {
+          recipient: {
+            select: { name: true },
+          },
+        },
       });
 
-      if (!assessment || assessment.recipient.userId !== ctx.session.user.id) {
-        throw new Error("アクセス権限がありません");
+      if (!assessment) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "アセスメントが見つかりません",
+        });
       }
 
-      return ctx.db.assessment.delete({
-        where: { recipientId: input.recipientId },
+      // 削除
+      await ctx.prisma.assessment.delete({
+        where: { id: input.id },
       });
+
+      // 監査ログ記録
+      await ctx.prisma.auditLog.create({
+        data: {
+          userId: ctx.session.user.id,
+          action: "Delete",
+          resourceType: "Assessment",
+          resourceId: input.id,
+          metadata: {
+            recipientId: assessment.recipientId,
+            recipientName: assessment.recipient.name,
+          },
+        },
+      });
+
+      return { success: true };
     }),
 });

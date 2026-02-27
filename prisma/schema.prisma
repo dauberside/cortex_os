@@ -12,12 +12,20 @@ datasource db {
 // ============================================
 // User - NextAuth.js managed
 // ============================================
+
+enum UserRole {
+  STAFF   // 一般職員（記録作成・提出のみ）
+  LEAD    // リーダー職員（承認・差戻し権限あり）
+  MANAGER // 管理者（全権限）
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
   name          String?
   emailVerified DateTime?
   image         String?
+  role          UserRole  @default(STAFF)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -36,8 +44,13 @@ model User {
   handovers      Handover[]
   careIncidents  CareIncident[]
   serviceRecords ServiceRecord[]
+  guideRecords   GuideRecord[]
+  unitStaffs     UnitStaff[]
+  dailyLogs      DailyLog[]
+  auditLogs      AuditLog[]
 
   @@index([email])
+  @@index([role])
   @@map("users")
 }
 
@@ -194,70 +207,251 @@ model AIMessage {
 // ============================================
 
 // CareRecipient - 利用者（重度障害者）
+// ★ ガイドヘルプ用・サポート基本情報票を基準に再設計
 model CareRecipient {
   id              String    @id @default(cuid())
   userId          String    // 施設・事業所のユーザーID
+  createdBy       String?   // 利用者を作成したSTAFFのユーザーID
+
+  // ============================================
+  // 1. 基本プロフィール（サポート基本情報票 Page 1）
+  // ============================================
+
+  // 基本情報
   name            String
   nameKana        String?
   birthDate       DateTime
   gender          String    // Male/Female/Other
+  school          String?   // 通所（学）先
+  photoUrl        String?   // 写真URL（35mm×45mm相当）
 
-  // 障害情報
-  disabilityType  String[]  @default([]) // Physical/Intellectual/Mental
+  // 手帳・区分・サービス
+  handbookType    String?   // 手帳種別（例: 療育手帳/身体障害者手帳/精神障害者保健福祉手帳）
+  handbookGrade   String?   // 等級（例: A1/1級/2級など）
   supportLevel    Int?      // 障害支援区分 1-6
+  serviceTypes    String[]  @default([]) // 利用サービス（行動援護/移動支援/利用会員など）
 
-  // サービス情報
-  serviceTypes    String[]  @default([]) // HomeHelp/VisitingCare/BehaviorSupport/MobilitySupport/DayCare/ShortStay/GroupHome
+  // 住所・連絡
+  homeAddress     String?   // 自宅住所
+  homePhone       String?   // 自宅電話
+  nearestStation  String?   // 最寄り駅
+  walkingMinutes  String?   // 徒歩分数
+  livingType      String?   // GH入居/一人暮らし/実家など
+  ghName          String?   // GH名称
+  ghAddress       String?   // GH住所
+  ghPhone         String?   // GH電話
+  ghCorporation   String?   // GH法人名
+  ghAccess        String?   // GHアクセス
+  hasMobilePhone  Boolean   @default(false) // 本人携帯 あり/なし
+  mobilePhone     String?   // 本人携帯番号
+
+  // 緊急連絡
+  emergencyContact String?  // 緊急連絡先電話番号
+  emergencyRelation String? // 本人との関係
+  emergencyContactFax String? // 緊急連絡先FAX
+
+  // 運用ルール
+  priorConfirmationNote String? @db.Text // 前日確認の特記
+  hasRecordNote     Boolean @default(false) // ノートの有無（記録）
+  walletNote        String? @db.Text // ガイドのお財布特記
+  cafeBreak         Boolean @default(false) // 休憩時の喫茶入店 希望しない/希望する
+  cafeCondition     String? // 喫茶条件（例: 300円以内）
+  trainDiscountType String? // 電車割引種別（例: 1種/2種）
+  hasToeiPass       Boolean @default(false) // 都営乗車券等の有無
+  hasRestrictionConsent Boolean @default(false) // 行動制限の同意書 有/無
+  planConsultationOffice String? // 計画相談事業所
+  planConsultant    String? // 担当者名
+
+  // ============================================
+  // 2. アセスメント・支援上の留意点（Page 1下〜Page 2上）
+  // ============================================
+
+  // 健康・服薬
+  disabilityName    String?   // 障害名
+  diseaseStatus     String?   @db.Text // 疾病状況
+  hasSeizures       Boolean   @default(false) // 発作の有無
+  seizureFrequency  String?   // 発作頻度
+  seizureResponse   String?   @db.Text // 発作対処方法
+  medication        String[]  @default([]) // 服薬（朝食後/昼食後/夕食後/就寝前/時間固定）
+  hasPrnMedication  Boolean   @default(false) // 頓服の有無
+  prnMedicationMethod String? @db.Text // 頓服服薬方法
+  hasSeasonalMedication Boolean @default(false) // 季節薬の有無
+  seasonalMedicationContent String? @db.Text // 季節薬内容
+  healthNote        String?   @db.Text // 留意点
+
+  // 食事
+  favoriteFoods     String?   @db.Text // 好きなもの
+  dislikedFoods     String?   @db.Text // 嫌いなもの
+  hasAllergy        Boolean   @default(false) // アレルギー 無/有
+  allergyNote       String?   @db.Text // アレルギー内容（厳重注意）
+  menuSelectionMethod String? @db.Text // メニューの選び方
+  eatingStyle       String?   // 食事形態（はし/スプーンなど）
+
+  // 排泄
+  toiletSign        String?   @db.Text // サイン
+  toiletFrequency   String?   // 頻度
+  toiletAssistMethod String?  @db.Text // 介助方法
+  toiletNote        String?   @db.Text // 留意点
+
+  // 移動
+  mobilityMethod    String?   @db.Text // 手段
+  mobilityAssist    String?   @db.Text // 介助方法
+  mobilityNote      String?   @db.Text // 留意点
+
+  // コミュニケーション
+  commVerbal        String?   @db.Text // 会話
+  commGesture       String?   @db.Text // ジェスチャー
+  commExpression    String?   @db.Text // 表情での表現
+  commRequest       String?   @db.Text // 要求の表現
+  commRefusal       String?   @db.Text // 拒否の表現
+  commNote          String?   @db.Text // 留意点
+
+  // こだわり等
+  hasObsession      Boolean   @default(false) // こだわり 有/無
+  obsessionSituation String?  @db.Text // 状況
+  obsessionResponse String?   @db.Text // 対応
+
+  // 安全・行動
+  hasSelfHarm       Boolean   @default(false) // 自傷 なし/あり
+  hasHarmToOthers   Boolean   @default(false) // 他害 なし/あり
+  safetyNote        String?   @db.Text // 安全に関する留意点
+
+  // その他
+  hobbies           String?   @db.Text // 趣味・好きなこと
+  otherNotes        String?   @db.Text // その他、注意点
+  hasPastIncidents  Boolean   @default(false) // 過去のサポートでのパニック・事故等
+  pastIncidentsNote String?   @db.Text // 過去のインシデント詳細
+
+  // ============================================
+  // Phase 1追加フィールド: 感覚過敏・鈍麻
+  // ============================================
+  sensorySound      String?   @db.Text // 音（好きな音/嫌いな音、特定の音に過敏等）
+  sensoryLight      String?   @db.Text // 光（過敏さ等）
+  sensoryTaste      String?   @db.Text // 味覚（偏食、味の好み、飲み込み等）
+  sensoryTouch      String?   @db.Text // 触覚（衣服の材質/タグ等へのこだわり、触れ方等）
+  sensorySmell      String?   @db.Text // におい（食事の好み、臭いに敏感等）
+  sensoryOther      String?   @db.Text // その他感覚
+
+  // ============================================
+  // Phase 1追加フィールド: こだわり
+  // ============================================
+  obsessionPast     String?   @db.Text // 過去、こだわっていたこと
+  obsessionCurrent  String?   @db.Text // 現在、こだわっていること
+
+  // ============================================
+  // Phase 1追加フィールド: 自傷・他害・パニック
+  // ============================================
+  selfHarmContent   String?   @db.Text // 自傷の内容
+  aggressionContent String?   @db.Text // 他害の内容
+  panicContent      String?   @db.Text // パニックの内容
+
+  // ============================================
+  // Phase 1追加フィールド: 趣味・関心・余暇・嗜好（8カテゴリー）
+  // ============================================
+  hobbyOuting       String?   @db.Text // 外出（好きな外出先・嫌いな外出先等）
+  hobbyTv           String?   @db.Text // TV（好きな番組・嫌いな番組）
+  hobbyMusic        String?   @db.Text // 音楽（好きな曲・嫌いな曲）
+  hobbyBook         String?   @db.Text // 本・雑誌（好きな本・嫌いな本）
+  hobbyInterpersonal String?  @db.Text // 対人関係・遊び（2人以上で楽しめる遊び等）
+  hobbyInterestScope String?  @db.Text // 趣味の範囲（特定なものへの関心等）
+  hobbyFoodPreference String? @db.Text // 嗜好物等（好きな食べ物・嫌いな食べ物等）
+  hobbyOther        String?   @db.Text // その他（その他の遊び、余暇活動）
+
+  // ============================================
+  // Phase 1追加フィールド: 服薬詳細
+  // ============================================
+  medicationMorning String?   @db.Text // 朝食後の服薬内容
+  medicationNoon    String?   @db.Text // 昼食後の服薬内容
+  medicationEvening String?   @db.Text // 夕食後の服薬内容
+  medicationBedtime String?   @db.Text // 就寝前の服薬内容
+  medicationOtherTime String? @db.Text // その他時間帯の服薬（例：16時）
+  medicationTimeSpecific String? @db.Text // 時間で服薬するもの
+  medicationNote    String?   @db.Text // 服薬特記
+
+  // ============================================
+  // Phase 1追加フィールド: 臨時薬（頓服・季節薬）
+  // ============================================
+  prnMedicationContent String? @db.Text // 臨時薬の内容
+  prnMedicationTiming String?  @db.Text // どういうときに飲むか（例：不眠時）
+  prnMedicationMemo String?    @db.Text // 臨時薬メモ（例：マイスリー）
+
+  // ============================================
+  // Phase 1追加フィールド: 発作詳細
+  // ============================================
+  seizureTimePattern String?   @db.Text // 発作が起きやすい時間帯
+  seizureHistoryNote String?   @db.Text // 発作履歴補足（例：10年以上なし）
+
+  // ============================================
+  // Phase 1追加フィールド: 塗薬等
+  // ============================================
+  hasTopicalMedication Boolean @default(false) // 塗薬等の有無
+  topicalMedicationNote String? @db.Text // 塗薬等詳細
+
+  // ============================================
+  // Phase 1追加フィールド: 人柄
+  // ============================================
+  personality       String?   @db.Text // 人柄（自由記述）
+
+  // ============================================
+  // 3. 性格・関わり方のワンポイント（Page 2）
+  // ============================================
+  personalityNote   String?   @db.Text // 性格
+  interactionNote   String?   @db.Text // 関わり方
+
+  // ============================================
+  // 4. 外出の主な傾向（Page 2）
+  // ============================================
+  outingRequestPattern String? @db.Text // 外出先の依頼パターン
+  outingGroupPlanDeparture String? // グループプラン発着
+  outingGroupPlanNote String? @db.Text // グループプラン特記
+  outingSpecificRequest1 String? @db.Text // 特定の外出依頼内容①
+  outingSpecificRequest2 String? @db.Text // 特定の外出依頼内容②
+  outingCasualDestination String? @db.Text // おまかせの人の行先
+  outingIrregularNote String? @db.Text // 不定期
+  outingOtherNote   String?   @db.Text // その他 特記事項
+
+  // ============================================
+  // 旧フィールド（互換性のため残す・段階的に移行）
+  // ============================================
+  disabilityType  String[]  @default([]) // Physical/Intellectual/Mental
   utilizationStatus String? // Home/Facility/DayCare/GroupHome
   receivedDate    DateTime? // 受給者証交付日
   validUntil      DateTime? // 受給者証有効期限
   recipientNumber String?   // 受給者番号
+  behaviorSupportNeeded Boolean @default(false)
+  behaviorScore   Int?
+  allowances      String[]  @default([])
 
-  // 行動援護関連
-  behaviorSupportNeeded Boolean @default(false) // 行動援護が必要か
-  behaviorScore   Int?      // 行動関連項目の合計点数（10点以上で行動援護対象）
+  physicalHandicapBook Boolean @default(false)
+  physicalHandicapGrade String?
+  intellectualHandicapBook Boolean @default(false)
+  intellectualHandicapGrade String?
+  mentalHandicapBook Boolean @default(false)
+  mentalHandicapGrade String?
 
-  // 加算情報
-  allowances      String[]  @default([]) // IntensiveBehaviorSupport/EmergencySupport/SpecialArea/EarlyMorning/LateNight/DeafBlindSupport など
+  specialChildAllowance Boolean @default(false)
+  disabilityAllowance Boolean @default(false)
+  specialDisabilityAllowance Boolean @default(false)
+  nursingAllowance Boolean @default(false)
+  disabilityPension Boolean @default(false)
+  disabilityPensionGrade String?
+  disabilityPensionType String?
 
-  // 障害者手帳情報
-  physicalHandicapBook Boolean @default(false) // 身体障害者手帳 所持
-  physicalHandicapGrade String? // 身体障害者手帳 等級 (1〜6級)
-  intellectualHandicapBook Boolean @default(false) // 療育手帳 所持
-  intellectualHandicapGrade String? // 療育手帳 等級 (A1/A2/B1/B2)
-  mentalHandicapBook Boolean @default(false) // 精神障害者保健福祉手帳 所持
-  mentalHandicapGrade String? // 精神障害者保健福祉手帳 等級 (1〜3級)
+  psychiatricDiagnosis String?
+  developmentalDiagnosis String?
+  autismSpectrumLevel String?
+  medicalProtectionAdmission Boolean @default(false)
+  outpatientMedication Boolean @default(false)
+  medicalFeeExemption String?
 
-  // 手当・給付
-  specialChildAllowance Boolean @default(false) // 特別児童扶養手当（20歳未満）
-  disabilityAllowance Boolean @default(false) // 障害児福祉手当（20歳未満・重度）
-  specialDisabilityAllowance Boolean @default(false) // 特別障害者手当（20歳以上・重度在宅）
-  nursingAllowance Boolean @default(false) // 障害者特別給付金等
-  disabilityPension Boolean @default(false) // 障害年金 受給
-  disabilityPensionGrade String? // 障害年金 等級 (1級/2級/3級)
-  disabilityPensionType String? // 年金種別 (National/Employee/Employee3rd)
+  isElderly Boolean @default(false)
+  careInsuranceCertified Boolean @default(false)
+  careInsuranceLevel String?
+  careInsuranceExpiry DateTime?
+  continuedDisabilityService Boolean @default(false)
 
-  // 精神科・発達障害関連
-  psychiatricDiagnosis String? // 精神科診断名
-  developmentalDiagnosis String? // 発達障害診断名 (ASD/ADHD/LD等)
-  autismSpectrumLevel String? // 自閉スペクトラム症の程度
-  medicalProtectionAdmission Boolean @default(false) // 医療保護入院歴
-  outpatientMedication Boolean @default(false) // 精神科通院・服薬中
-  medicalFeeExemption String? // 自立支援医療（精神通院）制度利用 (None/Applied/Approved)
-
-  // 高齢障害者関連
-  isElderly Boolean @default(false) // 65歳以上（介護保険優先適用）
-  careInsuranceCertified Boolean @default(false) // 介護保険認定済み
-  careInsuranceLevel String? // 介護保険 要介護度 (Support1/Support2/Care1〜Care5)
-  careInsuranceExpiry DateTime? // 介護保険 有効期限
-  continuedDisabilityService Boolean @default(false) // 高齢障害者の障害福祉サービス継続利用
-
-  // 連絡先
-  emergencyContact String?
   doctor          String?
   hospital        String?
-
-  // その他
   allergies       String?
   medicalHistory  String?   @db.Text
   notes           String?   @db.Text
@@ -275,6 +469,10 @@ model CareRecipient {
   handovers       Handover[]
   incidents       CareIncident[]
   serviceRecords  ServiceRecord[] // サービス提供記録
+  guideRecords         GuideRecord[]
+  unitRecipients       UnitRecipient[]
+  medicationSchedules  MedicationSchedule[]
+  dailyLogEntries      DailyLogEntry[]
 
   @@index([userId])
   @@index([userId, deletedAt])
@@ -314,9 +512,65 @@ model Assessment {
   // 服薬情報詳細
   medicationDetails String? @db.Text // 定期薬・頓服薬の詳細
 
+  // 排泄ケア設定（利用者ごとの排泄支援の種別）
+  toiletCareTypes String[] @default([]) // Toilet/Diaper/Enema/Catheter
+  toiletInterval  String?              // 排泄誘導の間隔（例: 2時間ごと）
+  toiletNote      String?  @db.Text   // 排泄に関する特記
+
   // その他
   familyStructure String? @db.Text // 家族構成
   supportSystem   String? @db.Text // 支援体制
+
+  // ============================================
+  // Phase 1追加フィールド: ヘッダー情報（スナップショット）
+  // ============================================
+  recipientGender String?         // 性別（スナップショット）
+  recipientDisabilityName String? // 障害名（スナップショット）
+  recipientSupportLevel String?   // 支援区分（スナップショット）
+  recipientHandbook String?       // 障害者手帳（種別・等級）（スナップショット）
+  recipientFacility String?       // 事業所名（スナップショット）
+  recipientAddress String? @db.Text // 住所・連絡先（スナップショット）
+  serviceManager String?          // サービス管理責任者
+  homeManager String?             // ホーム長
+  dayService String?              // 通所先
+  familyStatus String? @db.Text   // 家族の状況
+  recentStatus String? @db.Text   // 最近の状況
+
+  // ============================================
+  // Phase 1追加フィールド: 社会性・対人行動
+  // ============================================
+  socialRelationship String? @db.Text // 人との関係の取り方
+  socialRules String? @db.Text        // 社会的なルールの理解
+
+  // ============================================
+  // Phase 1追加フィールド: 表現のコミュニケーション
+  // ============================================
+  commExpressionMethods String[] @default([]) // 表現手段（複数選択）
+  commExpressionContent String? @db.Text      // 自発的に表現する内容
+  commExpressionOther String? @db.Text        // その他
+
+  // ============================================
+  // Phase 1追加フィールド: 理解のコミュニケーション
+  // ============================================
+  commUnderstandMethods String[] @default([]) // 効果的な指示・伝え方（複数選択）
+  commCognitionLevels String[] @default([])   // 認知レベル（わかるもの）（複数選択）
+  commCognitionOther String? @db.Text         // その他
+
+  // ============================================
+  // Phase 1追加フィールド: 身辺自立（3段階評価）
+  // 注: 既存のadlEating等とは別フィールド（紙のアセスメントシート対応）
+  // ============================================
+  adlEating3Level String?        // 食事（自立/ある程度できる/できない）
+  adlEatingSupport String? @db.Text // 食事支援メモ
+  adlToiletSmall3Level String?   // トイレ小（自立/ある程度できる/できない）
+  adlToiletSmallSupport String? @db.Text // トイレ小支援メモ
+  adlToiletLarge3Level String?   // トイレ大（自立/ある程度できる/できない）
+  adlToiletLargeSupport String? @db.Text // トイレ大支援メモ
+  adlBathing3Level String?    // 入浴（自立/ある程度できる/できない）
+  adlBathingSupport String? @db.Text // 入浴支援メモ
+  adlDressing3Level String?   // 着替え（自立/ある程度できる/できない）
+  adlDressingSupport String? @db.Text // 着替え支援メモ
+  adlOther3Level String? @db.Text // その他
 
   updatedAt     DateTime @updatedAt
   createdAt     DateTime @default(now())
@@ -490,7 +744,7 @@ model ServiceRecord {
   recipientId   String
   userId        String   // サービス提供者
 
-  serviceType   String   // BehaviorSupport/MobilitySupport/HomeHelp/VisitingCare
+  serviceType   String   // BehaviorSupport/HomeHelp/VisitingCare/DayCare/ShortStay/GroupHome
   serviceDate   DateTime // サービス提供日
   startTime     DateTime // 開始時刻
   endTime       DateTime // 終了時刻
@@ -508,6 +762,10 @@ model ServiceRecord {
   // 加算適用
   appliedAllowances String[] @default([]) // 適用した加算
 
+  // 時間帯ルール適用（小平市の移動支援など）
+  timeBand            String?  // DAYTIME/EARLY_LATE/CROSSES_BANDS
+  appliedRuleVersion  String?  // 適用したTimeBandRuleのversion
+
   // 同行者
   staff1        String?  // 提供者1
   staff2        String?  // 提供者2（複数人対応の場合）
@@ -517,15 +775,332 @@ model ServiceRecord {
   approvedBy    String?
   approvedAt    DateTime?
 
+  // NOTE: GuideRecordがSubmitted以降は原則編集不可（差戻し必須）。
+  // 将来、Submittedでも編集可にする場合は、監査ログ（変更理由・差分）を必須化する。
+  guideRecordId String? @unique
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   // リレーション
   recipient     CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guideRecord   GuideRecord? @relation(fields: [guideRecordId], references: [id], onDelete: SetNull)
 
   @@index([recipientId, serviceDate])
   @@index([userId])
   @@index([serviceType])
+  @@index([timeBand])
   @@map("service_records")
 }
+
+// ============================================
+// Unit Models - ユニット管理
+// ============================================
+
+// Unit - ユニット（ハウス）
+model Unit {
+  id          String   @id @default(cuid())
+  name        String   // ハウスてんじん等
+  serviceType String   // GH/KAIGO/JUSHO/SHORT
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // リレーション
+  staffs     UnitStaff[]
+  recipients UnitRecipient[]
+  dailyLogs  DailyLog[]
+
+  @@map("units")
+}
+
+// UnitStaff - 職員とユニットの紐づけ
+model UnitStaff {
+  id           String    @id @default(cuid())
+  unitId       String
+  userId       String
+  role         String    // primary（固定担当）/ temporary（臨時）
+  assignedDate DateTime? // temporaryの場合のみ対象日を指定
+  createdAt    DateTime  @default(now())
+
+  // リレーション
+  unit Unit @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([unitId])
+  @@index([userId])
+  @@index([unitId, assignedDate])
+  @@map("unit_staffs")
+}
+
+// UnitRecipient - 利用者とユニットの紐づけ
+model UnitRecipient {
+  id          String    @id @default(cuid())
+  unitId      String
+  recipientId String
+  joinedAt    DateTime  @default(now())
+  leftAt      DateTime? // 退所時に設定
+
+  // リレーション
+  unit      Unit          @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  recipient CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([unitId])
+  @@index([recipientId])
+  @@map("unit_recipients")
+}
+
+// ============================================
+// Daily Journal Models - 業務日誌
+// ============================================
+
+// MedicationSchedule - 服薬スケジュール設定（利用者ごとの定時薬）
+model MedicationSchedule {
+  id             String   @id @default(cuid())
+  recipientId    String
+  timing         String   // Morning/Noon/Evening/Bedtime
+  medicationName String
+  notes          String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // リレーション
+  recipient CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([recipientId])
+  @@index([recipientId, isActive])
+  @@map("medication_schedules")
+}
+
+// DailyLog - 業務日誌ヘッダー（ユニット・シフト単位）
+model DailyLog {
+  id              String   @id @default(cuid())
+  unitId          String
+  logDate         DateTime @db.Date          // 基準日（勤務開始日）
+  shift           String                     // Day/Late/Night
+  shiftStart      DateTime                   // 勤務開始日時
+  shiftEnd        DateTime                   // 勤務終了日時（日跨ぎあり）
+  staffId         String                     // 作成者
+  staffRole       String?                    // リーダー/見守り/服薬確認など
+  residentSummary Json?                      // {inHouse, outing, overnight, hospital, homeLeave}
+  majorEvent      Boolean  @default(false)   // 重大イベント有無フラグ
+  handover        String?  @db.Text          // 申し送り事項
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // リレーション
+  unit    Unit           @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  staff   User           @relation(fields: [staffId], references: [id])
+  entries DailyLogEntry[]
+
+  @@index([unitId, logDate])
+  @@index([staffId])
+  @@map("daily_logs")
+}
+
+// DailyLogEntry - 利用者ごとの記録（業務日誌の明細）
+model DailyLogEntry {
+  id          String @id @default(cuid())
+  dailyLogId  String
+  recipientId String
+
+  // A. 状態
+  temperature   Float?
+  bloodPressure String?                      // 例: "120/80"
+  spo2          Int?
+  vitalAlert    Boolean  @default(false)     // 異常値フラグ
+  sleepTime     DateTime?
+  wakeTime      DateTime?
+  nightWaking   String?                      // 夜間覚醒の原因
+  behaviorNote  String?  @db.Text           // 行動・心理状態と対応結果
+
+  // B. 生活支援
+  mealAmount      String?
+  mealTexture     String?
+  swallowNote     String?
+  waterIntake     String?
+  dehydrationRisk Boolean  @default(false)
+  toiletRecords   Json?                      // [{time, type: Urine/Feces/Enema, note?}]
+  bathDone        Boolean  @default(false)
+  bathRefusal     String?
+  oralCareDone    Boolean  @default(false)
+  dressingDone    Boolean  @default(false)
+
+  // C. 服薬
+  medicationChecks Json?                     // [{scheduleId, done, staffId, refusal?, sideEffect?, note?}]
+  prnMedications   Json?                     // [{name, reason, time, effect?}]
+
+  // D. 外出・外泊・帰寮
+  outingDestination String?
+  outingCompanion   String?
+  plannedReturnTime DateTime?
+  returnTime        DateTime?
+  returnCondition   String?
+  overnightStay     Boolean  @default(false)
+  overnightDest     String?
+
+  // E. 拒否記録
+  refusalRecords Json?                       // [{category, refusal, approach, result}]
+
+  // F. 支援区分タグ（個別支援計画との紐づけ用）
+  supportTags  String[] @default([])         // 食事/排泄/服薬/行動/移動など
+  planItemRefs String[] @default([])         // SupportItem/GoalのID参照（Phase B以降）
+
+  // G. 特記事項
+  notes String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // リレーション
+  dailyLog  DailyLog      @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+  recipient CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@unique([dailyLogId, recipientId])
+  @@index([dailyLogId])
+  @@index([recipientId])
+  @@map("daily_log_entries")
+}
+
+// GuideRecordStatus - ガイド記録の状態遷移
+// Draft（下書き）→ Submitted（提出）
+// NOTE: 紙運用に合わせて、Submitted後も編集・削除可能
+// 承認フローではなく、LEAD/MANAGERによる「閲覧済み（reviewed）」マークで管理
+enum GuideRecordStatus {
+  DRAFT
+  SUBMITTED
+}
+
+// GuideRecord - 外出支援の記録票（移動支援 / 通院等介助 / その他）※同行援護は現状非対応（将来拡張）
+model GuideRecord {
+  id          String   @id @default(cuid())
+  recipientId String
+  userId      String
+
+  // 支援日時
+  startedAt   DateTime              // 支援開始日時
+  endedAt     DateTime?             // 支援終了日時
+
+  // ワークフロー状態
+  status       GuideRecordStatus @default(DRAFT)
+  submittedAt  DateTime?
+  submittedBy  String?
+
+  // レビュー（閲覧済みマーク）- LEAD/MANAGER用
+  reviewedAt   DateTime?
+  reviewedBy   String?
+
+  // 外出情報
+  destination String?  @db.Text    // 外出先
+  purpose     String?  @db.Text    // 外出目的
+
+  // 集合・解散情報（印刷フォーマット対応）
+  assemblyLocation   String?   // 集合場所
+  dismissalLocation  String?   // 解散場所
+
+  // 経路情報（印刷フォーマット対応）
+  route              Json?     @db.JsonB // 経路情報（配列形式）
+
+  // 移動手段（複数可）
+  transport   String[] @default([]) // 徒歩/電車/バス/タクシー/車椅子対応タクシー等
+
+  // 支援内容・利用者の様子
+  supportContent String? @db.Text  // 支援内容の詳細
+  userCondition  String? @db.Text  // 利用者の様子・状態
+
+  // 金銭管理（印刷フォーマット対応：詳細内訳）
+  cashHandled         Boolean  @default(false) // 金銭管理の有無
+  handedAmount        Int?                     // 渡した金額（円）
+  returnedAmount      Int?                     // 残金（円）
+  cashNote            String?  @db.Text        // 金銭内訳・備考
+
+  // 金銭詳細内訳（印刷フォーマット対応）
+  transportExpenses   Json?    @db.JsonB       // 交通費内訳（配列形式）
+  foodExpenses        Json?    @db.JsonB       // 飲食費内訳（配列形式）
+  otherExpenses       Json?    @db.JsonB       // その他費用内訳（配列形式）
+  staffMealExpense    Int?                     // サポーター食事代（円）
+
+  // 食事情報（印刷フォーマット対応）
+  mealContent    String?   // 食事内容
+  mealAmount     String?   // 全量/半量/食べず
+
+  // 服薬情報（印刷フォーマット対応）
+  medicationTaken    Boolean?  // 服薬あり/なし
+  medicationTime     String?   // 服薬時間
+
+  // 手順書・インシデント（事務所用印刷フォーマット対応）
+  procedure          String?  @db.Text // 手順書
+  incidents          Json?    @db.JsonB // インシデント情報
+
+  // 特記事項
+  notes       String?  @db.Text
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // リレーション
+  recipient   CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Fact（実績）側との紐付け（C案：GuideRecord入力→ServiceRecord自動生成）
+  serviceRecord ServiceRecord?
+
+  @@index([recipientId, startedAt])
+  @@index([userId])
+  @@index([status])
+  @@index([submittedAt])
+  @@index([reviewedAt])
+  @@map("guide_records")
+}
+
+// ============================================
+// Audit & Settings Models - 監査ログと設定
+// ============================================
+
+// AuditLog - 監査ログ（閲覧・変更履歴）
+model AuditLog {
+  id           String   @id @default(cuid())
+  userId       String   // 操作者
+  action       String   // View/Edit/Delete/Approve/BackToDraft
+  resourceType String   // CareRecipient/GuideRecord/Assessment/ServiceRecord etc.
+  resourceId   String   // 対象リソースのID
+  path         String?  // アクセスしたパス（閲覧ログ用）
+  changeNote   String?  @db.Text // 変更理由・差分情報
+  metadata     Json?    @db.JsonB // その他メタデータ
+  createdAt    DateTime @default(now())
+
+  // リレーション
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([resourceType, resourceId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// TimeBandRule - 時間帯ルール設定（小平市の移動支援）
+model TimeBandRule {
+  id          String   @id @default(cuid())
+  version     String   @unique // ルールバージョン（例: "2024-v1"）
+  name        String   // ルール名（例: "小平市移動支援時間帯ルール"）
+  description String?  @db.Text
+
+  // 時間帯定義（JSON形式）
+  // 例: { "daytime": { "start": "08:00", "end": "18:00" }, "earlyLate": [...] }
+  timeBands   Json     @db.JsonB
+
+  isActive    Boolean  @default(true)  // 現在有効なルールか
+  effectiveFrom DateTime @default(now()) // 適用開始日
+  effectiveTo   DateTime?                // 適用終了日（null = 無期限）
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([effectiveFrom])
+  @@map("time_band_rules")
+}
+
