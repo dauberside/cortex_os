@@ -494,6 +494,49 @@ export default function RecipientDetailPage() {
                   </div>
                 )}
 
+                {/* 所持手帳 */}
+                {((recipient as any).physicalHandicapBook ||
+                  (recipient as any).intellectualHandicapBook ||
+                  (recipient as any).mentalHandicapBook) && (
+                  <div className="rounded-lg bg-blue-50 p-3 md:col-span-2">
+                    <p className="text-muted-foreground mb-0.5 text-xs">
+                      所持手帳
+                    </p>
+                    <div className="space-y-1 text-sm">
+                      {(recipient as any).physicalHandicapBook && (
+                        <p>
+                          身体障害者手帳
+                          {(recipient as any).physicalHandicapGrade && (
+                            <span className="ml-2 font-semibold">
+                              {(recipient as any).physicalHandicapGrade}級
+                            </span>
+                          )}
+                        </p>
+                      )}
+                      {(recipient as any).intellectualHandicapBook && (
+                        <p>
+                          愛の手帳（療育手帳）
+                          {(recipient as any).intellectualHandicapGrade && (
+                            <span className="ml-2 font-semibold">
+                              {(recipient as any).intellectualHandicapGrade}
+                            </span>
+                          )}
+                        </p>
+                      )}
+                      {(recipient as any).mentalHandicapBook && (
+                        <p>
+                          精神障害者保健福祉手帳
+                          {(recipient as any).mentalHandicapGrade && (
+                            <span className="ml-2 font-semibold">
+                              {(recipient as any).mentalHandicapGrade}級
+                            </span>
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* 通所先・学校 */}
                 {((recipient as any).school ||
                   (recipient as any).dayServiceFacility) && (

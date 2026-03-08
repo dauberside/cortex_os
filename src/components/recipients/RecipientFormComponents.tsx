@@ -111,7 +111,7 @@ export function DisabilitySystemSection({ register }: { register: any }) {
             </div>
           </div>
 
-          {/* 療育手帳 */}
+          {/* 愛の手帳 */}
           <div className="space-y-3 rounded-lg border p-4">
             <label className="flex items-center gap-2 text-sm font-medium">
               <input
@@ -119,21 +119,21 @@ export function DisabilitySystemSection({ register }: { register: any }) {
                 {...register("intellectualHandicapBook")}
                 className="rounded"
               />
-              療育手帳（愛の手帳等）
+              愛の手帳（療育手帳）
             </label>
             <div>
               <label className="text-muted-foreground mb-1 block text-xs">
-                等級
+                程度
               </label>
               <select
                 {...register("intellectualHandicapGrade")}
                 className="w-full rounded border px-2 py-1.5 text-sm"
               >
                 <option value="">未設定</option>
-                <option value="A1">A1（最重度）</option>
-                <option value="A2">A2（重度）</option>
-                <option value="B1">B1（中度）</option>
-                <option value="B2">B2（軽度）</option>
+                <option value="1度">1度（最重度）</option>
+                <option value="2度">2度（重度）</option>
+                <option value="3度">3度（中度）</option>
+                <option value="4度">4度（軽度）</option>
               </select>
             </div>
           </div>

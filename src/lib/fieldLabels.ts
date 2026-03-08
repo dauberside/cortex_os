@@ -137,8 +137,8 @@ export const FIELD_LABELS: Record<string, string> = {
   // 障害福祉制度情報
   physicalHandicapBook: "身体障害者手帳",
   physicalHandicapGrade: "身体障害者手帳等級",
-  intellectualHandicapBook: "療育手帳",
-  intellectualHandicapGrade: "療育手帳等級",
+  intellectualHandicapBook: "愛の手帳（療育手帳）",
+  intellectualHandicapGrade: "愛の手帳等級",
   mentalHandicapBook: "精神障害者保健福祉手帳",
   mentalHandicapGrade: "精神障害者保健福祉手帳等級",
 

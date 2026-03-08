@@ -303,8 +303,18 @@ export default function NewRecipientPage() {
           defaultOpen
         >
           <div className="space-y-4">
+            <div className="rounded-md bg-amber-50 p-4">
+              <p className="text-sm text-amber-900">
+                <strong>⚠️ 障害種別と手帳について</strong>
+                <br />
+                障害種別と障害者手帳は別々に管理します。重複障害（複数の障害を併せ持つ）の場合は、該当する障害種別を複数選択してください。
+                <br />
+                手帳情報は下記「制度情報」セクションで入力してください。
+              </p>
+            </div>
+
             <div>
-              <label className="mb-2 block text-sm font-medium">障害種別</label>
+              <label className="mb-2 block text-sm font-medium">障害種別 <span className="text-xs text-gray-500">（複数選択可）</span></label>
               <div className="space-y-2">
                 <label className="flex items-center">
                   <input
@@ -334,6 +344,9 @@ export default function NewRecipientPage() {
                   精神障害
                 </label>
               </div>
+              <p className="mt-2 text-xs text-gray-500">
+                ※重複障害の場合は複数選択してください
+              </p>
             </div>
 
             <div>
@@ -588,7 +601,7 @@ export default function NewRecipientPage() {
                 <br />
                 手帳の種別・等級は上記「制度情報（手帳・年金/手当・精神科/発達・介護保険）」セクションに入力してください。
                 <br />
-                身体障害者手帳、療育手帳、精神障害者保健福祉手帳の3種類に対応しています。
+                身体障害者手帳、愛の手帳（療育手帳）、精神障害者保健福祉手帳の3種類に対応しています。
               </p>
             </div>
 
