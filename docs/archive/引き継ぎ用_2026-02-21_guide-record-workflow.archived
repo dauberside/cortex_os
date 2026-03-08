@@ -1,0 +1,8 @@
+確認した内容（あなたの最終チェック）と、実コード（GuideRecordWorkflowActions.tsx / GuideRecordStatusBadge.tsx / edit/page.tsx）は 一致しています。SSOT（Review方式）の要件を満たしている状態でOKです。
+	•	GuideRecordWorkflowActions.tsx は useSession と tRPC mutation を使うので "use client" が必須で、その使い方も Next.js の指針どおりです。  ￼
+	•	DRAFT時の提出ボタンは canSubmit で抑制（STAFFは所有者のみ）、SUBMITTED時は canReview で抑制（LEAD/MANAGERのみ）＋ reviewedAt があれば「閲覧済み」表示、という実装になっていて、あなたのまとめと整合しています（画面上のコードもその通り）。
+	•	DB反映で db push --accept-data-loss を使った点も妥当です（Prismaはデータ損失の可能性がある変更を検知すると --accept-data-loss が必要）。  ￼
+	•	Prisma v7では db push が prisma generate を自動実行しないので、db:generate を別で実行した運用は正しいです。  ￼
+	•	Neonの pooler/direct 使い分け（アプリは -pooler、CLIは direct）は PrismaのNeonガイドに沿っています。  ￼
+
+最後に、あなたが書いたスモークテスト（STAFF/LEAD/MANAGERでの表示・操作確認）を一周すれば「実運用OK」の状態です。

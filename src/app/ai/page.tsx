@@ -2,7 +2,7 @@
 
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -75,40 +75,6 @@ export default function AIPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-4 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-            <h1 className="text-2xl font-bold text-black sm:text-3xl">
-              Cortex OS - AIチャット
-            </h1>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push("/")}
-                className="self-start"
-              >
-                ノート管理へ
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => router.push("/graph")}
-                className="self-start"
-              >
-                グラフビュー
-              </Button>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <span className="max-w-[150px] truncate text-xs text-black sm:max-w-none sm:text-sm">
-              {session.user.email}
-            </span>
-            <Button variant="outline" size="sm" onClick={() => signOut()}>
-              ログアウト
-            </Button>
-          </div>
-        </div>
-
         <div className="grid gap-4 sm:gap-8 lg:grid-cols-4">
           {/* サイドバー：会話一覧 */}
           <div className="space-y-4 sm:space-y-6">

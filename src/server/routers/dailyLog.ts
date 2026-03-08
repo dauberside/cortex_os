@@ -256,6 +256,8 @@ export const dailyLogRouter = router({
         planItemRefs: z.array(z.string()).optional(),
         // G. 特記事項
         notes: z.string().optional(),
+        // H. 時間帯別記録
+        timeSlotRecords: z.any().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {

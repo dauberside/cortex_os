@@ -197,6 +197,11 @@ const FIELD_LABELS: Record<string, string> = {
 
   // 人柄
   personality: "人柄",
+
+  // Phase 2フィールド
+  familyMembers: "家族構成",
+  emergencyContacts: "緊急連絡先",
+  contactPolicy: "連絡ルール",
 };
 
 export function ChangeHistory({ recipientId }: ChangeHistoryProps) {
@@ -269,12 +274,68 @@ export function ChangeHistory({ recipientId }: ChangeHistoryProps) {
                 {log.metadata && (
                   <div className="bg-muted/50 mt-2 rounded p-2 text-xs">
                     {log.metadata.recipientName && (
-                      <div className="mb-1">
+                      <div className="mb-2">
                         <span className="font-medium">利用者:</span>{" "}
                         {log.metadata.recipientName as string}
                       </div>
                     )}
-                    {log.metadata.updatedFields && Array.isArray(log.metadata.updatedFields) && (
+
+                    {/* フォーマット済み変更内容がある場合 */}
+                    {log.metadata.formattedChanges && Array.isArray(log.metadata.formattedChanges) && (
+                      <div className="space-y-2">
+                        <span className="font-medium">変更内容:</span>
+                        <div className="mt-2 space-y-2">
+                          {(log.metadata.formattedChanges as any[]).map((change, index) => {
+                            // JSON型フィールドの場合は簡潔な表示
+                            const isJsonField = ['家族構成', '緊急連絡先', '連絡ルール'].includes(change.label);
+
+                            if (isJsonField) {
+                              return (
+                                <div
+                                  key={index}
+                                  className="rounded border border-gray-200 bg-white p-2"
+                                >
+                                  <div className="font-semibold text-gray-700">
+                                    {change.label}
+                                  </div>
+                                  <div className="mt-1 text-xs text-gray-600">
+                                    内容を更新しました
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <div
+                                key={index}
+                                className="rounded border border-gray-200 bg-white p-2"
+                              >
+                                <div className="mb-1 font-semibold text-gray-700">
+                                  {change.label}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                  <div>
+                                    <div className="text-muted-foreground mb-1">変更前:</div>
+                                    <div className="rounded bg-red-50 p-1.5 text-red-800">
+                                      {change.oldValue}
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <div className="text-muted-foreground mb-1">変更後:</div>
+                                    <div className="rounded bg-green-50 p-1.5 text-green-800">
+                                      {change.newValue}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 従来形式（フォールバック） */}
+                    {!log.metadata.formattedChanges && log.metadata.updatedFields && Array.isArray(log.metadata.updatedFields) && (
                       <div>
                         <span className="font-medium">更新項目:</span>{" "}
                         <div className="mt-1 flex flex-wrap gap-1">

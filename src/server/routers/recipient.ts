@@ -6,6 +6,9 @@ import {
   generateCSV,
   parseCSV,
 } from "@/lib/csv";
+import type { PrismaClient } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
+import { formatChanges } from "@/lib/fieldLabels";
 
 // バリデーションスキーマ
 // フロントエンドのrecipientSchemaをベースに、tRPC用にDate型に変更
@@ -228,6 +231,68 @@ const createRecipientSchema = z.object({
   careInsuranceLevel: z.string().optional(),
   careInsuranceExpiry: z.date().optional(),
   continuedDisabilityService: z.boolean().optional(),
+
+  // ============================================
+  // Phase 2: フェイスシート拡張フィールド
+  // ============================================
+
+  // 書類ヘッダー情報
+  documentCreatedDate: z.union([z.date(), z.string()]).transform(val =>
+    typeof val === 'string' ? new Date(val) : val
+  ).optional(),
+  organizationName: z.string().optional(),
+  documentHeaderGroupHomeName: z.string().optional(),
+  serviceManagerName: z.string().optional(),
+  documentEnteredBy: z.string().optional(),
+  documentEnteredAt: z.union([z.date(), z.string()]).transform(val =>
+    typeof val === 'string' ? new Date(val) : val
+  ).optional(),
+
+  // 基本情報拡張
+  postalCode: z.string().optional(),
+  livingArrangement: z.string().optional(),
+  householdSeparation: z.boolean().optional(),
+
+  // 緊急連絡先（JSON型）- any型で受けてPrismaのJson型へ渡す
+  emergencyContacts: z.any().optional(),
+
+  // 家族構成（JSON型）
+  familyMembers: z.any().optional(),
+
+  // 経済的状況
+  disabilityPensionAmount: z.union([
+    z.number().int().min(0),
+    z.literal("")
+  ]).optional(),
+  publicMedicalCare: z.string().optional(),
+  medicalInsuranceTypes: z.any().optional(), // JSON配列
+  medicalInsuranceDetail: z.string().optional(),
+
+  // 障害の状況詳細
+  disabilityCause: z.string().optional(),
+  disabilityDetail: z.string().optional(),
+
+  // 生活歴（Text型）
+  lifeHistory: z.string().optional(),
+  finalEducation: z.string().optional(),
+  workHistory: z.string().optional(),
+
+  // 医療情報拡張
+  hospitalVisits: z.string().optional(),
+  regularCheckups: z.string().optional(),
+  medicalRemarks: z.string().optional(),
+
+  // サービス利用状況（JSON型）
+  currentServices: z.any().optional(),
+  guardianshipType: z.string().optional(),
+  welfareRightsAdvocacy: z.boolean().optional(),
+  welfareRightsDetail: z.string().optional(),
+
+  // 特記事項
+  specialRemarks: z.string().optional(),
+
+  // 連絡ルール（JSON型）
+  contactPolicy: z.any().optional(),
 });
 
 const updateRecipientSchema = createRecipientSchema.partial().extend({
@@ -280,6 +345,14 @@ function calculateDiff(existing: any, updates: any) {
       } else {
         hasChanged = true;
       }
+    } else if (typeof newValue === 'object' && newValue !== null && typeof oldValue === 'object' && oldValue !== null) {
+      // オブジェクト型（familyMembers, emergencyContacts, contactPolicyなど）: JSON.stringifyで比較
+      hasChanged = JSON.stringify(newValue) !== JSON.stringify(oldValue);
+    } else if ((typeof newValue === 'object' && newValue !== null) || (typeof oldValue === 'object' && oldValue !== null)) {
+      // 一方だけがオブジェクト（nullオブジェクトとnull/undefinedは同一視）
+      const normalizedOld = normalizeValue(oldValue);
+      const normalizedNew = normalizeValue(newValue);
+      hasChanged = normalizedNew !== normalizedOld;
     } else {
       // プリミティブ型: null/undefined/空文字列を正規化して比較
       const normalizedOld = normalizeValue(oldValue);
@@ -305,6 +378,9 @@ async function createRecipientAuditLog(
   changedFields: string[],
   changes: Record<string, { from: any; to: any }>
 ) {
+  // 人間が読める形式に変換
+  const formattedChanges = formatChanges(changes);
+
   await ctx.db.auditLog.create({
     data: {
       userId: ctx.session.user.id,
@@ -315,7 +391,8 @@ async function createRecipientAuditLog(
       metadata: {
         recipientName,
         updatedFields: changedFields,
-        changes,
+        changes, // 元の生データも保持
+        formattedChanges, // 人間が読める形式
       },
     },
   });
@@ -443,6 +520,23 @@ export const recipientRouter = router({
 
         // 差分計算
         const { changedFields, patch, changes } = calculateDiff(existing, data);
+
+        // デバッグ: フェイスシート関連フィールドをログ出力
+        console.log("Update debug - organizationName:", {
+          existing: existing.organizationName,
+          input: data.organizationName,
+          inPatch: 'organizationName' in patch,
+        });
+        console.log("Update debug - documentHeaderGroupHomeName:", {
+          existing: existing.documentHeaderGroupHomeName,
+          input: data.documentHeaderGroupHomeName,
+          inPatch: 'documentHeaderGroupHomeName' in patch,
+        });
+        console.log("Update debug - serviceManagerName:", {
+          existing: existing.serviceManagerName,
+          input: data.serviceManagerName,
+          inPatch: 'serviceManagerName' in patch,
+        });
 
         // 変更がない場合はNoop（監査ログも作らない）
         if (changedFields.length === 0) {
@@ -786,12 +880,12 @@ export const recipientRouter = router({
             // CSVから不要なフィールドを除外
             const {
               assessment,
-              userId,
-              createdBy,
-              id,
-              createdAt,
-              updatedAt,
-              deletedAt,
+              userId: _userId,
+              createdBy: _createdBy,
+              id: _id,
+              createdAt: _createdAt,
+              updatedAt: _updatedAt,
+              deletedAt: _deletedAt,
               ...recipientFields
             } = recipientData as any;
 
@@ -828,7 +922,7 @@ export const recipientRouter = router({
             console.log("All field names:", Object.keys(dataToCreate).sort().join(", "));
 
             // 各利用者を個別のトランザクションで作成
-            const recipient = await ctx.db.$transaction(async (tx) => {
+            const recipient = await ctx.db.$transaction(async (tx: Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => {
               // 利用者を作成
               const newRecipient = await tx.careRecipient.create({
                 data: dataToCreate,

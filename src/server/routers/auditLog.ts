@@ -109,9 +109,14 @@ export const auditLogRouter = router({
       }
 
       // 期間範囲を計算（デフォルト30日）
+      // 今日の23:59:59まで含める
       const now = new Date();
+      now.setHours(23, 59, 59, 999);
+
+      // X日前の00:00:00から
       const from = new Date(now);
-      from.setDate(from.getDate() - input.days);
+      from.setDate(from.getDate() - (input.days - 1));
+      from.setHours(0, 0, 0, 0);
 
       const whereClause: any = {
         createdAt: {

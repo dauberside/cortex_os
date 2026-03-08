@@ -456,6 +456,61 @@ model CareRecipient {
   medicalHistory  String?   @db.Text
   notes           String?   @db.Text
 
+  // ============================================
+  // Phase 2フィールド: フェイスシート拡張（帳票レンダリング用）
+  // ============================================
+
+  // 書類ヘッダー情報
+  documentCreatedDate DateTime? // 帳票作成日
+  organizationName String? // 法人/事業所名
+  documentHeaderGroupHomeName String? // 帳票ヘッダー用GH名（既存ghNameと区別）
+  serviceManagerName String? // サービス管理責任者名
+  documentEnteredBy String? // 帳票記入者名
+  documentEnteredAt DateTime? // 帳票記入日
+
+  // 基本情報拡張
+  postalCode String? // 郵便番号
+  livingArrangement String? // 生活形態（一人暮らし/家族同居/その他）
+  householdSeparation Boolean? // 世帯分離（Optional）
+
+  // 緊急連絡先（JSON型・複数対応）
+  emergencyContacts Json? @db.JsonB // [{"nameKana":"ヤマダ ハナコ","name":"山田 花子","relationship":"母","phone":"03-1234-5678","fax":""}]
+
+  // 家族構成（JSON型）
+  familyMembers Json? @db.JsonB // {"diagram":"家系図テキスト","members":[{"relation":"父","name":"山田太郎","age":65,"notes":"同居"}]}
+
+  // 経済的状況
+  disabilityPensionAmount Int? // 障害基礎年金（円）
+  publicMedicalCare String? @db.Text // 公費医療
+  medicalInsuranceTypes Json? @db.JsonB // 医療保険種別（JSON配列、DB非依存）
+  medicalInsuranceDetail String? @db.Text // 医療保険その他詳細
+
+  // 障害の状況詳細
+  disabilityCause String? @db.Text // 障害の起因
+  disabilityDetail String? @db.Text // 障害の内容
+
+  // 生活歴（Text型・自由記述）
+  lifeHistory String? @db.Text // 主な生活歴（年表形式）
+  finalEducation String? // 最終学歴
+  workHistory String? @db.Text // 主な職歴・通所先
+
+  // 医療情報拡張
+  hospitalVisits String? @db.Text // 通院情報（医療機関名・受診科・頻度）
+  regularCheckups String? @db.Text // 定期受診（腎機能・歯科）
+  medicalRemarks String? @db.Text // 医療備考
+
+  // サービス利用状況（JSON型）
+  currentServices Json? @db.JsonB // [{"serviceName":"居宅介護","frequency":"週3回","remarks":"入浴介助"}]
+  guardianshipType String? // 成年後見制度（補助/補佐/後見/無）
+  welfareRightsAdvocacy Boolean @default(false) // 地域福祉権利擁護事業
+  welfareRightsDetail String? @db.Text // 地域福祉権利擁護詳細
+
+  // 特記事項
+  specialRemarks String? @db.Text // 特記事項
+
+  // 連絡ルール（現場運用の最小フィールド）
+  contactPolicy Json? @db.JsonB // 連絡ルール（昼/夜/緊急/遅刻キャンセル時の連絡先・方法）
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   deletedAt       DateTime? // 論理削除
@@ -950,6 +1005,10 @@ model DailyLogEntry {
 
   // G. 特記事項
   notes String? @db.Text
+
+  // H. 時間帯別記録（30分刻み）
+  // [{time: "15:00", water: "200ml", meal: "全量", leisure: "TV視聴", oral: true, bath: false, condition: "良好", toilet: "排尿", sleep: "", notes: ""}]
+  timeSlotRecords Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

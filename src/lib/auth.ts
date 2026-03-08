@@ -61,6 +61,18 @@ export const authConfig = {
       }
       return token;
     },
+    async redirect({ url, baseUrl }) {
+      // 相対URLの場合はリクエスト元のベースURLを使用
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+      // 同じオリジンの場合は許可
+      else if (new URL(url).origin === baseUrl) {
+        return url;
+      }
+      // それ以外はリクエスト元のベースURLにリダイレクト
+      return baseUrl;
+    },
   },
   session: {
     strategy: "jwt",
