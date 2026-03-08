@@ -51,13 +51,15 @@ export function FamilyMembersSection({
   const [diagram, setDiagram] = useState(getInitialDiagram);
   const [members, setMembers] = useState<FamilyMember[]>(getInitialMembers);
 
-  // データ変更時にフォームに反映
+  // ローカルstateが変更されたときのみフォームに反映
+  // familyMembersDataは依存配列から除外してループを防ぐ
   useEffect(() => {
     const data: FamilyMembersData = {
       diagram,
       members,
     };
-    setValue("familyMembers", data as any);
+    setValue("familyMembers", data as any, { shouldDirty: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [diagram, members, setValue]);
 
   const addMember = () => {

@@ -38,9 +38,11 @@ export function EmergencyContactsSection({
   const [contacts, setContacts] =
     useState<EmergencyContact[]>(getInitialContacts);
 
-  // データ変更時にフォームに反映
+  // ローカルstateが変更されたときのみフォームに反映
+  // emergencyContactsDataは依存配列から除外してループを防ぐ
   useEffect(() => {
-    setValue("emergencyContacts", contacts as any);
+    setValue("emergencyContacts", contacts as any, { shouldDirty: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contacts, setValue]);
 
   const addContact = () => {
