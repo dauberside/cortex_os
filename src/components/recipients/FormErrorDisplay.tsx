@@ -30,7 +30,7 @@ export function FormErrorSummary({ errors }: { errors: FieldErrors }) {
         element.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }
-  }, [errorEntries.length]);
+  }, [errorEntries]);
 
   if (errorEntries.length === 0) return null;
 

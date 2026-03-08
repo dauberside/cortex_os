@@ -23,18 +23,15 @@ export function EmergencyContactsSection({
 }: EmergencyContactsSectionProps) {
   const emergencyContactsData = watch("emergencyContacts") as any;
 
-  const [contacts, setContacts] = useState<EmergencyContact[]>([
-    { nameKana: "", name: "", relationship: "", phone: "", fax: "" },
-  ]);
-
-  // 初期データの読み込み
-  useEffect(() => {
-    if (emergencyContactsData && Array.isArray(emergencyContactsData)) {
-      setContacts(emergencyContactsData.length > 0 ? emergencyContactsData : [
-        { nameKana: "", name: "", relationship: "", phone: "", fax: "" },
-      ]);
+  // 初期値を計算（useStateの初期化時のみ実行される）
+  const getInitialContacts = () => {
+    if (emergencyContactsData && Array.isArray(emergencyContactsData) && emergencyContactsData.length > 0) {
+      return emergencyContactsData;
     }
-  }, []);
+    return [{ nameKana: "", name: "", relationship: "", phone: "", fax: "" }];
+  };
+
+  const [contacts, setContacts] = useState<EmergencyContact[]>(getInitialContacts);
 
   // データ変更時にフォームに反映
   useEffect(() => {

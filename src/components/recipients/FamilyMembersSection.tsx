@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { UseFormWatch, UseFormSetValue } from "react-hook-form";
 import { RecipientFormData } from "@/lib/validations/recipientSchema";
 import { Plus, Trash2 } from "lucide-react";
@@ -28,24 +28,20 @@ export function FamilyMembersSection({
 }: FamilyMembersSectionProps) {
   const familyMembersData = watch("familyMembers") as any;
 
-  const [diagram, setDiagram] = useState("");
-  const [members, setMembers] = useState<FamilyMember[]>([
-    { relation: "", name: "", age: undefined, livingTogether: false, notes: "" },
-  ]);
-  const initializedRef = useRef(false);
+  // 初期値を計算（useStateの初期化時のみ実行される）
+  const getInitialDiagram = () => {
+    return familyMembersData?.diagram || "";
+  };
 
-  // 初期データの読み込み（1回のみ）
-  useEffect(() => {
-    if (familyMembersData && !initializedRef.current) {
-      setDiagram(familyMembersData.diagram || "");
-      setMembers(
-        familyMembersData.members && familyMembersData.members.length > 0
-          ? familyMembersData.members
-          : [{ relation: "", name: "", age: undefined, livingTogether: false, notes: "" }]
-      );
-      initializedRef.current = true;
+  const getInitialMembers = () => {
+    if (familyMembersData?.members && familyMembersData.members.length > 0) {
+      return familyMembersData.members;
     }
-  }, [familyMembersData]);
+    return [{ relation: "", name: "", age: undefined, livingTogether: false, notes: "" }];
+  };
+
+  const [diagram, setDiagram] = useState(getInitialDiagram);
+  const [members, setMembers] = useState<FamilyMember[]>(getInitialMembers);
 
   // データ変更時にフォームに反映
   useEffect(() => {
