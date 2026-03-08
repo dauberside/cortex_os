@@ -9,8 +9,7 @@ export default defineConfig({
   datasource: {
     url:
       process.env["DIRECT_URL"] ??
-      process.env["DATABASE_URL"] ??
       process.env["CORTEX_DATABASE_DATABASE_URL_UNPOOLED"] ??
-      process.env["CORTEX_DATABASE_DATABASE_URL"],
+      process.env["DATABASE_URL"],
   },
 });
