@@ -58,7 +58,10 @@ export default function NewUnitPage() {
 
       <h1 className="mb-6 text-2xl font-bold">新規ユニット登録</h1>
 
-      <form onSubmit={handleSubmit} className="bg-card space-y-6 rounded-lg border p-6">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-card space-y-6 rounded-lg border p-6"
+      >
         <div>
           <label className="mb-1 block text-sm font-medium">
             ユニット名 <span className="text-destructive">*</span>
@@ -68,7 +71,7 @@ export default function NewUnitPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="例: ハウスてんじん"
-            className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+            className="w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:ring-offset-1 focus:outline-none"
           />
         </div>
 
@@ -79,7 +82,7 @@ export default function NewUnitPage() {
           <select
             value={serviceType}
             onChange={(e) => setServiceType(e.target.value)}
-            className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+            className="w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:ring-offset-1 focus:outline-none"
           >
             {SERVICE_TYPES.map((t) => (
               <option key={t.value} value={t.value}>
@@ -96,13 +99,11 @@ export default function NewUnitPage() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="ユニットの説明・備考"
             rows={3}
-            className="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+            className="w-full rounded-md border px-3 py-2 text-sm focus:ring-2 focus:ring-offset-1 focus:outline-none"
           />
         </div>
 
-        {error && (
-          <p className="text-destructive text-sm">{error}</p>
-        )}
+        {error && <p className="text-destructive text-sm">{error}</p>}
 
         <div className="flex justify-end gap-2">
           <Link href="/units">

@@ -3,7 +3,15 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
-import { FileText, Filter, ChevronDown, ChevronUp, AlertTriangle, Trash2, Clock } from "lucide-react";
+import {
+  FileText,
+  Filter,
+  ChevronDown,
+  ChevronUp,
+  AlertTriangle,
+  Trash2,
+  Clock,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function AuditLogsPage() {
@@ -87,7 +95,11 @@ export default function AuditLogsPage() {
   };
 
   // リソース名を取得（IDから名前に変換）
-  const getResourceName = (resourceType: string, resourceId: string, metadata?: any) => {
+  const getResourceName = (
+    resourceType: string,
+    resourceId: string,
+    metadata?: any
+  ) => {
     if (resourceType === "CareRecipient") {
       const recipient = recipients?.find((r: any) => r.id === resourceId);
       return recipient ? recipient.name : null;
@@ -99,14 +111,20 @@ export default function AuditLogsPage() {
         return unit ? unit.name : null;
       }
     }
-    if (resourceType === "Assessment" || resourceType === "GuideRecord" || resourceType === "SupportProfileSheet") {
+    if (
+      resourceType === "Assessment" ||
+      resourceType === "GuideRecord" ||
+      resourceType === "SupportProfileSheet"
+    ) {
       // メタデータにrecipientNameがあればそれを優先
       if (metadata?.recipientName) {
         return metadata.recipientName;
       }
       // なければrecipientIdから取得
       if (metadata?.recipientId) {
-        const recipient = recipients?.find((r: any) => r.id === metadata.recipientId);
+        const recipient = recipients?.find(
+          (r: any) => r.id === metadata.recipientId
+        );
         return recipient ? recipient.name : null;
       }
     }
@@ -123,7 +141,14 @@ export default function AuditLogsPage() {
     // DailyLog（業務日誌）の場合
     if (resourceType === "DailyLog") {
       if (metadata.shift) {
-        const shiftLabel = metadata.shift === "Day" ? "日勤" : metadata.shift === "Late" ? "遅番" : metadata.shift === "Night" ? "夜勤" : metadata.shift;
+        const shiftLabel =
+          metadata.shift === "Day"
+            ? "日勤"
+            : metadata.shift === "Late"
+              ? "遅番"
+              : metadata.shift === "Night"
+                ? "夜勤"
+                : metadata.shift;
         parts.push(`勤務: ${shiftLabel}`);
       }
       if (metadata.unitId) {
@@ -208,7 +233,9 @@ export default function AuditLogsPage() {
             </div>
             <div>
               <p className="text-muted-foreground text-sm">表示中</p>
-              <p className="text-xl font-bold sm:text-2xl">{filteredLogs?.length}件</p>
+              <p className="text-xl font-bold sm:text-2xl">
+                {filteredLogs?.length}件
+              </p>
             </div>
             <div className="col-span-2 md:col-span-1">
               <p className="text-muted-foreground text-sm">期間</p>
@@ -310,7 +337,9 @@ export default function AuditLogsPage() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">特殊フィルタ</label>
+              <label className="mb-1 block text-sm font-medium">
+                特殊フィルタ
+              </label>
               <div className="flex items-center rounded-md border px-3 py-2">
                 <input
                   type="checkbox"
@@ -383,20 +412,32 @@ export default function AuditLogsPage() {
                         <div className="flex-1">
                           {/* 1行サマリー：誰が・いつ・何を・どれに */}
                           <p className="mb-1 text-sm sm:text-base">
-                            <span className="font-semibold">{log.user.name}</span>
-                            <span className="text-muted-foreground mx-1">が</span>
+                            <span className="font-semibold">
+                              {log.user.name}
+                            </span>
+                            <span className="text-muted-foreground mx-1">
+                              が
+                            </span>
                             {(() => {
-                              const resourceName = getResourceName(log.resourceType, log.resourceId, log.metadata);
+                              const resourceName = getResourceName(
+                                log.resourceType,
+                                log.resourceId,
+                                log.metadata
+                              );
                               return resourceName ? (
                                 <>
                                   <span className="font-medium text-blue-600">
                                     {getResourceTypeLabel(log.resourceType)}
                                   </span>
-                                  <span className="text-muted-foreground mx-1">「</span>
+                                  <span className="text-muted-foreground mx-1">
+                                    「
+                                  </span>
                                   <span className="font-semibold text-blue-700">
                                     {resourceName}
                                   </span>
-                                  <span className="text-muted-foreground mx-1">」</span>
+                                  <span className="text-muted-foreground mx-1">
+                                    」
+                                  </span>
                                 </>
                               ) : (
                                 <>
@@ -406,7 +447,9 @@ export default function AuditLogsPage() {
                                 </>
                               );
                             })()}
-                            <span className="text-muted-foreground mx-1">を</span>
+                            <span className="text-muted-foreground mx-1">
+                              を
+                            </span>
                             <span
                               className={`font-medium ${
                                 log.action === "Delete"
@@ -452,7 +495,8 @@ export default function AuditLogsPage() {
                           {log.changeNote && (
                             <div className="mt-2 rounded-md bg-gray-50 p-2">
                               <p className="text-xs text-gray-600">
-                                <span className="font-medium">理由:</span> {log.changeNote}
+                                <span className="font-medium">理由:</span>{" "}
+                                {log.changeNote}
                               </p>
                             </div>
                           )}
@@ -488,25 +532,36 @@ export default function AuditLogsPage() {
                         <h3 className="mb-2 text-sm font-semibold">技術詳細</h3>
                         <div className="grid gap-2 text-sm">
                           <div>
-                            <span className="text-muted-foreground">リソースID:</span>{" "}
-                            <span className="font-mono text-xs">{log.resourceId}</span>
+                            <span className="text-muted-foreground">
+                              リソースID:
+                            </span>{" "}
+                            <span className="font-mono text-xs">
+                              {log.resourceId}
+                            </span>
                           </div>
                           {log.path && (
                             <div>
-                              <span className="text-muted-foreground">パス:</span>{" "}
+                              <span className="text-muted-foreground">
+                                パス:
+                              </span>{" "}
                               <span className="text-xs">{log.path}</span>
                             </div>
                           )}
-                          {log.metadata && Object.keys(log.metadata).length > 0 && (
-                            <div>
-                              <span className="text-muted-foreground">メタデータ:</span>
-                              <pre className="mt-1 overflow-x-auto rounded bg-gray-50 p-2 text-xs">
-                                {JSON.stringify(log.metadata, null, 2)}
-                              </pre>
-                            </div>
-                          )}
+                          {log.metadata &&
+                            Object.keys(log.metadata).length > 0 && (
+                              <div>
+                                <span className="text-muted-foreground">
+                                  メタデータ:
+                                </span>
+                                <pre className="mt-1 overflow-x-auto rounded bg-gray-50 p-2 text-xs">
+                                  {JSON.stringify(log.metadata, null, 2)}
+                                </pre>
+                              </div>
+                            )}
                           <div>
-                            <span className="text-muted-foreground">タイムスタンプ:</span>{" "}
+                            <span className="text-muted-foreground">
+                              タイムスタンプ:
+                            </span>{" "}
                             <span className="font-mono text-xs">
                               {new Date(log.createdAt).toISOString()}
                             </span>

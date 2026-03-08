@@ -1,12 +1,15 @@
 # GuideRecord ワークフロー実装記録
 
 ## 実装完了日
+
 2026-02-21
 
 ## 概要
+
 GuideRecord（外出支援記録）にDRAFT/SUBMITTED/APPROVEDの状態管理を追加し、SUBMITTED時にServiceRecord（サービス提供実績）を自動生成する機能を実装。
 
 ## 目的
+
 「GuideRecord に DRAFT/SUBMITTED/APPROVED の状態を追加し、SUBMITTEDで ServiceRecord を自動生成、SUBMITTED後の編集は差戻し必須」とすることで、以下を実現：
 
 1. **ワークフロー管理**: 下書き → 提出 → 承認の明確な状態遷移
@@ -88,7 +91,8 @@ pnpm db:generate
 if (existing.status !== "DRAFT") {
   throw new TRPCError({
     code: "FORBIDDEN",
-    message: "提出後の編集は差戻しが必要です（DRAFTに戻してから再提出してください）",
+    message:
+      "提出後の編集は差戻しが必要です（DRAFTに戻してから再提出してください）",
   });
 }
 
@@ -107,6 +111,7 @@ if (existing.status !== "DRAFT") {
 - SUBMITTED 時に ServiceRecord を upsert（guideRecordIdで一意）して自動生成
 
 **要件**:
+
 - submittedAt = now, submittedBy = ctx.userId
 - ServiceRecord の serviceType/serviceDate/startTime/endTime/duration を GuideRecord から生成
 - destination/purpose/serviceDetail/userCondition/incidents も同期

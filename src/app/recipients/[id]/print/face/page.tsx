@@ -113,7 +113,9 @@ export default function FaceSheetPrintPage() {
                 <tr>
                   <td className="label-cell">グループホーム名</td>
                   <td className="value-cell" colSpan={1}>
-                    {(recipient as any).documentHeaderGroupHomeName || (recipient as any).ghName || ""}
+                    {(recipient as any).documentHeaderGroupHomeName ||
+                      (recipient as any).ghName ||
+                      ""}
                   </td>
                 </tr>
                 <tr>
@@ -221,7 +223,11 @@ export default function FaceSheetPrintPage() {
                   <td className="value-cell">
                     {/* TODO: 緊急連絡先氏名を追加 */}
                   </td>
-                  <td className="value-cell" rowSpan={4} style={{ verticalAlign: "middle" }}>
+                  <td
+                    className="value-cell"
+                    rowSpan={4}
+                    style={{ verticalAlign: "middle" }}
+                  >
                     {(recipient as any).familyMembers?.diagram ? (
                       <div className="multiline-text family-diagram">
                         {(recipient as any).familyMembers.diagram}
@@ -245,9 +251,7 @@ export default function FaceSheetPrintPage() {
                 </tr>
                 <tr>
                   <td className="label-cell">FAX</td>
-                  <td className="value-cell">
-                    {/* TODO: FAX番号を追加 */}
-                  </td>
+                  <td className="value-cell">{/* TODO: FAX番号を追加 */}</td>
                 </tr>
               </tbody>
             </table>
@@ -264,10 +268,10 @@ export default function FaceSheetPrintPage() {
                     {(recipient as any).disabilityPension && (
                       <>
                         {(recipient as any).disabilityPensionGrade}級
-                        {(recipient as any).disabilityPensionType === "National" &&
-                          "（基礎）"}
-                        {(recipient as any).disabilityPensionType === "Employee" &&
-                          "（厚生）"}
+                        {(recipient as any).disabilityPensionType ===
+                          "National" && "（基礎）"}
+                        {(recipient as any).disabilityPensionType ===
+                          "Employee" && "（厚生）"}
                       </>
                     )}
                   </td>
@@ -317,7 +321,8 @@ export default function FaceSheetPrintPage() {
                 <tr>
                   <td className="label-cell">種類</td>
                   <td className="value-cell" colSpan={3}>
-                    {(recipient as any).physicalHandicapBook && "身体障害者手帳"}
+                    {(recipient as any).physicalHandicapBook &&
+                      "身体障害者手帳"}
                     {(recipient as any).intellectualHandicapBook && " 療育手帳"}
                     {(recipient as any).mentalHandicapBook &&
                       " 精神障害者保健福祉手帳"}
@@ -372,9 +377,7 @@ export default function FaceSheetPrintPage() {
                 </tr>
                 <tr>
                   <td className="label-cell">最終学歴</td>
-                  <td className="value-cell">
-                    {/* TODO: 最終学歴を追加 */}
-                  </td>
+                  <td className="value-cell">{/* TODO: 最終学歴を追加 */}</td>
                 </tr>
                 <tr>
                   <td className="subsection-header" colSpan={2}>
@@ -412,8 +415,12 @@ export default function FaceSheetPrintPage() {
                     {(recipient as any).hasSeizures ? "有" : "無"}
                     {(recipient as any).hasSeizures && (
                       <>
-                        <div>頻度: {(recipient as any).seizureFrequency || ""}</div>
-                        <div>対処法: {(recipient as any).seizureResponse || ""}</div>
+                        <div>
+                          頻度: {(recipient as any).seizureFrequency || ""}
+                        </div>
+                        <div>
+                          対処法: {(recipient as any).seizureResponse || ""}
+                        </div>
                       </>
                     )}
                   </td>

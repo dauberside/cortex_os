@@ -105,17 +105,16 @@ export default function DashboardPage() {
       {/* 統計カード: 2列グリッド */}
       <div className="mb-6 grid grid-cols-2 gap-3">
         {stats.map((s) => (
-          <div
-            key={s.label}
-            className="bg-card rounded-lg border p-4"
-          >
+          <div key={s.label} className="bg-card rounded-lg border p-4">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-muted-foreground text-xs">{s.label}</p>
               <s.icon
                 className={`h-5 w-5 ${s.alert ? "text-destructive" : "text-muted-foreground"}`}
               />
             </div>
-            <p className={`text-2xl font-bold ${s.alert ? "text-destructive" : ""}`}>
+            <p
+              className={`text-2xl font-bold ${s.alert ? "text-destructive" : ""}`}
+            >
               {s.value}
             </p>
           </div>
@@ -123,7 +122,7 @@ export default function DashboardPage() {
       </div>
 
       {/* メニュー */}
-      <div className="bg-card rounded-lg border divide-y">
+      <div className="bg-card divide-y rounded-lg border">
         {visibleMenus.map((m) => (
           <Link
             key={m.href}

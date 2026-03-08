@@ -166,13 +166,17 @@ export default function PrintSupportProfileSheetPage() {
 
                 {/* 住所・連絡先 */}
                 <tr>
-                  <td className="label-cell" colSpan={2}>住所</td>
+                  <td className="label-cell" colSpan={2}>
+                    住所
+                  </td>
                   <td className="value-cell" colSpan={5}>
                     {recipient.homeAddress || ""}
                   </td>
                 </tr>
                 <tr>
-                  <td className="label-cell" colSpan={2}>電話</td>
+                  <td className="label-cell" colSpan={2}>
+                    電話
+                  </td>
                   <td className="value-cell" colSpan={2}>
                     {recipient.homePhone || ""}
                   </td>
@@ -182,14 +186,20 @@ export default function PrintSupportProfileSheetPage() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="label-cell" colSpan={2}>アクセス</td>
+                  <td className="label-cell" colSpan={2}>
+                    アクセス
+                  </td>
                   <td className="value-cell" colSpan={5}>
                     {(() => {
                       const station = recipient.nearestStation || "";
                       const minutes = recipient.walkingMinutes;
 
                       // 既に「徒歩」「分」「(」等の情報が含まれている場合はそのまま表示
-                      if (station.includes("徒歩") || station.includes("分") || station.includes("(")) {
+                      if (
+                        station.includes("徒歩") ||
+                        station.includes("分") ||
+                        station.includes("(")
+                      ) {
                         return station;
                       }
 
@@ -203,7 +213,9 @@ export default function PrintSupportProfileSheetPage() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="label-cell" colSpan={2}>緊急連絡先</td>
+                  <td className="label-cell" colSpan={2}>
+                    緊急連絡先
+                  </td>
                   <td className="value-cell" colSpan={3}>
                     {recipient.emergencyContact || ""}
                   </td>
@@ -217,19 +229,25 @@ export default function PrintSupportProfileSheetPage() {
                 {recipient.ghName && (
                   <>
                     <tr>
-                      <td className="label-cell" colSpan={2}>GH名</td>
+                      <td className="label-cell" colSpan={2}>
+                        GH名
+                      </td>
                       <td className="value-cell" colSpan={5}>
                         {recipient.ghName}
                       </td>
                     </tr>
                     <tr>
-                      <td className="label-cell" colSpan={2}>GH住所</td>
+                      <td className="label-cell" colSpan={2}>
+                        GH住所
+                      </td>
                       <td className="value-cell" colSpan={5}>
                         {recipient.ghAddress || ""}
                       </td>
                     </tr>
                     <tr>
-                      <td className="label-cell" colSpan={2}>GH電話</td>
+                      <td className="label-cell" colSpan={2}>
+                        GH電話
+                      </td>
                       <td className="value-cell" colSpan={5}>
                         {recipient.ghPhone || ""}
                       </td>
@@ -244,30 +262,40 @@ export default function PrintSupportProfileSheetPage() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="label-cell" colSpan={2}>前日確認</td>
+                  <td className="label-cell" colSpan={2}>
+                    前日確認
+                  </td>
                   <td className="value-cell" colSpan={5}>
                     {recipient.priorConfirmationNote || ""}
                   </td>
                 </tr>
                 <tr>
-                  <td className="label-cell" colSpan={2}>ノート</td>
+                  <td className="label-cell" colSpan={2}>
+                    ノート
+                  </td>
                   <td className="value-cell">
                     {recipient.hasRecordNote ? "有" : "無"}
                   </td>
-                  <td className="label-cell" colSpan={2}>お財布</td>
+                  <td className="label-cell" colSpan={2}>
+                    お財布
+                  </td>
                   <td className="value-cell" colSpan={2}>
                     {recipient.walletNote || ""}
                   </td>
                 </tr>
                 <tr>
-                  <td className="label-cell" colSpan={2}>休憩喫茶</td>
+                  <td className="label-cell" colSpan={2}>
+                    休憩喫茶
+                  </td>
                   <td className="value-cell" colSpan={5}>
                     {recipient.cafeBreak ? "希望する" : "希望しない"}{" "}
                     {recipient.cafeCondition && `(${recipient.cafeCondition})`}
                   </td>
                 </tr>
                 <tr>
-                  <td className="label-cell" colSpan={2}>電車割引</td>
+                  <td className="label-cell" colSpan={2}>
+                    電車割引
+                  </td>
                   <td className="value-cell" colSpan={2}>
                     {recipient.trainDiscountType || ""}
                   </td>
@@ -277,10 +305,13 @@ export default function PrintSupportProfileSheetPage() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="label-cell" colSpan={2}>計画相談</td>
+                  <td className="label-cell" colSpan={2}>
+                    計画相談
+                  </td>
                   <td className="value-cell" colSpan={5}>
                     {recipient.planConsultationOffice || ""}{" "}
-                    {recipient.planConsultant && `(${recipient.planConsultant})`}
+                    {recipient.planConsultant &&
+                      `(${recipient.planConsultant})`}
                   </td>
                 </tr>
               </tbody>
@@ -484,7 +515,9 @@ export default function PrintSupportProfileSheetPage() {
                 <tr>
                   <td className="label-cell">趣味</td>
                   <td className="value-cell" colSpan={3}>
-                    <div className="multiline-text">{recipient.hobbies || ""}</div>
+                    <div className="multiline-text">
+                      {recipient.hobbies || ""}
+                    </div>
                   </td>
                 </tr>
                 <tr>

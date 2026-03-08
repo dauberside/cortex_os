@@ -3,7 +3,13 @@
 import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ExternalLink, AlertTriangle, Clock, User } from "lucide-react";
+import {
+  ArrowLeft,
+  ExternalLink,
+  AlertTriangle,
+  Clock,
+  User,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function ServiceRecordDetailPage() {
@@ -178,7 +184,7 @@ export default function ServiceRecordDetailPage() {
               )}
             </div>
             {record.timeBand === "CROSSES_BANDS" && (
-              <div className="bg-orange-50 mt-3 rounded-md border border-orange-200 p-3">
+              <div className="mt-3 rounded-md border border-orange-200 bg-orange-50 p-3">
                 <p className="text-sm text-orange-800">
                   ⚠️
                   この実績は時間帯を跨いでいます。請求時に分割が必要な場合があります。
@@ -218,7 +224,9 @@ export default function ServiceRecordDetailPage() {
         {/* 利用者の状態 */}
         {(record.userCondition || record.incidents) && (
           <div className="bg-card rounded-lg border p-6">
-            <h2 className="mb-4 text-xl font-semibold">利用者の様子・特記事項</h2>
+            <h2 className="mb-4 text-xl font-semibold">
+              利用者の様子・特記事項
+            </h2>
             <div className="space-y-3">
               {record.userCondition && (
                 <div>

@@ -239,14 +239,15 @@ export function ChangeHistory({ recipientId }: ChangeHistoryProps) {
 
       <div className="space-y-2">
         {filteredLogs.map((log: any) => {
-            const ActionIcon = ACTION_ICONS[log.action] || FileText;
-            const actionLabel = ACTION_LABELS[log.action] || log.action;
-            const actionColor = ACTION_COLORS[log.action] || "text-gray-600 bg-gray-50";
+          const ActionIcon = ACTION_ICONS[log.action] || FileText;
+          const actionLabel = ACTION_LABELS[log.action] || log.action;
+          const actionColor =
+            ACTION_COLORS[log.action] || "text-gray-600 bg-gray-50";
 
-            return (
+          return (
             <div
               key={log.id}
-              className="bg-card flex items-start gap-4 rounded-lg border p-4 transition-colors hover:bg-accent"
+              className="bg-card hover:bg-accent flex items-start gap-4 rounded-lg border p-4 transition-colors"
             >
               <div className={`rounded-full p-2 ${actionColor}`}>
                 <ActionIcon className="h-4 w-4" />
@@ -281,80 +282,95 @@ export function ChangeHistory({ recipientId }: ChangeHistoryProps) {
                     )}
 
                     {/* フォーマット済み変更内容がある場合 */}
-                    {log.metadata.formattedChanges && Array.isArray(log.metadata.formattedChanges) && (
-                      <div className="space-y-2">
-                        <span className="font-medium">変更内容:</span>
-                        <div className="mt-2 space-y-2">
-                          {(log.metadata.formattedChanges as any[]).map((change, index) => {
-                            // JSON型フィールドの場合は簡潔な表示
-                            const isJsonField = ['家族構成', '緊急連絡先', '連絡ルール'].includes(change.label);
+                    {log.metadata.formattedChanges &&
+                      Array.isArray(log.metadata.formattedChanges) && (
+                        <div className="space-y-2">
+                          <span className="font-medium">変更内容:</span>
+                          <div className="mt-2 space-y-2">
+                            {(log.metadata.formattedChanges as any[]).map(
+                              (change, index) => {
+                                // JSON型フィールドの場合は簡潔な表示
+                                const isJsonField = [
+                                  "家族構成",
+                                  "緊急連絡先",
+                                  "連絡ルール",
+                                ].includes(change.label);
 
-                            if (isJsonField) {
-                              return (
-                                <div
-                                  key={index}
-                                  className="rounded border border-gray-200 bg-white p-2"
-                                >
-                                  <div className="font-semibold text-gray-700">
-                                    {change.label}
-                                  </div>
-                                  <div className="mt-1 text-xs text-gray-600">
-                                    内容を更新しました
-                                  </div>
-                                </div>
-                              );
-                            }
+                                if (isJsonField) {
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="rounded border border-gray-200 bg-white p-2"
+                                    >
+                                      <div className="font-semibold text-gray-700">
+                                        {change.label}
+                                      </div>
+                                      <div className="mt-1 text-xs text-gray-600">
+                                        内容を更新しました
+                                      </div>
+                                    </div>
+                                  );
+                                }
 
-                            return (
-                              <div
-                                key={index}
-                                className="rounded border border-gray-200 bg-white p-2"
-                              >
-                                <div className="mb-1 font-semibold text-gray-700">
-                                  {change.label}
-                                </div>
-                                <div className="grid grid-cols-2 gap-2 text-xs">
-                                  <div>
-                                    <div className="text-muted-foreground mb-1">変更前:</div>
-                                    <div className="rounded bg-red-50 p-1.5 text-red-800">
-                                      {change.oldValue}
+                                return (
+                                  <div
+                                    key={index}
+                                    className="rounded border border-gray-200 bg-white p-2"
+                                  >
+                                    <div className="mb-1 font-semibold text-gray-700">
+                                      {change.label}
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                      <div>
+                                        <div className="text-muted-foreground mb-1">
+                                          変更前:
+                                        </div>
+                                        <div className="rounded bg-red-50 p-1.5 text-red-800">
+                                          {change.oldValue}
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <div className="text-muted-foreground mb-1">
+                                          変更後:
+                                        </div>
+                                        <div className="rounded bg-green-50 p-1.5 text-green-800">
+                                          {change.newValue}
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
-                                  <div>
-                                    <div className="text-muted-foreground mb-1">変更後:</div>
-                                    <div className="rounded bg-green-50 p-1.5 text-green-800">
-                                      {change.newValue}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
+                                );
+                              }
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* 従来形式（フォールバック） */}
-                    {!log.metadata.formattedChanges && log.metadata.updatedFields && Array.isArray(log.metadata.updatedFields) && (
-                      <div>
-                        <span className="font-medium">更新項目:</span>{" "}
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {(log.metadata.updatedFields as string[]).map((field, index) => (
-                            <span
-                              key={index}
-                              className="inline-block rounded bg-white px-2 py-0.5 text-xs"
-                            >
-                              {FIELD_LABELS[field] || field}
-                            </span>
-                          ))}
+                    {!log.metadata.formattedChanges &&
+                      log.metadata.updatedFields &&
+                      Array.isArray(log.metadata.updatedFields) && (
+                        <div>
+                          <span className="font-medium">更新項目:</span>{" "}
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {(log.metadata.updatedFields as string[]).map(
+                              (field, index) => (
+                                <span
+                                  key={index}
+                                  className="inline-block rounded bg-white px-2 py-0.5 text-xs"
+                                >
+                                  {FIELD_LABELS[field] || field}
+                                </span>
+                              )
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                 )}
 
                 {log.changeNote && (
-                  <div className="mt-2 text-sm italic text-gray-600">
+                  <div className="mt-2 text-sm text-gray-600 italic">
                     {log.changeNote}
                   </div>
                 )}
@@ -371,8 +387,8 @@ export function ChangeHistory({ recipientId }: ChangeHistoryProps) {
                 </div>
               </div>
             </div>
-            );
-          })}
+          );
+        })}
       </div>
     </div>
   );

@@ -11,6 +11,7 @@ metadata:
 # Access Control (RBAC + ABAC)
 
 ## Core policy
+
 - Roles: STAFF / LEAD / MANAGER
 - ABAC: same unit + ownership
 - STAFF: same-unit records are view-only; can edit/delete only own records
@@ -18,6 +19,7 @@ metadata:
 - MANAGER: full across units
 
 ## Implementation checklist
+
 1. Centralize policy helpers: canView/canEdit/canDelete
 2. Enforce in tRPC protected procedures
 3. Add tests for boundary cases

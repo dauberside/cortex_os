@@ -145,7 +145,8 @@ export default function EditRecipientPage() {
         photoUrl: (recipient as any).photoUrl || "",
         // 書類ヘッダー情報
         organizationName: (recipient as any).organizationName || "",
-        documentHeaderGroupHomeName: (recipient as any).documentHeaderGroupHomeName || "",
+        documentHeaderGroupHomeName:
+          (recipient as any).documentHeaderGroupHomeName || "",
         serviceManagerName: (recipient as any).serviceManagerName || "",
         school: (recipient as any).school || "",
         handbookType: (recipient as any).handbookType || "",
@@ -171,7 +172,8 @@ export default function EditRecipientPage() {
         cafeCondition: (recipient as any).cafeCondition || "",
         trainDiscountType: (recipient as any).trainDiscountType || "",
         hasToeiPass: (recipient as any).hasToeiPass || false,
-        hasRestrictionConsent: (recipient as any).hasRestrictionConsent || false,
+        hasRestrictionConsent:
+          (recipient as any).hasRestrictionConsent || false,
         planConsultationOffice: (recipient as any).planConsultationOffice || "",
         planConsultant: (recipient as any).planConsultant || "",
         // アセスメント・健康
@@ -185,8 +187,10 @@ export default function EditRecipientPage() {
           : (recipient as any).medication || "",
         hasPrnMedication: (recipient as any).hasPrnMedication || false,
         prnMedicationMethod: (recipient as any).prnMedicationMethod || "",
-        hasSeasonalMedication: (recipient as any).hasSeasonalMedication || false,
-        seasonalMedicationContent: (recipient as any).seasonalMedicationContent || "",
+        hasSeasonalMedication:
+          (recipient as any).hasSeasonalMedication || false,
+        seasonalMedicationContent:
+          (recipient as any).seasonalMedicationContent || "",
         healthNote: (recipient as any).healthNote || "",
         // 食事
         favoriteFoods: (recipient as any).favoriteFoods || "",
@@ -228,11 +232,13 @@ export default function EditRecipientPage() {
         interactionNote: (recipient as any).interactionNote || "",
         // 外出傾向
         outingRequestPattern: (recipient as any).outingRequestPattern || "",
-        outingGroupPlanDeparture: (recipient as any).outingGroupPlanDeparture || "",
+        outingGroupPlanDeparture:
+          (recipient as any).outingGroupPlanDeparture || "",
         outingGroupPlanNote: (recipient as any).outingGroupPlanNote || "",
         outingSpecificRequest1: (recipient as any).outingSpecificRequest1 || "",
         outingSpecificRequest2: (recipient as any).outingSpecificRequest2 || "",
-        outingCasualDestination: (recipient as any).outingCasualDestination || "",
+        outingCasualDestination:
+          (recipient as any).outingCasualDestination || "",
         outingIrregularNote: (recipient as any).outingIrregularNote || "",
         outingOtherNote: (recipient as any).outingOtherNote || "",
         // Phase 1追加フィールド: 感覚過敏・鈍麻
@@ -264,7 +270,8 @@ export default function EditRecipientPage() {
         medicationEvening: (recipient as any).medicationEvening || "",
         medicationBedtime: (recipient as any).medicationBedtime || "",
         medicationTimeFixed: (recipient as any).medicationTimeFixed || "",
-        medicationTimeFixedDetail: (recipient as any).medicationTimeFixedDetail || "",
+        medicationTimeFixedDetail:
+          (recipient as any).medicationTimeFixedDetail || "",
         medicationNote: (recipient as any).medicationNote || "",
         // Phase 1追加フィールド: 臨時薬
         prnMedicationContent: (recipient as any).prnMedicationContent || "",
@@ -329,9 +336,7 @@ export default function EditRecipientPage() {
       supportLevel: data.supportLevel ? Number(data.supportLevel) : undefined,
       serviceTypes: data.serviceTypes || [],
       allowances: data.allowances || [],
-      receivedDate: data.receivedDate
-        ? new Date(data.receivedDate)
-        : undefined,
+      receivedDate: data.receivedDate ? new Date(data.receivedDate) : undefined,
       validUntil: data.validUntil ? new Date(data.validUntil) : undefined,
       behaviorScore: data.behaviorScore
         ? Number(data.behaviorScore)
@@ -402,10 +407,7 @@ export default function EditRecipientPage() {
             <label className="mb-2 block text-sm font-medium">
               氏名（カナ）
             </label>
-            <KanaInput
-              {...register("nameKana")}
-              hasError={!!errors.nameKana}
-            />
+            <KanaInput {...register("nameKana")} hasError={!!errors.nameKana} />
             <FieldError message={errors.nameKana?.message} />
             <p className="mt-1 text-xs text-gray-500">
               ※ひらがなで入力するとカタカナに自動変換されます
@@ -463,7 +465,9 @@ export default function EditRecipientPage() {
                 <label className="mb-2 block text-sm font-medium">続柄</label>
                 <select
                   value={watch("emergencyRelation") || ""}
-                  onChange={(e) => setValue("emergencyRelation", e.target.value)}
+                  onChange={(e) =>
+                    setValue("emergencyRelation", e.target.value)
+                  }
                   className={`w-full rounded-md border px-3 py-2 ${errors.emergencyRelation ? "border-red-500" : ""}`}
                 >
                   <option value="">選択してください</option>
@@ -557,9 +561,7 @@ export default function EditRecipientPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium">
-                  主治医
-                </label>
+                <label className="mb-2 block text-sm font-medium">主治医</label>
                 <input
                   {...register("doctor")}
                   className="w-full rounded-md border px-3 py-2"
@@ -620,127 +622,126 @@ export default function EditRecipientPage() {
           defaultOpen
         >
           <div className="space-y-4">
-
-          <div>
-            <label className="mb-2 block text-sm font-medium">
-              利用サービス種別
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {getEnabledServiceTypes().map((type) => (
-                <label
-                  key={type.value}
-                  className="flex items-center gap-2 text-sm"
-                >
-                  <input
-                    type="checkbox"
-                    value={type.value}
-                    {...register("serviceTypes")}
-                    className="rounded"
-                  />
-                  {type.label}
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium">利用状況</label>
-            <select
-              {...register("utilizationStatus")}
-              className="w-full rounded-md border px-3 py-2"
-            >
-              <option value="">未設定</option>
-              <option value="Home">在宅</option>
-              <option value="Facility">入所施設</option>
-              <option value="DayCare">通所</option>
-              <option value="GroupHome">グループホーム</option>
-            </select>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
               <label className="mb-2 block text-sm font-medium">
-                受給者番号
+                利用サービス種別
               </label>
-              <input
-                {...register("recipientNumber")}
-                className="w-full rounded-md border px-3 py-2"
-                placeholder="受給者証番号"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                受給者証交付日
-              </label>
-              <input
-                type="date"
-                {...register("receivedDate")}
-                className="w-full rounded-md border px-3 py-2"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                受給者証有効期限
-              </label>
-              <input
-                type="date"
-                {...register("validUntil")}
-                className="w-full rounded-md border px-3 py-2"
-              />
-            </div>
-          </div>
-
-          <div className="rounded-lg border bg-red-50/50 p-4">
-            <h3 className="mb-3 text-sm font-semibold text-red-800">
-              行動援護・強度行動障害
-            </h3>
-            <div className="space-y-3">
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  {...register("behaviorSupportNeeded")}
-                  className="rounded"
-                />
-                行動援護サービスが必要（行動障害スコア10点以上）
-              </label>
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  行動関連項目合計点数
-                </label>
-                <input
-                  type="number"
-                  {...register("behaviorScore")}
-                  className="w-32 rounded-md border px-3 py-2 text-sm"
-                  placeholder="0"
-                  min="0"
-                  max="100"
-                />
-                <p className="text-muted-foreground mt-1 text-xs">
-                  ※10点以上で行動援護の対象となります
-                </p>
+              <div className="grid grid-cols-2 gap-2">
+                {getEnabledServiceTypes().map((type) => (
+                  <label
+                    key={type.value}
+                    className="flex items-center gap-2 text-sm"
+                  >
+                    <input
+                      type="checkbox"
+                      value={type.value}
+                      {...register("serviceTypes")}
+                      className="rounded"
+                    />
+                    {type.label}
+                  </label>
+                ))}
               </div>
             </div>
-          </div>
 
-          <div>
-            <label className="mb-2 block text-sm font-medium">適用加算</label>
-            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-              {ALLOWANCE_OPTIONS.map((opt) => (
-                <label
-                  key={opt.value}
-                  className="flex items-center gap-2 text-sm"
-                >
+            <div>
+              <label className="mb-2 block text-sm font-medium">利用状況</label>
+              <select
+                {...register("utilizationStatus")}
+                className="w-full rounded-md border px-3 py-2"
+              >
+                <option value="">未設定</option>
+                <option value="Home">在宅</option>
+                <option value="Facility">入所施設</option>
+                <option value="DayCare">通所</option>
+                <option value="GroupHome">グループホーム</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  受給者番号
+                </label>
+                <input
+                  {...register("recipientNumber")}
+                  className="w-full rounded-md border px-3 py-2"
+                  placeholder="受給者証番号"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  受給者証交付日
+                </label>
+                <input
+                  type="date"
+                  {...register("receivedDate")}
+                  className="w-full rounded-md border px-3 py-2"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  受給者証有効期限
+                </label>
+                <input
+                  type="date"
+                  {...register("validUntil")}
+                  className="w-full rounded-md border px-3 py-2"
+                />
+              </div>
+            </div>
+
+            <div className="rounded-lg border bg-red-50/50 p-4">
+              <h3 className="mb-3 text-sm font-semibold text-red-800">
+                行動援護・強度行動障害
+              </h3>
+              <div className="space-y-3">
+                <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
-                    value={opt.value}
-                    {...register("allowances")}
+                    {...register("behaviorSupportNeeded")}
                     className="rounded"
                   />
-                  {opt.label}
+                  行動援護サービスが必要（行動障害スコア10点以上）
                 </label>
-              ))}
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    行動関連項目合計点数
+                  </label>
+                  <input
+                    type="number"
+                    {...register("behaviorScore")}
+                    className="w-32 rounded-md border px-3 py-2 text-sm"
+                    placeholder="0"
+                    min="0"
+                    max="100"
+                  />
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    ※10点以上で行動援護の対象となります
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium">適用加算</label>
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                {ALLOWANCE_OPTIONS.map((opt) => (
+                  <label
+                    key={opt.value}
+                    className="flex items-center gap-2 text-sm"
+                  >
+                    <input
+                      type="checkbox"
+                      value={opt.value}
+                      {...register("allowances")}
+                      className="rounded"
+                    />
+                    {opt.label}
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
         </CollapsibleSection>
 
@@ -760,294 +761,308 @@ export default function EditRecipientPage() {
           description="基本情報票に合わせた追加情報（住所・GH・運用ルールなど）"
         >
           <div className="space-y-4">
-          {/* 書類ヘッダー情報（フェイスシート用） */}
-          <div className="border-b pb-4">
-            <h3 className="mb-3 text-base font-semibold">書類ヘッダー情報（フェイスシート用）</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  法人/事業所名
-                </label>
-                <input
-                  type="text"
-                  {...register("organizationName")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  placeholder="例: 社会福祉法人○○会 ○○事業所"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  グループホーム名（書類用）
-                </label>
-                <input
-                  type="text"
-                  {...register("documentHeaderGroupHomeName")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  placeholder="未入力の場合、下記のGH名が使用されます"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  サービス管理責任者
-                </label>
-                <input
-                  type="text"
-                  {...register("serviceManagerName")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                />
+            {/* 書類ヘッダー情報（フェイスシート用） */}
+            <div className="border-b pb-4">
+              <h3 className="mb-3 text-base font-semibold">
+                書類ヘッダー情報（フェイスシート用）
+              </h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    法人/事業所名
+                  </label>
+                  <input
+                    type="text"
+                    {...register("organizationName")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                    placeholder="例: 社会福祉法人○○会 ○○事業所"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    グループホーム名（書類用）
+                  </label>
+                  <input
+                    type="text"
+                    {...register("documentHeaderGroupHomeName")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                    placeholder="未入力の場合、下記のGH名が使用されます"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    サービス管理責任者
+                  </label>
+                  <input
+                    type="text"
+                    {...register("serviceManagerName")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* 通所先 */}
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              通所（学）先
-            </label>
-            <input
-              type="text"
-              {...register("school")}
-              className="w-full rounded-md border px-3 py-2 text-sm"
-            />
-          </div>
-
-          {/* 手帳情報の参照 */}
-          <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-            <p className="text-sm text-blue-900">
-              <strong>📖 手帳情報について</strong>
-              <br />
-              手帳の種別・等級は上記「制度情報（手帳・年金/手当・精神科/発達・介護保険）」セクションに入力してください。
-              <br />
-              身体障害者手帳、療育手帳、精神障害者保健福祉手帳の3種類に対応しています。
-            </p>
-          </div>
-
-          {/* 住所・連絡先 */}
-          <div>
-            <label className="mb-1 block text-sm font-medium">自宅住所</label>
-            <input
-              type="text"
-              {...register("homeAddress")}
-              className="w-full rounded-md border px-3 py-2 text-sm"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium">自宅電話</label>
-              <input
-                type="text"
-                {...register("homePhone")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-              />
-            </div>
+            {/* 通所先 */}
             <div>
               <label className="mb-1 block text-sm font-medium">
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="checkbox"
-                    {...register("hasMobilePhone")}
-                    className="rounded"
-                  />
-                  本人携帯あり
-                </div>
+                通所（学）先
               </label>
-              {watch("hasMobilePhone") && (
-                <input
-                  type="text"
-                  {...register("mobilePhone")}
-                  placeholder="090-1234-5678"
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium">最寄り駅</label>
               <input
                 type="text"
-                {...register("nearestStation")}
+                {...register("school")}
                 className="w-full rounded-md border px-3 py-2 text-sm"
               />
             </div>
+
+            {/* 手帳情報の参照 */}
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+              <p className="text-sm text-blue-900">
+                <strong>📖 手帳情報について</strong>
+                <br />
+                手帳の種別・等級は上記「制度情報（手帳・年金/手当・精神科/発達・介護保険）」セクションに入力してください。
+                <br />
+                身体障害者手帳、療育手帳、精神障害者保健福祉手帳の3種類に対応しています。
+              </p>
+            </div>
+
+            {/* 住所・連絡先 */}
             <div>
-              <label className="mb-1 block text-sm font-medium">徒歩分数</label>
+              <label className="mb-1 block text-sm font-medium">自宅住所</label>
               <input
                 type="text"
-                {...register("walkingMinutes")}
+                {...register("homeAddress")}
                 className="w-full rounded-md border px-3 py-2 text-sm"
-                placeholder="例: 10"
               />
             </div>
-          </div>
 
-          {/* GH情報 */}
-          <div className="border-t pt-4">
-            <h3 className="mb-3 text-base font-semibold">GH（グループホーム）情報</h3>
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium">GH名称</label>
+                <label className="mb-1 block text-sm font-medium">
+                  自宅電話
+                </label>
                 <input
                   type="text"
-                  {...register("ghName")}
+                  {...register("homePhone")}
                   className="w-full rounded-md border px-3 py-2 text-sm"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">GH住所</label>
+                <label className="mb-1 block text-sm font-medium">
+                  <div className="mb-2 flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      {...register("hasMobilePhone")}
+                      className="rounded"
+                    />
+                    本人携帯あり
+                  </div>
+                </label>
+                {watch("hasMobilePhone") && (
+                  <input
+                    type="text"
+                    {...register("mobilePhone")}
+                    placeholder="090-1234-5678"
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  最寄り駅
+                </label>
                 <input
                   type="text"
-                  {...register("ghAddress")}
+                  {...register("nearestStation")}
                   className="w-full rounded-md border px-3 py-2 text-sm"
                 />
               </div>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  徒歩分数
+                </label>
+                <input
+                  type="text"
+                  {...register("walkingMinutes")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  placeholder="例: 10"
+                />
+              </div>
+            </div>
+
+            {/* GH情報 */}
+            <div className="border-t pt-4">
+              <h3 className="mb-3 text-base font-semibold">
+                GH（グループホーム）情報
+              </h3>
+              <div className="space-y-3">
                 <div>
                   <label className="mb-1 block text-sm font-medium">
-                    GH電話
+                    GH名称
                   </label>
                   <input
                     type="text"
-                    {...register("ghPhone")}
+                    {...register("ghName")}
                     className="w-full rounded-md border px-3 py-2 text-sm"
                   />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium">
-                    GH法人名
+                    GH住所
                   </label>
                   <input
                     type="text"
-                    {...register("ghCorporation")}
+                    {...register("ghAddress")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                  />
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      GH電話
+                    </label>
+                    <input
+                      type="text"
+                      {...register("ghPhone")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      GH法人名
+                    </label>
+                    <input
+                      type="text"
+                      {...register("ghCorporation")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    GHアクセス
+                  </label>
+                  <input
+                    type="text"
+                    {...register("ghAccess")}
                     className="w-full rounded-md border px-3 py-2 text-sm"
                   />
                 </div>
               </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  GHアクセス
-                </label>
-                <input
-                  type="text"
-                  {...register("ghAccess")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                />
-              </div>
             </div>
-          </div>
 
-          {/* 運用ルール */}
-          <div className="border-t pt-4">
-            <h3 className="mb-3 text-base font-semibold">運用ルール</h3>
-            <div className="space-y-3">
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  前日確認の特記
-                </label>
-                <textarea
-                  {...register("priorConfirmationNote")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  rows={2}
-                />
-              </div>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <label className="flex items-center gap-2 text-sm font-medium">
-                  <input
-                    type="checkbox"
-                    {...register("hasRecordNote")}
-                    className="rounded"
-                  />
-                  ノート（記録）あり
-                </label>
-                <label className="flex items-center gap-2 text-sm font-medium">
-                  <input
-                    type="checkbox"
-                    {...register("hasToeiPass")}
-                    className="rounded"
-                  />
-                  都営乗車券等あり
-                </label>
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  ガイドのお財布特記
-                </label>
-                <textarea
-                  {...register("walletNote")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  rows={2}
-                />
-              </div>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* 運用ルール */}
+            <div className="border-t pt-4">
+              <h3 className="mb-3 text-base font-semibold">運用ルール</h3>
+              <div className="space-y-3">
                 <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    前日確認の特記
+                  </label>
+                  <textarea
+                    {...register("priorConfirmationNote")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                    rows={2}
+                  />
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <label className="flex items-center gap-2 text-sm font-medium">
                     <input
                       type="checkbox"
-                      {...register("cafeBreak")}
+                      {...register("hasRecordNote")}
                       className="rounded"
                     />
-                    休憩時の喫茶入店を希望する
+                    ノート（記録）あり
+                  </label>
+                  <label className="flex items-center gap-2 text-sm font-medium">
+                    <input
+                      type="checkbox"
+                      {...register("hasToeiPass")}
+                      className="rounded"
+                    />
+                    都営乗車券等あり
                   </label>
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium">
-                    喫茶条件
+                    ガイドのお財布特記
                   </label>
-                  <input
-                    type="text"
-                    {...register("cafeCondition")}
+                  <textarea
+                    {...register("walletNote")}
                     className="w-full rounded-md border px-3 py-2 text-sm"
-                    placeholder="例: 300円以内"
+                    rows={2}
                   />
                 </div>
-              </div>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-sm font-medium">
-                    電車割引種別
-                  </label>
-                  <input
-                    type="text"
-                    {...register("trainDiscountType")}
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                    placeholder="例: 1種/2種"
-                  />
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-medium">
+                      <input
+                        type="checkbox"
+                        {...register("cafeBreak")}
+                        className="rounded"
+                      />
+                      休憩時の喫茶入店を希望する
+                    </label>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      喫茶条件
+                    </label>
+                    <input
+                      type="text"
+                      {...register("cafeCondition")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                      placeholder="例: 300円以内"
+                    />
+                  </div>
                 </div>
-                <label className="flex items-center gap-2 text-sm font-medium">
-                  <input
-                    type="checkbox"
-                    {...register("hasRestrictionConsent")}
-                    className="rounded"
-                  />
-                  行動制限の同意書あり
-                </label>
-              </div>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-sm font-medium">
-                    計画相談事業所
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      電車割引種別
+                    </label>
+                    <input
+                      type="text"
+                      {...register("trainDiscountType")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                      placeholder="例: 1種/2種"
+                    />
+                  </div>
+                  <label className="flex items-center gap-2 text-sm font-medium">
+                    <input
+                      type="checkbox"
+                      {...register("hasRestrictionConsent")}
+                      className="rounded"
+                    />
+                    行動制限の同意書あり
                   </label>
-                  <input
-                    type="text"
-                    {...register("planConsultationOffice")}
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                  />
                 </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium">
-                    担当者名
-                  </label>
-                  <input
-                    type="text"
-                    {...register("planConsultant")}
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                  />
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      計画相談事業所
+                    </label>
+                    <input
+                      type="text"
+                      {...register("planConsultationOffice")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      担当者名
+                    </label>
+                    <input
+                      type="text"
+                      {...register("planConsultant")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </div>
         </CollapsibleSection>
 
@@ -1058,975 +1073,1065 @@ export default function EditRecipientPage() {
           defaultOpen={false}
         >
           <div className="space-y-4">
-
-          {/* 健康・服薬 */}
-          <div className="space-y-3">
-            <h3 className="text-base font-semibold">健康・服薬</h3>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* 健康・服薬 */}
+            <div className="space-y-3">
+              <h3 className="text-base font-semibold">健康・服薬</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    障害名
+                  </label>
+                  <input
+                    type="text"
+                    {...register("disabilityName")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-medium">
+                    <input
+                      type="checkbox"
+                      {...register("hasSeizures")}
+                      className="rounded"
+                    />
+                    発作あり
+                  </label>
+                </div>
+              </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">障害名</label>
-                <input
-                  type="text"
-                  {...register("disabilityName")}
+                <label className="mb-1 block text-sm font-medium">
+                  疾病状況
+                </label>
+                <textarea
+                  {...register("diseaseStatus")}
                   className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={3}
                 />
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    発作頻度
+                  </label>
+                  <input
+                    type="text"
+                    {...register("seizureFrequency")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    発作対処方法
+                  </label>
+                  <input
+                    type="text"
+                    {...register("seizureResponse")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  服薬（朝/昼/夕/就寝前など、1行ずつ）
+                </label>
+                <textarea
+                  {...register("medication")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={4}
+                  placeholder="1行ずつ入力してください"
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    {...register("hasPrnMedication")}
+                    className="rounded"
+                  />
+                  頓服あり
+                </label>
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    {...register("hasSeasonalMedication")}
+                    className="rounded"
+                  />
+                  季節薬あり
+                </label>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  健康・服薬の留意点
+                </label>
+                <textarea
+                  {...register("healthNote")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={3}
+                />
+              </div>
+
+              {/* Phase 1追加: 発作詳細 */}
+              {watch("hasSeizures") && (
+                <div className="space-y-3 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                  <h4 className="text-sm font-semibold text-blue-900">
+                    発作の詳細情報
+                  </h4>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium">
+                        起きやすい時間帯
+                      </label>
+                      <input
+                        type="text"
+                        {...register("seizureTimePattern")}
+                        className="w-full rounded-md border px-3 py-2 text-sm"
+                        placeholder="例: 起床時、夜間など"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium">
+                        発作履歴補足
+                      </label>
+                      <input
+                        type="text"
+                        {...register("seizureHistoryNote")}
+                        className="w-full rounded-md border px-3 py-2 text-sm"
+                        placeholder="例: 10年以上なし"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Phase 1追加: 服薬詳細（時間帯別） */}
+              <div className="space-y-3 rounded-lg border border-purple-200 bg-purple-50 p-4">
+                <h4 className="text-sm font-semibold text-purple-900">
+                  服薬詳細（時間帯別）
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      朝食後
+                    </label>
+                    <textarea
+                      {...register("medicationMorning")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                      rows={2}
+                      placeholder="薬の名前と量"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      昼食後
+                    </label>
+                    <textarea
+                      {...register("medicationNoon")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                      rows={2}
+                      placeholder="薬の名前と量"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      夕食後
+                    </label>
+                    <textarea
+                      {...register("medicationEvening")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                      rows={2}
+                      placeholder="薬の名前と量"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      就寝前
+                    </label>
+                    <textarea
+                      {...register("medicationBedtime")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                      rows={2}
+                      placeholder="薬の名前と量"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div>
+                      <label className="mb-1 block text-sm font-medium">
+                        時間固定の服薬
+                      </label>
+                      <input
+                        type="text"
+                        {...register("medicationTimeFixed")}
+                        className="w-full rounded-md border px-3 py-2 text-sm"
+                        placeholder="例: 16時"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-sm font-medium">
+                        時間固定の詳細
+                      </label>
+                      <input
+                        type="text"
+                        {...register("medicationTimeFixedDetail")}
+                        className="w-full rounded-md border px-3 py-2 text-sm"
+                        placeholder="薬の名前"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      服薬特記
+                    </label>
+                    <textarea
+                      {...register("medicationNote")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                      rows={2}
+                      placeholder="服薬に関する特記事項"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Phase 1追加: 臨時薬（頓服・季節薬） */}
+              {(watch("hasPrnMedication") ||
+                watch("hasSeasonalMedication")) && (
+                <div className="space-y-3 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+                  <h4 className="text-sm font-semibold text-yellow-900">
+                    臨時薬（頓服・季節薬）
+                  </h4>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      薬の内容
+                    </label>
+                    <textarea
+                      {...register("prnMedicationContent")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                      rows={2}
+                      placeholder="臨時薬の内容"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      どういうときに飲むか
+                    </label>
+                    <input
+                      type="text"
+                      {...register("prnMedicationTiming")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                      placeholder="例: 不眠時、発熱時"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      メモ
+                    </label>
+                    <input
+                      type="text"
+                      {...register("prnMedicationMemo")}
+                      className="w-full rounded-md border px-3 py-2 text-sm"
+                      placeholder="例: マイスリー"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Phase 1追加: 塗薬等 */}
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    {...register("hasTopicalMedication")}
+                    className="rounded"
+                  />
+                  塗薬等あり
+                </label>
+              </div>
+              {watch("hasTopicalMedication") && (
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    塗薬等の詳細
+                  </label>
+                  <textarea
+                    {...register("topicalMedicationNote")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                    rows={2}
+                    placeholder="塗薬の名前、使用箇所、頻度など"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* 食事 */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">食事</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    好きなもの
+                  </label>
+                  <textarea
+                    {...register("favoriteFoods")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    嫌いなもの
+                  </label>
+                  <textarea
+                    {...register("dislikedFoods")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                    rows={2}
+                  />
+                </div>
               </div>
               <div>
                 <label className="flex items-center gap-2 text-sm font-medium">
                   <input
                     type="checkbox"
-                    {...register("hasSeizures")}
+                    {...register("hasAllergy")}
                     className="rounded"
                   />
-                  発作あり
+                  アレルギーあり（要注意）
                 </label>
-              </div>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                疾病状況
-              </label>
-              <textarea
-                {...register("diseaseStatus")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={3}
-              />
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  発作頻度
-                </label>
-                <input
-                  type="text"
-                  {...register("seizureFrequency")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                />
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium">
-                  発作対処方法
+                  アレルギー詳細
                 </label>
-                <input
-                  type="text"
-                  {...register("seizureResponse")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
+                <textarea
+                  {...register("allergyNote")}
+                  className="w-full rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm"
+                  rows={2}
                 />
               </div>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                服薬（朝/昼/夕/就寝前など、1行ずつ）
-              </label>
-              <textarea
-                {...register("medication")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={4}
-                placeholder="1行ずつ入力してください"
-              />
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <label className="flex items-center gap-2 text-sm font-medium">
-                <input
-                  type="checkbox"
-                  {...register("hasPrnMedication")}
-                  className="rounded"
-                />
-                頓服あり
-              </label>
-              <label className="flex items-center gap-2 text-sm font-medium">
-                <input
-                  type="checkbox"
-                  {...register("hasSeasonalMedication")}
-                  className="rounded"
-                />
-                季節薬あり
-              </label>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                健康・服薬の留意点
-              </label>
-              <textarea
-                {...register("healthNote")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={3}
-              />
-            </div>
-
-            {/* Phase 1追加: 発作詳細 */}
-            {watch("hasSeizures") && (
-              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 space-y-3">
-                <h4 className="text-sm font-semibold text-blue-900">発作の詳細情報</h4>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-1 block text-sm font-medium">
-                      起きやすい時間帯
-                    </label>
-                    <input
-                      type="text"
-                      {...register("seizureTimePattern")}
-                      className="w-full rounded-md border px-3 py-2 text-sm"
-                      placeholder="例: 起床時、夜間など"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium">
-                      発作履歴補足
-                    </label>
-                    <input
-                      type="text"
-                      {...register("seizureHistoryNote")}
-                      className="w-full rounded-md border px-3 py-2 text-sm"
-                      placeholder="例: 10年以上なし"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Phase 1追加: 服薬詳細（時間帯別） */}
-            <div className="rounded-lg border border-purple-200 bg-purple-50 p-4 space-y-3">
-              <h4 className="text-sm font-semibold text-purple-900">服薬詳細（時間帯別）</h4>
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">朝食後</label>
-                  <textarea
-                    {...register("medicationMorning")}
+                  <label className="mb-1 block text-sm font-medium">
+                    メニューの選び方
+                  </label>
+                  <input
+                    type="text"
+                    {...register("menuSelectionMethod")}
                     className="w-full rounded-md border px-3 py-2 text-sm"
-                    rows={2}
-                    placeholder="薬の名前と量"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium">昼食後</label>
-                  <textarea
-                    {...register("medicationNoon")}
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                    rows={2}
-                    placeholder="薬の名前と量"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium">夕食後</label>
-                  <textarea
-                    {...register("medicationEvening")}
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                    rows={2}
-                    placeholder="薬の名前と量"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium">就寝前</label>
-                  <textarea
-                    {...register("medicationBedtime")}
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                    rows={2}
-                    placeholder="薬の名前と量"
-                  />
-                </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label className="mb-1 block text-sm font-medium">
-                      時間固定の服薬
-                    </label>
-                    <input
-                      type="text"
-                      {...register("medicationTimeFixed")}
-                      className="w-full rounded-md border px-3 py-2 text-sm"
-                      placeholder="例: 16時"
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium">
-                      時間固定の詳細
-                    </label>
-                    <input
-                      type="text"
-                      {...register("medicationTimeFixedDetail")}
-                      className="w-full rounded-md border px-3 py-2 text-sm"
-                      placeholder="薬の名前"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium">服薬特記</label>
-                  <textarea
-                    {...register("medicationNote")}
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                    rows={2}
-                    placeholder="服薬に関する特記事項"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Phase 1追加: 臨時薬（頓服・季節薬） */}
-            {(watch("hasPrnMedication") || watch("hasSeasonalMedication")) && (
-              <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 space-y-3">
-                <h4 className="text-sm font-semibold text-yellow-900">臨時薬（頓服・季節薬）</h4>
-                <div>
-                  <label className="mb-1 block text-sm font-medium">薬の内容</label>
-                  <textarea
-                    {...register("prnMedicationContent")}
-                    className="w-full rounded-md border px-3 py-2 text-sm"
-                    rows={2}
-                    placeholder="臨時薬の内容"
                   />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium">
-                    どういうときに飲むか
+                    食事形態
                   </label>
                   <input
                     type="text"
-                    {...register("prnMedicationTiming")}
+                    {...register("eatingStyle")}
                     className="w-full rounded-md border px-3 py-2 text-sm"
-                    placeholder="例: 不眠時、発熱時"
+                    placeholder="例: はし/スプーン"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 排泄・移動・コミュニケーション */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">排泄</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    サイン・頻度
+                  </label>
+                  <input
+                    type="text"
+                    {...register("toiletSign")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">メモ</label>
+                  <label className="mb-1 block text-sm font-medium">頻度</label>
                   <input
                     type="text"
-                    {...register("prnMedicationMemo")}
+                    {...register("toiletFrequency")}
                     className="w-full rounded-md border px-3 py-2 text-sm"
-                    placeholder="例: マイスリー"
                   />
                 </div>
-              </div>
-            )}
-
-            {/* Phase 1追加: 塗薬等 */}
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium">
-                <input
-                  type="checkbox"
-                  {...register("hasTopicalMedication")}
-                  className="rounded"
-                />
-                塗薬等あり
-              </label>
-            </div>
-            {watch("hasTopicalMedication") && (
-              <div>
-                <label className="mb-1 block text-sm font-medium">塗薬等の詳細</label>
-                <textarea
-                  {...register("topicalMedicationNote")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  rows={2}
-                  placeholder="塗薬の名前、使用箇所、頻度など"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* 食事 */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">食事</h3>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  好きなもの
-                </label>
-                <textarea
-                  {...register("favoriteFoods")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  rows={2}
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  嫌いなもの
-                </label>
-                <textarea
-                  {...register("dislikedFoods")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  rows={2}
-                />
-              </div>
-            </div>
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium">
-                <input
-                  type="checkbox"
-                  {...register("hasAllergy")}
-                  className="rounded"
-                />
-                アレルギーあり（要注意）
-              </label>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                アレルギー詳細
-              </label>
-              <textarea
-                {...register("allergyNote")}
-                className="w-full rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  メニューの選び方
-                </label>
-                <input
-                  type="text"
-                  {...register("menuSelectionMethod")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  食事形態
-                </label>
-                <input
-                  type="text"
-                  {...register("eatingStyle")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  placeholder="例: はし/スプーン"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* 排泄・移動・コミュニケーション */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">排泄</h3>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  サイン・頻度
-                </label>
-                <input
-                  type="text"
-                  {...register("toiletSign")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">頻度</label>
-                <input
-                  type="text"
-                  {...register("toiletFrequency")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                介助方法
-              </label>
-              <textarea
-                {...register("toiletAssistMethod")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">移動</h3>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">手段</label>
-                <input
-                  type="text"
-                  {...register("mobilityMethod")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                />
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium">
                   介助方法
                 </label>
-                <input
-                  type="text"
-                  {...register("mobilityAssist")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">コミュニケーション</h3>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                会話・発語
-              </label>
-              <textarea
-                {...register("commVerbal")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                ジェスチャー
-              </label>
-              <textarea
-                {...register("commGesture")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  要求の表現
-                </label>
                 <textarea
-                  {...register("commRequest")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  rows={2}
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">
-                  拒否の表現
-                </label>
-                <textarea
-                  {...register("commRefusal")}
+                  {...register("toiletAssistMethod")}
                   className="w-full rounded-md border px-3 py-2 text-sm"
                   rows={2}
                 />
               </div>
             </div>
-          </div>
 
-          {/* こだわり・安全・その他 */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">こだわり等</h3>
-            <label className="flex items-center gap-2 text-sm font-medium">
-              <input
-                type="checkbox"
-                {...register("hasObsession")}
-                className="rounded"
-              />
-              こだわりあり
-            </label>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">状況</label>
-                <textarea
-                  {...register("obsessionSituation")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  rows={2}
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">対応</label>
-                <textarea
-                  {...register("obsessionResponse")}
-                  className="w-full rounded-md border px-3 py-2 text-sm"
-                  rows={2}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">安全・行動</h3>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <label className="flex items-center gap-2 text-sm font-medium">
-                <input
-                  type="checkbox"
-                  {...register("hasSelfHarm")}
-                  className="rounded"
-                />
-                自傷あり
-              </label>
-              <label className="flex items-center gap-2 text-sm font-medium">
-                <input
-                  type="checkbox"
-                  {...register("hasHarmToOthers")}
-                  className="rounded"
-                />
-                他害あり
-              </label>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                安全に関する留意点
-              </label>
-              <textarea
-                {...register("safetyNote")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">その他</h3>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                趣味・好きなこと
-              </label>
-              <textarea
-                {...register("hobbies")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                その他、注意点
-              </label>
-              <textarea
-                {...register("otherNotes")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={3}
-              />
-            </div>
-            <label className="flex items-center gap-2 text-sm font-medium">
-              <input
-                type="checkbox"
-                {...register("hasPastIncidents")}
-                className="rounded"
-              />
-              過去のサポートでのパニック・事故等あり
-            </label>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                過去のインシデント詳細
-              </label>
-              <textarea
-                {...register("pastIncidentsNote")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-          </div>
-
-          {/* Phase 1追加: 感覚過敏・鈍麻 */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">感覚（具体的に）</h3>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                音（好きな音/嫌いな音、特定の音に過敏 等）
-              </label>
-              <textarea
-                {...register("sensorySound")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                光（過敏さ 等）
-              </label>
-              <textarea
-                {...register("sensoryLight")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                味覚（偏食、味の好み、飲み込み 等）
-              </label>
-              <textarea
-                {...register("sensoryTaste")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                触覚（衣服の材質/タグ等へのこだわり、触れ方 等）
-              </label>
-              <textarea
-                {...register("sensoryTouch")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                におい（食事の好み、臭いに敏感 等）
-              </label>
-              <textarea
-                {...register("sensorySmell")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">その他</label>
-              <textarea
-                {...register("sensoryOther")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-          </div>
-
-          {/* Phase 1追加: こだわり【あれば記入】 */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">こだわり【あれば記入】</h3>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                過去、こだわっていたこと
-              </label>
-              <textarea
-                {...register("obsessionPast")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={3}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                現在、こだわっていること
-              </label>
-              <textarea
-                {...register("obsessionCurrent")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={3}
-              />
-            </div>
-          </div>
-
-          {/* Phase 1追加: 自傷・他害・パニック【あれば記入】 */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">自傷・他害・パニック【あれば記入】</h3>
-            <div>
-              <label className="mb-1 block text-sm font-medium">自傷（内容）</label>
-              <textarea
-                {...register("selfHarmContent")}
-                className="w-full rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">他害（内容）</label>
-              <textarea
-                {...register("aggressionContent")}
-                className="w-full rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">パニック（内容）</label>
-              <textarea
-                {...register("panicContent")}
-                className="w-full rounded-md border border-yellow-300 bg-yellow-50 px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-          </div>
-
-          {/* Phase 1追加: 趣味・関心・余暇・嗜好【あれば記入】 */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">趣味・関心・余暇・嗜好【あれば記入】</h3>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                1. 外出（好きな外出先・嫌いな外出先 等）
-              </label>
-              <textarea
-                {...register("hobbyOuting")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                2. TV（好きな番組・嫌いな番組）
-              </label>
-              <textarea
-                {...register("hobbyTv")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                3. 音楽（好きな曲・嫌いな曲）
-              </label>
-              <textarea
-                {...register("hobbyMusic")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                4. 本・雑誌（好きな本・嫌いな本）
-              </label>
-              <textarea
-                {...register("hobbyBook")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                5. 対人関係・遊び（2人以上で楽しめる遊び 等）
-              </label>
-              <textarea
-                {...register("hobbyInterpersonal")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                6. 趣味の範囲（特定なものへの関心 等）
-              </label>
-              <textarea
-                {...register("hobbyInterestScope")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                7. 嗜好物等（好きな食べ物・嫌いな食べ物 等）
-              </label>
-              <textarea
-                {...register("hobbyFoodPreference")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                8. その他（その他の遊び、余暇活動）
-              </label>
-              <textarea
-                {...register("hobbyOther")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-          </div>
-
-          {/* Phase 1追加: 人柄 */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">人柄</h3>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                人柄（自由記述）
-              </label>
-              <textarea
-                {...register("personality")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={4}
-              />
-            </div>
-          </div>
-
-          {/* Phase 1追加: 社会性・対人行動 */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">社会性・対人行動</h3>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                人との関係の取り方
-              </label>
-              <textarea
-                {...register("socialRelationship")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={3}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                社会的なルールの理解
-              </label>
-              <textarea
-                {...register("socialRules")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={3}
-              />
-            </div>
-          </div>
-
-          {/* Phase 1追加: 表現のコミュニケーション */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">表現のコミュニケーション</h3>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                表現手段（複数選択可）
-              </label>
-              <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
-                {[
-                  { value: "word", label: "ことば（単語）" },
-                  { value: "sentence", label: "ことば（二語文以上）" },
-                  { value: "text_word", label: "文字（単語）" },
-                  { value: "text_sentence", label: "文字（二語文以上）" },
-                  { value: "sign", label: "サイン言語" },
-                  { value: "gesture", label: "ジェスチャー" },
-                  { value: "picture", label: "絵・写真" },
-                  { value: "object", label: "物を使う" },
-                  { value: "direct", label: "直接動作" },
-                  { value: "voice", label: "発声" },
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      value={option.value}
-                      {...register("commExpressionMethods")}
-                      className="rounded"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                自発的に表現する内容
-              </label>
-              <textarea
-                {...register("commExpressionContent")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={3}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">その他</label>
-              <textarea
-                {...register("commExpressionOther")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-          </div>
-
-          {/* Phase 1追加: 理解のコミュニケーション */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">理解のコミュニケーション</h3>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                効果的な指示・伝え方（複数選択可）
-              </label>
-              <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
-                {[
-                  { value: "verbal_word", label: "言語指示（単語）" },
-                  { value: "verbal_sentence", label: "言語指示（二語文以上）" },
-                  { value: "text_hiragana", label: "文字（ひらがな）" },
-                  { value: "text_kanji", label: "文字（漢字）" },
-                  { value: "text_simple", label: "簡単な文" },
-                  { value: "gesture", label: "ジェスチャー" },
-                  { value: "picture", label: "絵・写真" },
-                  { value: "object", label: "物の提示" },
-                  { value: "model", label: "見本の提示" },
-                  { value: "hand_over_hand", label: "手添え" },
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      value={option.value}
-                      {...register("commUnderstandMethods")}
-                      className="rounded"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">
-                認知レベル（わかるもの）（複数選択可）
-              </label>
-              <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
-                {[
-                  { value: "object_distinction", label: "物の区別" },
-                  { value: "object_name", label: "物の名称" },
-                  { value: "shape_color_distinction", label: "形・色の区別" },
-                  { value: "shape_color_name", label: "形・色の名称" },
-                  { value: "hiragana", label: "ひらがなが読める" },
-                  { value: "shape_color_matching", label: "形・色のマッチング" },
-                  { value: "simple_word", label: "簡単な単語が読める" },
-                  { value: "simple_sentence", label: "簡単な文が読める" },
-                  { value: "money_distinction", label: "お金の区別" },
-                  { value: "money_size", label: "金銭の大小" },
-                  { value: "counting", label: "数える" },
-                  { value: "clock", label: "時計が読める" },
-                  { value: "math", label: "足し算・引き算" },
-                  { value: "traffic_sign", label: "交通標識の意味" },
-                  { value: "signal", label: "信号の意味" },
-                  { value: "game_rules", label: "卓上ゲームのルール" },
-                  { value: "danger", label: "危険の認識" },
-                ].map((option) => (
-                  <label key={option.value} className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      value={option.value}
-                      {...register("commCognitionLevels")}
-                      className="rounded"
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">その他（理解・指示）</label>
-              <textarea
-                {...register("commUnderstandOther")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">その他（認知レベル）</label>
-              <textarea
-                {...register("commCognitionOther")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={2}
-              />
-            </div>
-          </div>
-
-          {/* Phase 1追加: 身辺自立【特に支援を要すること】 */}
-          <div className="space-y-3 border-t pt-4">
-            <h3 className="text-base font-semibold">身辺自立【特に支援を要すること】</h3>
-            <div className="space-y-3">
-              {[
-                { levelField: "adlEating3Level", supportField: "adlEatingSupport", label: "1. 食事" },
-                { levelField: "adlToiletSmall3Level", supportField: "adlToiletSmallSupport", label: "2. トイレ小" },
-                { levelField: "adlToiletLarge3Level", supportField: "adlToiletLargeSupport", label: "3. トイレ大" },
-                { levelField: "adlBathing3Level", supportField: "adlBathingSupport", label: "4. 入浴" },
-                { levelField: "adlDressing3Level", supportField: "adlDressingSupport", label: "5. 着替え" },
-              ].map((item) => (
-                <div key={item.levelField} className="rounded-lg border p-3">
-                  <label className="mb-2 block text-sm font-medium">{item.label}</label>
-                  <div className="mb-2 flex gap-4">
-                    {["自立", "ある程度できる", "できない"].map((level) => (
-                      <label key={level} className="flex items-center gap-2 text-sm">
-                        <input
-                          type="radio"
-                          value={level}
-                          {...register(item.levelField as any)}
-                        />
-                        {level}
-                      </label>
-                    ))}
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs text-gray-600">支援メモ</label>
-                    <textarea
-                      {...register(item.supportField as any)}
-                      className="w-full rounded-md border px-3 py-2 text-sm"
-                      rows={2}
-                      placeholder="支援が必要な点を記入"
-                    />
-                  </div>
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">移動</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium">手段</label>
+                  <input
+                    type="text"
+                    {...register("mobilityMethod")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                  />
                 </div>
-              ))}
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    介助方法
+                  </label>
+                  <input
+                    type="text"
+                    {...register("mobilityAssist")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">その他（自由記述）</label>
-              <textarea
-                {...register("adlOther3Level")}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                rows={3}
-              />
+
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">コミュニケーション</h3>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  会話・発語
+                </label>
+                <textarea
+                  {...register("commVerbal")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  ジェスチャー
+                </label>
+                <textarea
+                  {...register("commGesture")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    要求の表現
+                  </label>
+                  <textarea
+                    {...register("commRequest")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    拒否の表現
+                  </label>
+                  <textarea
+                    {...register("commRefusal")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                    rows={2}
+                  />
+                </div>
+              </div>
             </div>
-          </div>
+
+            {/* こだわり・安全・その他 */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">こだわり等</h3>
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <input
+                  type="checkbox"
+                  {...register("hasObsession")}
+                  className="rounded"
+                />
+                こだわりあり
+              </label>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-sm font-medium">状況</label>
+                  <textarea
+                    {...register("obsessionSituation")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">対応</label>
+                  <textarea
+                    {...register("obsessionResponse")}
+                    className="w-full rounded-md border px-3 py-2 text-sm"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">安全・行動</h3>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    {...register("hasSelfHarm")}
+                    className="rounded"
+                  />
+                  自傷あり
+                </label>
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    {...register("hasHarmToOthers")}
+                    className="rounded"
+                  />
+                  他害あり
+                </label>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  安全に関する留意点
+                </label>
+                <textarea
+                  {...register("safetyNote")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">その他</h3>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  趣味・好きなこと
+                </label>
+                <textarea
+                  {...register("hobbies")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  その他、注意点
+                </label>
+                <textarea
+                  {...register("otherNotes")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={3}
+                />
+              </div>
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <input
+                  type="checkbox"
+                  {...register("hasPastIncidents")}
+                  className="rounded"
+                />
+                過去のサポートでのパニック・事故等あり
+              </label>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  過去のインシデント詳細
+                </label>
+                <textarea
+                  {...register("pastIncidentsNote")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            {/* Phase 1追加: 感覚過敏・鈍麻 */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">感覚（具体的に）</h3>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  音（好きな音/嫌いな音、特定の音に過敏 等）
+                </label>
+                <textarea
+                  {...register("sensorySound")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  光（過敏さ 等）
+                </label>
+                <textarea
+                  {...register("sensoryLight")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  味覚（偏食、味の好み、飲み込み 等）
+                </label>
+                <textarea
+                  {...register("sensoryTaste")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  触覚（衣服の材質/タグ等へのこだわり、触れ方 等）
+                </label>
+                <textarea
+                  {...register("sensoryTouch")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  におい（食事の好み、臭いに敏感 等）
+                </label>
+                <textarea
+                  {...register("sensorySmell")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">その他</label>
+                <textarea
+                  {...register("sensoryOther")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            {/* Phase 1追加: こだわり【あれば記入】 */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">
+                こだわり【あれば記入】
+              </h3>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  過去、こだわっていたこと
+                </label>
+                <textarea
+                  {...register("obsessionPast")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  現在、こだわっていること
+                </label>
+                <textarea
+                  {...register("obsessionCurrent")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            {/* Phase 1追加: 自傷・他害・パニック【あれば記入】 */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">
+                自傷・他害・パニック【あれば記入】
+              </h3>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  自傷（内容）
+                </label>
+                <textarea
+                  {...register("selfHarmContent")}
+                  className="w-full rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  他害（内容）
+                </label>
+                <textarea
+                  {...register("aggressionContent")}
+                  className="w-full rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  パニック（内容）
+                </label>
+                <textarea
+                  {...register("panicContent")}
+                  className="w-full rounded-md border border-yellow-300 bg-yellow-50 px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            {/* Phase 1追加: 趣味・関心・余暇・嗜好【あれば記入】 */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">
+                趣味・関心・余暇・嗜好【あれば記入】
+              </h3>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  1. 外出（好きな外出先・嫌いな外出先 等）
+                </label>
+                <textarea
+                  {...register("hobbyOuting")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  2. TV（好きな番組・嫌いな番組）
+                </label>
+                <textarea
+                  {...register("hobbyTv")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  3. 音楽（好きな曲・嫌いな曲）
+                </label>
+                <textarea
+                  {...register("hobbyMusic")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  4. 本・雑誌（好きな本・嫌いな本）
+                </label>
+                <textarea
+                  {...register("hobbyBook")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  5. 対人関係・遊び（2人以上で楽しめる遊び 等）
+                </label>
+                <textarea
+                  {...register("hobbyInterpersonal")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  6. 趣味の範囲（特定なものへの関心 等）
+                </label>
+                <textarea
+                  {...register("hobbyInterestScope")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  7. 嗜好物等（好きな食べ物・嫌いな食べ物 等）
+                </label>
+                <textarea
+                  {...register("hobbyFoodPreference")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  8. その他（その他の遊び、余暇活動）
+                </label>
+                <textarea
+                  {...register("hobbyOther")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            {/* Phase 1追加: 人柄 */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">人柄</h3>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  人柄（自由記述）
+                </label>
+                <textarea
+                  {...register("personality")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            {/* Phase 1追加: 社会性・対人行動 */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">社会性・対人行動</h3>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  人との関係の取り方
+                </label>
+                <textarea
+                  {...register("socialRelationship")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  社会的なルールの理解
+                </label>
+                <textarea
+                  {...register("socialRules")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            {/* Phase 1追加: 表現のコミュニケーション */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">
+                表現のコミュニケーション
+              </h3>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  表現手段（複数選択可）
+                </label>
+                <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                  {[
+                    { value: "word", label: "ことば（単語）" },
+                    { value: "sentence", label: "ことば（二語文以上）" },
+                    { value: "text_word", label: "文字（単語）" },
+                    { value: "text_sentence", label: "文字（二語文以上）" },
+                    { value: "sign", label: "サイン言語" },
+                    { value: "gesture", label: "ジェスチャー" },
+                    { value: "picture", label: "絵・写真" },
+                    { value: "object", label: "物を使う" },
+                    { value: "direct", label: "直接動作" },
+                    { value: "voice", label: "発声" },
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        value={option.value}
+                        {...register("commExpressionMethods")}
+                        className="rounded"
+                      />
+                      {option.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  自発的に表現する内容
+                </label>
+                <textarea
+                  {...register("commExpressionContent")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">その他</label>
+                <textarea
+                  {...register("commExpressionOther")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            {/* Phase 1追加: 理解のコミュニケーション */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">
+                理解のコミュニケーション
+              </h3>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  効果的な指示・伝え方（複数選択可）
+                </label>
+                <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                  {[
+                    { value: "verbal_word", label: "言語指示（単語）" },
+                    {
+                      value: "verbal_sentence",
+                      label: "言語指示（二語文以上）",
+                    },
+                    { value: "text_hiragana", label: "文字（ひらがな）" },
+                    { value: "text_kanji", label: "文字（漢字）" },
+                    { value: "text_simple", label: "簡単な文" },
+                    { value: "gesture", label: "ジェスチャー" },
+                    { value: "picture", label: "絵・写真" },
+                    { value: "object", label: "物の提示" },
+                    { value: "model", label: "見本の提示" },
+                    { value: "hand_over_hand", label: "手添え" },
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        value={option.value}
+                        {...register("commUnderstandMethods")}
+                        className="rounded"
+                      />
+                      {option.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  認知レベル（わかるもの）（複数選択可）
+                </label>
+                <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+                  {[
+                    { value: "object_distinction", label: "物の区別" },
+                    { value: "object_name", label: "物の名称" },
+                    { value: "shape_color_distinction", label: "形・色の区別" },
+                    { value: "shape_color_name", label: "形・色の名称" },
+                    { value: "hiragana", label: "ひらがなが読める" },
+                    {
+                      value: "shape_color_matching",
+                      label: "形・色のマッチング",
+                    },
+                    { value: "simple_word", label: "簡単な単語が読める" },
+                    { value: "simple_sentence", label: "簡単な文が読める" },
+                    { value: "money_distinction", label: "お金の区別" },
+                    { value: "money_size", label: "金銭の大小" },
+                    { value: "counting", label: "数える" },
+                    { value: "clock", label: "時計が読める" },
+                    { value: "math", label: "足し算・引き算" },
+                    { value: "traffic_sign", label: "交通標識の意味" },
+                    { value: "signal", label: "信号の意味" },
+                    { value: "game_rules", label: "卓上ゲームのルール" },
+                    { value: "danger", label: "危険の認識" },
+                  ].map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        value={option.value}
+                        {...register("commCognitionLevels")}
+                        className="rounded"
+                      />
+                      {option.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  その他（理解・指示）
+                </label>
+                <textarea
+                  {...register("commUnderstandOther")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  その他（認知レベル）
+                </label>
+                <textarea
+                  {...register("commCognitionOther")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            {/* Phase 1追加: 身辺自立【特に支援を要すること】 */}
+            <div className="space-y-3 border-t pt-4">
+              <h3 className="text-base font-semibold">
+                身辺自立【特に支援を要すること】
+              </h3>
+              <div className="space-y-3">
+                {[
+                  {
+                    levelField: "adlEating3Level",
+                    supportField: "adlEatingSupport",
+                    label: "1. 食事",
+                  },
+                  {
+                    levelField: "adlToiletSmall3Level",
+                    supportField: "adlToiletSmallSupport",
+                    label: "2. トイレ小",
+                  },
+                  {
+                    levelField: "adlToiletLarge3Level",
+                    supportField: "adlToiletLargeSupport",
+                    label: "3. トイレ大",
+                  },
+                  {
+                    levelField: "adlBathing3Level",
+                    supportField: "adlBathingSupport",
+                    label: "4. 入浴",
+                  },
+                  {
+                    levelField: "adlDressing3Level",
+                    supportField: "adlDressingSupport",
+                    label: "5. 着替え",
+                  },
+                ].map((item) => (
+                  <div key={item.levelField} className="rounded-lg border p-3">
+                    <label className="mb-2 block text-sm font-medium">
+                      {item.label}
+                    </label>
+                    <div className="mb-2 flex gap-4">
+                      {["自立", "ある程度できる", "できない"].map((level) => (
+                        <label
+                          key={level}
+                          className="flex items-center gap-2 text-sm"
+                        >
+                          <input
+                            type="radio"
+                            value={level}
+                            {...register(item.levelField as any)}
+                          />
+                          {level}
+                        </label>
+                      ))}
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs text-gray-600">
+                        支援メモ
+                      </label>
+                      <textarea
+                        {...register(item.supportField as any)}
+                        className="w-full rounded-md border px-3 py-2 text-sm"
+                        rows={2}
+                        placeholder="支援が必要な点を記入"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  その他（自由記述）
+                </label>
+                <textarea
+                  {...register("adlOther3Level")}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                  rows={3}
+                />
+              </div>
+            </div>
           </div>
         </CollapsibleSection>
 

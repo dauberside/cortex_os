@@ -5,9 +5,21 @@ import { useParams, useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft, ChevronDown, ChevronUp, AlertTriangle, Save, Download, Trash2, Pencil } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronDown,
+  ChevronUp,
+  AlertTriangle,
+  Save,
+  Download,
+  Trash2,
+  Pencil,
+} from "lucide-react";
 import { TimeSlotRecordTable } from "@/components/dailyLog/TimeSlotRecordTable";
-import { TimeSlotRecord, initializeTimeSlotRecordsFromShift } from "@/types/dailyLog";
+import {
+  TimeSlotRecord,
+  initializeTimeSlotRecordsFromShift,
+} from "@/types/dailyLog";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useSession } from "next-auth/react";
 
@@ -24,10 +36,9 @@ const TIMING_LABELS: Record<string, string> = {
   Bedtime: "就寝前",
 };
 
-
 type ToiletRecord = {
-  time: string;   // HH:MM
-  type: string;   // Urine/Feces/Enema/Catheter
+  time: string; // HH:MM
+  type: string; // Urine/Feces/Enema/Catheter
   note: string;
 };
 
@@ -44,7 +55,12 @@ function RecipientEntryForm({
     id: string;
     name: string;
     nameKana?: string | null;
-    medicationSchedules: { id: string; timing: string; medicationName: string; notes?: string | null }[];
+    medicationSchedules: {
+      id: string;
+      timing: string;
+      medicationName: string;
+      notes?: string | null;
+    }[];
     assessment?: {
       toiletCareTypes: string[];
       toiletInterval: string | null;
@@ -63,7 +79,9 @@ function RecipientEntryForm({
   const entry = existingEntry || {};
 
   // A. 状態
-  const [temperature, setTemperature] = useState<string>(entry.temperature?.toString() ?? "");
+  const [temperature, setTemperature] = useState<string>(
+    entry.temperature?.toString() ?? ""
+  );
   const [bloodPressure, setBloodPressure] = useState(entry.bloodPressure ?? "");
   const [spo2, setSpo2] = useState<string>(entry.spo2?.toString() ?? "");
   const [weight, setWeight] = useState<string>(entry.weight?.toString() ?? "");
@@ -72,8 +90,10 @@ function RecipientEntryForm({
   const [nightWaking, setNightWaking] = useState(entry.nightWaking ?? "");
 
   // B. 生活支援
-  const [dinnerAmount, setDinnerAmount] = useState(entry.mealAmount ?? "");       // 夕食
-  const [breakfastAmount, setBreakfastAmount] = useState(entry.mealTexture ?? ""); // 朝食（mealTextureを流用）
+  const [dinnerAmount, setDinnerAmount] = useState(entry.mealAmount ?? ""); // 夕食
+  const [breakfastAmount, setBreakfastAmount] = useState(
+    entry.mealTexture ?? ""
+  ); // 朝食（mealTextureを流用）
   const [waterIntake, setWaterIntake] = useState(entry.waterIntake ?? "");
   const [bathDone, setBathDone] = useState(entry.bathDone ?? false);
   const [bathRefusal, setBathRefusal] = useState(entry.bathRefusal ?? "");
@@ -100,12 +120,14 @@ function RecipientEntryForm({
   });
 
   // H. 時間帯別記録
-  const [timeSlotRecords, setTimeSlotRecords] = useState<TimeSlotRecord[]>(() => {
-    if (entry.timeSlotRecords && Array.isArray(entry.timeSlotRecords)) {
-      return entry.timeSlotRecords as TimeSlotRecord[];
+  const [timeSlotRecords, setTimeSlotRecords] = useState<TimeSlotRecord[]>(
+    () => {
+      if (entry.timeSlotRecords && Array.isArray(entry.timeSlotRecords)) {
+        return entry.timeSlotRecords as TimeSlotRecord[];
+      }
+      return initializeTimeSlotRecordsFromShift(shiftStart, shiftEnd);
     }
-    return initializeTimeSlotRecordsFromShift(shiftStart, shiftEnd);
-  });
+  );
 
   // 自動保存: 時間帯別記録が変更されたら3秒後に自動保存
   const debouncedTimeSlotRecords = useDebounce(timeSlotRecords, 3000);
@@ -115,8 +137,12 @@ function RecipientEntryForm({
     if (!existingEntry) return;
 
     // 時間帯別記録が変更された場合のみ保存
-    const initialRecords = existingEntry.timeSlotRecords || initializeTimeSlotRecordsFromShift(shiftStart, shiftEnd);
-    const hasChanges = JSON.stringify(debouncedTimeSlotRecords) !== JSON.stringify(initialRecords);
+    const initialRecords =
+      existingEntry.timeSlotRecords ||
+      initializeTimeSlotRecordsFromShift(shiftStart, shiftEnd);
+    const hasChanges =
+      JSON.stringify(debouncedTimeSlotRecords) !==
+      JSON.stringify(initialRecords);
 
     if (hasChanges) {
       upsertMutation.mutate({
@@ -133,11 +159,20 @@ function RecipientEntryForm({
     const hh = String(now.getHours()).padStart(2, "0");
     const mm = String(now.getMinutes()).padStart(2, "0");
     const defaultType = recipient.assessment?.toiletCareTypes?.[0] ?? "Toilet";
-    setToiletRecords((prev) => [...prev, { time: `${hh}:${mm}`, type: defaultType, note: "" }]);
+    setToiletRecords((prev) => [
+      ...prev,
+      { time: `${hh}:${mm}`, type: defaultType, note: "" },
+    ]);
   };
 
-  const updateToiletRecord = (index: number, field: keyof ToiletRecord, value: string) => {
-    setToiletRecords((prev) => prev.map((r, i) => i === index ? { ...r, [field]: value } : r));
+  const updateToiletRecord = (
+    index: number,
+    field: keyof ToiletRecord,
+    value: string
+  ) => {
+    setToiletRecords((prev) =>
+      prev.map((r, i) => (i === index ? { ...r, [field]: value } : r))
+    );
   };
 
   const removeToiletRecord = (index: number) => {
@@ -170,14 +205,15 @@ function RecipientEntryForm({
       vitalAlert,
       behaviorNote: behaviorNote || undefined,
       nightWaking: nightWaking || undefined,
-      mealAmount: dinnerAmount || undefined,       // 夕食
-      mealTexture: breakfastAmount || undefined,   // 朝食（mealTextureを流用）
+      mealAmount: dinnerAmount || undefined, // 夕食
+      mealTexture: breakfastAmount || undefined, // 朝食（mealTextureを流用）
       waterIntake: waterIntake || undefined,
       bathDone,
       bathRefusal: bathRefusal || undefined,
       oralCareDone,
       dressingDone,
-      medicationChecks: medicationChecks.length > 0 ? medicationChecks : undefined,
+      medicationChecks:
+        medicationChecks.length > 0 ? medicationChecks : undefined,
       toiletRecords: toiletRecords.length > 0 ? toiletRecords : undefined,
       timeSlotRecords: timeSlotRecords.length > 0 ? timeSlotRecords : undefined,
       notes: notes || undefined,
@@ -196,7 +232,9 @@ function RecipientEntryForm({
         <div className="flex items-center gap-2">
           <span className="font-semibold">{recipient.name}</span>
           {recipient.nameKana && (
-            <span className="text-muted-foreground text-sm">({recipient.nameKana})</span>
+            <span className="text-muted-foreground text-sm">
+              ({recipient.nameKana})
+            </span>
           )}
           {hasData && (
             <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800">
@@ -210,7 +248,11 @@ function RecipientEntryForm({
             </span>
           )}
         </div>
-        {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        {open ? (
+          <ChevronUp className="h-4 w-4" />
+        ) : (
+          <ChevronDown className="h-4 w-4" />
+        )}
       </button>
 
       {open && (
@@ -221,7 +263,9 @@ function RecipientEntryForm({
               <h3 className="mb-3 font-medium">A. バイタル・状態</h3>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
                 <div>
-                  <label className="mb-1 block text-xs font-medium">体温 (℃)</label>
+                  <label className="mb-1 block text-xs font-medium">
+                    体温 (℃)
+                  </label>
                   <input
                     type="number"
                     step="0.1"
@@ -242,7 +286,9 @@ function RecipientEntryForm({
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium">SpO2 (%)</label>
+                  <label className="mb-1 block text-xs font-medium">
+                    SpO2 (%)
+                  </label>
                   <input
                     type="number"
                     value={spo2}
@@ -252,7 +298,9 @@ function RecipientEntryForm({
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium">体重 (kg)</label>
+                  <label className="mb-1 block text-xs font-medium">
+                    体重 (kg)
+                  </label>
                   <input
                     type="number"
                     step="0.1"
@@ -276,7 +324,9 @@ function RecipientEntryForm({
               </div>
               <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-xs font-medium">夜間覚醒の原因</label>
+                  <label className="mb-1 block text-xs font-medium">
+                    夜間覚醒の原因
+                  </label>
                   <input
                     type="text"
                     value={nightWaking}
@@ -286,7 +336,9 @@ function RecipientEntryForm({
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium">行動・心理状態</label>
+                  <label className="mb-1 block text-xs font-medium">
+                    行動・心理状態
+                  </label>
                   <input
                     type="text"
                     value={behaviorNote}
@@ -337,7 +389,9 @@ function RecipientEntryForm({
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium">水分摂取</label>
+                  <label className="mb-1 block text-xs font-medium">
+                    水分摂取
+                  </label>
                   <select
                     value={waterIntake}
                     onChange={(e) => setWaterIntake(e.target.value)}
@@ -380,7 +434,9 @@ function RecipientEntryForm({
                 </div>
                 {!bathDone && (
                   <div>
-                    <label className="mb-1 block text-xs font-medium">入浴拒否の理由</label>
+                    <label className="mb-1 block text-xs font-medium">
+                      入浴拒否の理由
+                    </label>
                     <input
                       type="text"
                       value={bathRefusal}
@@ -416,27 +472,44 @@ function RecipientEntryForm({
                 ) : (
                   <div className="space-y-2">
                     {toiletRecords.map((rec, i) => (
-                      <div key={i} className="grid grid-cols-[80px_1fr_1fr_auto] gap-2 items-center">
+                      <div
+                        key={i}
+                        className="grid grid-cols-[80px_1fr_1fr_auto] items-center gap-2"
+                      >
                         <input
                           type="time"
                           value={rec.time}
-                          onChange={(e) => updateToiletRecord(i, "time", e.target.value)}
+                          onChange={(e) =>
+                            updateToiletRecord(i, "time", e.target.value)
+                          }
                           className="rounded-md border px-2 py-1 text-sm"
                         />
                         <select
                           value={rec.type}
-                          onChange={(e) => updateToiletRecord(i, "type", e.target.value)}
+                          onChange={(e) =>
+                            updateToiletRecord(i, "type", e.target.value)
+                          }
                           className="rounded-md border px-2 py-1 text-sm"
                         >
-                          {recipient.assessment?.toiletCareTypes?.includes("Toilet") && <option value="Toilet">トイレ</option>}
-                          {recipient.assessment?.toiletCareTypes?.includes("Diaper") && <option value="Diaper">オムツ</option>}
-                          {recipient.assessment?.toiletCareTypes?.includes("Enema") && <option value="Enema">浣腸</option>}
-                          {recipient.assessment?.toiletCareTypes?.includes("Catheter") && <option value="Catheter">導尿</option>}
+                          {recipient.assessment?.toiletCareTypes?.includes(
+                            "Toilet"
+                          ) && <option value="Toilet">トイレ</option>}
+                          {recipient.assessment?.toiletCareTypes?.includes(
+                            "Diaper"
+                          ) && <option value="Diaper">オムツ</option>}
+                          {recipient.assessment?.toiletCareTypes?.includes(
+                            "Enema"
+                          ) && <option value="Enema">浣腸</option>}
+                          {recipient.assessment?.toiletCareTypes?.includes(
+                            "Catheter"
+                          ) && <option value="Catheter">導尿</option>}
                         </select>
                         <input
                           type="text"
                           value={rec.note}
-                          onChange={(e) => updateToiletRecord(i, "note", e.target.value)}
+                          onChange={(e) =>
+                            updateToiletRecord(i, "note", e.target.value)
+                          }
                           placeholder="性状・量・特記"
                           className="rounded-md border px-2 py-1 text-sm"
                         />
@@ -468,7 +541,10 @@ function RecipientEntryForm({
                         type="checkbox"
                         checked={medChecks[s.id] ?? false}
                         onChange={(e) =>
-                          setMedChecks((prev) => ({ ...prev, [s.id]: e.target.checked }))
+                          setMedChecks((prev) => ({
+                            ...prev,
+                            [s.id]: e.target.checked,
+                          }))
                         }
                         className="h-4 w-4"
                       />
@@ -477,7 +553,9 @@ function RecipientEntryForm({
                       </span>
                       <span>{s.medicationName}</span>
                       {s.notes && (
-                        <span className="text-muted-foreground text-xs">{s.notes}</span>
+                        <span className="text-muted-foreground text-xs">
+                          {s.notes}
+                        </span>
                       )}
                     </label>
                   ))}
@@ -498,7 +576,9 @@ function RecipientEntryForm({
 
             {/* G. 特記事項 */}
             <div>
-              <label className="mb-1 block text-sm font-medium">特記事項・気づき</label>
+              <label className="mb-1 block text-sm font-medium">
+                特記事項・気づき
+              </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -516,7 +596,11 @@ function RecipientEntryForm({
                 className={saved ? "bg-green-600 hover:bg-green-700" : ""}
               >
                 <Save className="mr-2 h-4 w-4" />
-                {upsertMutation.isPending ? "保存中..." : saved ? "保存しました" : "保存"}
+                {upsertMutation.isPending
+                  ? "保存中..."
+                  : saved
+                    ? "保存しました"
+                    : "保存"}
               </Button>
             </div>
           </div>
@@ -544,26 +628,51 @@ function escCsv(v: string | number | boolean | null | undefined): string {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportLogCsv(log: any) {
-  const dateStr = new Date(log.logDate).toLocaleDateString("ja-JP", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).replace(/\//g, "-");
-  const shiftLabel: Record<string, string> = { Day: "日勤", Late: "遅番", Night: "夜勤" };
+  const dateStr = new Date(log.logDate)
+    .toLocaleDateString("ja-JP", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    .replace(/\//g, "-");
+  const shiftLabel: Record<string, string> = {
+    Day: "日勤",
+    Late: "遅番",
+    Night: "夜勤",
+  };
 
   const headers = [
-    "氏名", "体温(℃)", "血圧", "SpO2(%)", "体重(kg)", "異常値",
-    "夕食", "朝食", "水分摂取", "入浴", "口腔ケア", "更衣", "入浴拒否理由",
-    "夜間覚醒", "行動・心理状態", "服薬確認", "特記事項",
+    "氏名",
+    "体温(℃)",
+    "血圧",
+    "SpO2(%)",
+    "体重(kg)",
+    "異常値",
+    "夕食",
+    "朝食",
+    "水分摂取",
+    "入浴",
+    "口腔ケア",
+    "更衣",
+    "入浴拒否理由",
+    "夜間覚醒",
+    "行動・心理状態",
+    "服薬確認",
+    "特記事項",
   ];
 
   const rows = log.entries.map((entry) => {
     const e = entry as any;
-    const medChecks: { scheduleId: string; done: boolean }[] = e.medicationChecks ?? [];
+    const medChecks: { scheduleId: string; done: boolean }[] =
+      e.medicationChecks ?? [];
     const medSummary = entry.recipient.medicationSchedules
-      .sort((a, b) => TIMING_ORDER.indexOf(a.timing) - TIMING_ORDER.indexOf(b.timing))
+      .sort(
+        (a, b) =>
+          TIMING_ORDER.indexOf(a.timing) - TIMING_ORDER.indexOf(b.timing)
+      )
       .map((s) => {
-        const done = medChecks.find((c) => c.scheduleId === s.id)?.done ?? false;
+        const done =
+          medChecks.find((c) => c.scheduleId === s.id)?.done ?? false;
         return `${TIMING_LABELS[s.timing] || s.timing}:${s.medicationName}:${done ? "済" : "未"}`;
       })
       .join(" / ");
@@ -586,7 +695,9 @@ function exportLogCsv(log: any) {
       e.behaviorNote ?? "",
       medSummary,
       e.notes ?? "",
-    ].map(escCsv).join(",");
+    ]
+      .map(escCsv)
+      .join(",");
   });
 
   const metaLines = [
@@ -596,7 +707,12 @@ function exportLogCsv(log: any) {
     "",
   ];
 
-  const csv = "\uFEFF" + metaLines.join("\n") + headers.join(",") + "\n" + rows.join("\n");
+  const csv =
+    "\uFEFF" +
+    metaLines.join("\n") +
+    headers.join(",") +
+    "\n" +
+    rows.join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -675,7 +791,9 @@ export default function LogDetailPage() {
 
   if (!log) return <div className="p-8">業務日誌が見つかりません</div>;
 
-  const entryMap = new Map<string, (typeof log.entries)[number]>(log.entries.map((e) => [e.recipientId, e]));
+  const entryMap = new Map<string, (typeof log.entries)[number]>(
+    log.entries.map((e) => [e.recipientId, e])
+  );
 
   // ユニットの利用者を取得（この日誌に紐づく利用者 or 全利用者）
   const unitRecipients = log.entries.map((e) => e.recipient);
@@ -705,13 +823,23 @@ export default function LogDetailPage() {
             })}
           </h1>
           <div className="flex shrink-0 flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => exportLogCsv(log)} className="flex-1 sm:flex-none">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportLogCsv(log)}
+              className="flex-1 sm:flex-none"
+            >
               <Download className="mr-1.5 h-4 w-4" />
               <span className="hidden sm:inline">CSV出力</span>
               <span className="sm:hidden">CSV</span>
             </Button>
             {!editMode && (
-              <Button variant="outline" size="sm" onClick={openEdit} className="flex-1 sm:flex-none">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openEdit}
+                className="flex-1 sm:flex-none"
+              >
                 <Pencil className="mr-1.5 h-4 w-4" />
                 編集
               </Button>
@@ -727,12 +855,21 @@ export default function LogDetailPage() {
                 >
                   削除
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setDeleteConfirm(false)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setDeleteConfirm(false)}
+                >
                   キャンセル
                 </Button>
               </div>
             ) : (
-              <Button variant="outline" size="sm" onClick={() => setDeleteConfirm(true)} className="flex-1 sm:flex-none">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setDeleteConfirm(true)}
+                className="flex-1 sm:flex-none"
+              >
                 <Trash2 className="mr-1.5 h-4 w-4" />
                 削除
               </Button>
@@ -747,9 +884,15 @@ export default function LogDetailPage() {
               {SHIFT_LABELS[log.shift] || log.shift}
             </span>
             <span>
-              {new Date(log.shiftStart).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}
+              {new Date(log.shiftStart).toLocaleTimeString("ja-JP", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
               〜
-              {new Date(log.shiftEnd).toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" })}
+              {new Date(log.shiftEnd).toLocaleTimeString("ja-JP", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </span>
             <span>担当: {log.staff.name || log.staff.email}</span>
             {log.staffRole && <span>({log.staffRole})</span>}
@@ -779,7 +922,9 @@ export default function LogDetailPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">開始日時</label>
+                <label className="mb-1 block text-sm font-medium">
+                  開始日時
+                </label>
                 <input
                   type="datetime-local"
                   value={editShiftStart}
@@ -788,7 +933,9 @@ export default function LogDetailPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">終了日時</label>
+                <label className="mb-1 block text-sm font-medium">
+                  終了日時
+                </label>
                 <input
                   type="datetime-local"
                   value={editShiftEnd}
@@ -819,7 +966,9 @@ export default function LogDetailPage() {
               </label>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">申し送り事項</label>
+              <label className="mb-1 block text-sm font-medium">
+                申し送り事項
+              </label>
               <textarea
                 value={editHandover}
                 onChange={(e) => setEditHandover(e.target.value)}
@@ -828,10 +977,18 @@ export default function LogDetailPage() {
               />
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" size="sm" onClick={() => setEditMode(false)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setEditMode(false)}
+              >
                 キャンセル
               </Button>
-              <Button size="sm" disabled={updateMutation.isPending} onClick={handleUpdate}>
+              <Button
+                size="sm"
+                disabled={updateMutation.isPending}
+                onClick={handleUpdate}
+              >
                 <Save className="mr-1.5 h-4 w-4" />
                 {updateMutation.isPending ? "保存中..." : "保存"}
               </Button>
@@ -846,7 +1003,16 @@ export default function LogDetailPage() {
               .filter(([, v]) => v > 0)
               .map(([k, v]) => (
                 <span key={k} className="text-muted-foreground">
-                  {k === "inHouse" ? "在寮" : k === "outing" ? "外出" : k === "overnight" ? "外泊" : k === "hospital" ? "入院" : "帰省"}: {v}名
+                  {k === "inHouse"
+                    ? "在寮"
+                    : k === "outing"
+                      ? "外出"
+                      : k === "overnight"
+                        ? "外泊"
+                        : k === "hospital"
+                          ? "入院"
+                          : "帰省"}
+                  : {v}名
                 </span>
               ))}
           </div>
@@ -856,7 +1022,9 @@ export default function LogDetailPage() {
         {!editMode && log.handover && (
           <div className="mt-4">
             <p className="mb-1 text-sm font-medium">申し送り事項</p>
-            <p className="bg-muted rounded-md p-3 text-sm whitespace-pre-wrap">{log.handover}</p>
+            <p className="bg-muted rounded-md p-3 text-sm whitespace-pre-wrap">
+              {log.handover}
+            </p>
           </div>
         )}
       </div>
@@ -864,7 +1032,10 @@ export default function LogDetailPage() {
       {/* 利用者別記録 */}
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">利用者別記録</h2>
-        <UnitRecipientsAdder logId={logId} existingRecipientIds={new Set(entryMap.keys())} />
+        <UnitRecipientsAdder
+          logId={logId}
+          existingRecipientIds={new Set(entryMap.keys())}
+        />
       </div>
 
       {unitRecipients.length === 0 ? (
@@ -903,7 +1074,9 @@ function UnitRecipientsAdder({
   const [selectedId, setSelectedId] = useState("");
   const utils = trpc.useUtils();
 
-  const { data: allRecipients } = trpc.recipient.list.useQuery({ includeDeleted: false });
+  const { data: allRecipients } = trpc.recipient.list.useQuery({
+    includeDeleted: false,
+  });
   const upsertMutation = trpc.dailyLog.upsertEntry.useMutation({
     onSuccess: () => {
       setShowAdd(false);
@@ -912,9 +1085,8 @@ function UnitRecipientsAdder({
     },
   });
 
-  const available = allRecipients?.filter(
-    (r) => !existingRecipientIds.has(r.id)
-  ) ?? [];
+  const available =
+    allRecipients?.filter((r) => !existingRecipientIds.has(r.id)) ?? [];
 
   return (
     <div className="flex items-center gap-2">
@@ -935,7 +1107,12 @@ function UnitRecipientsAdder({
           <Button
             size="sm"
             disabled={!selectedId}
-            onClick={() => upsertMutation.mutate({ dailyLogId: logId, recipientId: selectedId })}
+            onClick={() =>
+              upsertMutation.mutate({
+                dailyLogId: logId,
+                recipientId: selectedId,
+              })
+            }
           >
             追加
           </Button>

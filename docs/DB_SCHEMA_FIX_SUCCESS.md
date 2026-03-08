@@ -11,6 +11,7 @@
 ### 1. Migration 適用（users.role 列の追加）
 
 **実行内容**:
+
 ```sql
 -- Create UserRole enum
 DO $$ BEGIN
@@ -29,12 +30,14 @@ CREATE INDEX IF NOT EXISTS "users_role_idx" ON "users"("role");
 **結果**: ✅ 成功
 
 **確認結果**:
+
 ```
 column_name │ data_type      │ column_default
 role        │ USER-DEFINED   │ 'STAFF'::"UserRole"
 ```
 
 **UserRole enum 値**:
+
 - ✅ STAFF
 - ✅ LEAD
 - ✅ MANAGER
@@ -45,11 +48,11 @@ role        │ USER-DEFINED   │ 'STAFF'::"UserRole"
 
 **作成したユーザー**:
 
-| メールアドレス | 氏名 | role | 作成日時 |
-|---|---|---|---|
-| staff@example.com | 田中 太郎（スタッフ） | STAFF | 2026-03-03 11:53 |
-| lead@example.com | 佐藤 花子（リーダー） | LEAD | 2026-03-03 11:53 |
-| manager@example.com | 鈴木 一郎（管理者） | MANAGER | 2026-02-25 (既存) |
+| メールアドレス      | 氏名                  | role    | 作成日時          |
+| ------------------- | --------------------- | ------- | ----------------- |
+| staff@example.com   | 田中 太郎（スタッフ） | STAFF   | 2026-03-03 11:53  |
+| lead@example.com    | 佐藤 花子（リーダー） | LEAD    | 2026-03-03 11:53  |
+| manager@example.com | 鈴木 一郎（管理者）   | MANAGER | 2026-02-25 (既存) |
 
 **結果**: ✅ 3 test users ready!
 
@@ -67,19 +70,19 @@ role        │ USER-DEFINED   │ 'STAFF'::"UserRole"
 
 ### 調査結果
 
-| 項目 | 結果 | 詳細 |
-|---|---|---|
-| ICMP (ping) | ❌ タイムアウト | 正常（AWS/NeonはICMPをブロック） |
-| **PostgreSQL ポート (5432)** | ✅ **接続成功** | nc でポート到達性確認済み |
-| Prisma CLI (db push) | ❌ 失敗 | タイムアウト/SSL問題の可能性 |
-| **Node.js pg client** | ✅ **接続成功** | Direct URL with SSL で接続可能 |
+| 項目                         | 結果            | 詳細                             |
+| ---------------------------- | --------------- | -------------------------------- |
+| ICMP (ping)                  | ❌ タイムアウト | 正常（AWS/NeonはICMPをブロック） |
+| **PostgreSQL ポート (5432)** | ✅ **接続成功** | nc でポート到達性確認済み        |
+| Prisma CLI (db push)         | ❌ 失敗         | タイムアウト/SSL問題の可能性     |
+| **Node.js pg client**        | ✅ **接続成功** | Direct URL with SSL で接続可能   |
 
 ### 採用した解決策
 
 Prisma CLI ではなく、**Node.js の pg client を直接使用** してmigrationを適用：
 
 ```javascript
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 const client = new Client({
   connectionString: process.env.DIRECT_URL,
@@ -90,6 +93,7 @@ const client = new Client({
 ```
 
 **理由**:
+
 - Prisma CLI のタイムアウト/SSL設定の問題を回避
 - pg client は Neon の WebSocket pooler 経由で安定して接続可能
 - 同じアプローチでアプリケーションも動作している
@@ -226,10 +230,13 @@ https://localhost:3443
 ブラウザコンソール（F12）で実行：
 
 ```javascript
-fetch('/api/auth/session').then(r => r.json()).then(console.log)
+fetch("/api/auth/session")
+  .then((r) => r.json())
+  .then(console.log);
 ```
 
 **期待される結果**:
+
 ```json
 {
   "user": {
@@ -254,6 +261,7 @@ fetch('/api/auth/session').then(r => r.json()).then(console.log)
 **原因**: NextAuth の session callback で role を含めていない可能性
 
 **確認**:
+
 ```typescript
 // src/app/api/auth/[...nextauth]/route.ts
 callbacks: {
@@ -262,13 +270,14 @@ callbacks: {
       session.user.role = user.role; // ← これが必要
     }
     return session;
-  }
+  };
 }
 ```
 
 ### 権限エラーが発生する場合
 
 **確認事項**:
+
 1. Prisma Client が再生成されているか
 2. 開発サーバーが再起動されているか
 3. ブラウザのキャッシュをクリア

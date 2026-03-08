@@ -383,10 +383,16 @@ export function recipientToCSVRow(recipient: {
     // 受給者証情報
     利用状況: recipient.utilizationStatus || "",
     受給者証番号: recipient.recipientNumber || "",
-    交付年月日: recipient.receivedDate ? recipient.receivedDate.toISOString().split("T")[0] : "",
-    有効期限: recipient.validUntil ? recipient.validUntil.toISOString().split("T")[0] : "",
+    交付年月日: recipient.receivedDate
+      ? recipient.receivedDate.toISOString().split("T")[0]
+      : "",
+    有効期限: recipient.validUntil
+      ? recipient.validUntil.toISOString().split("T")[0]
+      : "",
     行動援護該当: boolToString(recipient.behaviorSupportNeeded),
-    行動関連項目点数: recipient.behaviorScore ? String(recipient.behaviorScore) : "",
+    行動関連項目点数: recipient.behaviorScore
+      ? String(recipient.behaviorScore)
+      : "",
     // 障害者手帳
     身体障害者手帳: boolToString(recipient.physicalHandicapBook),
     身体障害者手帳等級: recipient.physicalHandicapGrade || "",
@@ -410,8 +416,12 @@ export function recipientToCSVRow(recipient: {
     高齢障害者: boolToString(recipient.isElderly),
     介護保険認定: boolToString(recipient.careInsuranceCertified),
     介護保険要介護度: recipient.careInsuranceLevel || "",
-    介護保険有効期限: recipient.careInsuranceExpiry ? recipient.careInsuranceExpiry.toISOString().split("T")[0] : "",
-    障害福祉サービス継続利用: boolToString(recipient.continuedDisabilityService),
+    介護保険有効期限: recipient.careInsuranceExpiry
+      ? recipient.careInsuranceExpiry.toISOString().split("T")[0]
+      : "",
+    障害福祉サービス継続利用: boolToString(
+      recipient.continuedDisabilityService
+    ),
     // アセスメント情報
     ADL移動: a?.adlMovement ? adlMap[a.adlMovement] || a.adlMovement : "",
     ADL食事: a?.adlEating ? adlMap[a.adlEating] || a.adlEating : "",
@@ -597,7 +607,10 @@ export function csvRowToRecipient(row: RecipientCSVRow) {
     : [];
 
   const allowances = row.手当給付
-    ? row.手当給付.split(",").map((t) => t.trim()).filter((t) => t)
+    ? row.手当給付
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t)
     : [];
 
   const recipient = {
@@ -621,7 +634,12 @@ export function csvRowToRecipient(row: RecipientCSVRow) {
     hasSeizures: stringToBool(row.発作あり),
     seizureFrequency: row.発作頻度 || undefined,
     seizureResponse: row.発作対処方法 || undefined,
-    medication: row.服薬 ? row.服薬.split(/[\n,]/).map(m => m.trim()).filter(m => m) : [],
+    medication: row.服薬
+      ? row.服薬
+          .split(/[\n,]/)
+          .map((m) => m.trim())
+          .filter((m) => m)
+      : [],
     // 受給者証情報
     utilizationStatus: row.利用状況 || undefined,
     recipientNumber: row.受給者証番号 || undefined,
@@ -1283,7 +1301,9 @@ export function parseCSV(csvContent: string): RecipientCSVRow[] {
 
   // データ行が1つもない場合はエラー
   if (rows.length === 0) {
-    throw new Error("CSVファイルにデータが含まれていません。最低1行のデータを入力してください。");
+    throw new Error(
+      "CSVファイルにデータが含まれていません。最低1行のデータを入力してください。"
+    );
   }
 
   return rows;
@@ -1337,7 +1357,10 @@ function parseCSVContent(content: string): string[][] {
     currentField = "";
 
     // Skip completely empty records
-    if (currentRecord.length > 0 && !currentRecord.every((f) => f.trim() === "")) {
+    if (
+      currentRecord.length > 0 &&
+      !currentRecord.every((f) => f.trim() === "")
+    ) {
       records.push(currentRecord);
     }
     currentRecord = [];

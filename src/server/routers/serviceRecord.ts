@@ -175,8 +175,7 @@ export const serviceRecordRouter = router({
 
         // 時間帯集計
         if (record.timeBand) {
-          byTimeBand[record.timeBand] =
-            (byTimeBand[record.timeBand] || 0) + 1;
+          byTimeBand[record.timeBand] = (byTimeBand[record.timeBand] || 0) + 1;
 
           if (record.timeBand === "CROSSES_BANDS") {
             crossesBandsCount++;

@@ -11,6 +11,7 @@ metadata:
 # Auto Sync (Do -> Fact)
 
 ## Pattern
+
 - Trigger: submit() sets SUBMITTED
 - Upsert Fact using stable key (guideRecordId or dailyLogId)
 - Keep derived fields deterministic and recomputable

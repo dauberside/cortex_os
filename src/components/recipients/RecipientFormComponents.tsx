@@ -65,7 +65,7 @@ export function CollapsibleSection({
           <span className="text-muted-foreground text-sm">▼</span>
         </div>
       </summary>
-      <div className="px-6 pb-6 pt-2">{children}</div>
+      <div className="px-6 pt-2 pb-6">{children}</div>
     </details>
   );
 }

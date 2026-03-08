@@ -116,7 +116,7 @@ export function ImageUpload({
                   <button
                     type="button"
                     onClick={handleRemove}
-                    className="absolute -right-3 -top-3 rounded-full bg-red-500 p-2 text-white shadow-lg transition-all hover:bg-red-600 hover:scale-110"
+                    className="absolute -top-3 -right-3 rounded-full bg-red-500 p-2 text-white shadow-lg transition-all hover:scale-110 hover:bg-red-600"
                     disabled={isUploading}
                     title="写真を削除"
                   >
@@ -234,7 +234,8 @@ export function ImageUpload({
         </div>
 
         <p className="mt-3 text-xs text-gray-600">
-          💡 利用者の顔写真をアップロードしてください。本人確認やコミュニケーションに使用されます。
+          💡
+          利用者の顔写真をアップロードしてください。本人確認やコミュニケーションに使用されます。
         </p>
       </div>
     </div>

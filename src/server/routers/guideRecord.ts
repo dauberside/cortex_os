@@ -18,10 +18,7 @@ async function calculateTimeBand(
     where: {
       isActive: true,
       effectiveFrom: { lte: startTime },
-      OR: [
-        { effectiveTo: null },
-        { effectiveTo: { gte: startTime } },
-      ],
+      OR: [{ effectiveTo: null }, { effectiveTo: { gte: startTime } }],
     },
     orderBy: { effectiveFrom: "desc" },
   });
@@ -117,18 +114,30 @@ const createGuideRecordSchema = z.object({
   cashNote: z.string().optional(),
 
   // 金銭詳細内訳
-  transportExpenses: z.array(z.object({
-    amount: z.number().int().min(0),
-    description: z.string().optional(),
-  })).optional(),
-  foodExpenses: z.array(z.object({
-    amount: z.number().int().min(0),
-    description: z.string().optional(),
-  })).optional(),
-  otherExpenses: z.array(z.object({
-    amount: z.number().int().min(0),
-    description: z.string().optional(),
-  })).optional(),
+  transportExpenses: z
+    .array(
+      z.object({
+        amount: z.number().int().min(0),
+        description: z.string().optional(),
+      })
+    )
+    .optional(),
+  foodExpenses: z
+    .array(
+      z.object({
+        amount: z.number().int().min(0),
+        description: z.string().optional(),
+      })
+    )
+    .optional(),
+  otherExpenses: z
+    .array(
+      z.object({
+        amount: z.number().int().min(0),
+        description: z.string().optional(),
+      })
+    )
+    .optional(),
   staffMealExpense: z.number().int().min(0).optional(),
 
   // 食事情報
@@ -183,7 +192,9 @@ export const guideRecordRouter = router({
           select: { userId: true },
         });
 
-        const allowedUserIds = sameUnitStaffs.map((us: { userId: string }) => us.userId);
+        const allowedUserIds = sameUnitStaffs.map(
+          (us: { userId: string }) => us.userId
+        );
 
         // 提出済み記録は全利用者閲覧可能、DRAFT記録は同一ユニット内のみ
         whereClause.OR = [
@@ -231,7 +242,9 @@ export const guideRecordRouter = router({
           select: { userId: true },
         });
 
-        const allowedUserIds = sameUnitStaffs.map((us: { userId: string }) => us.userId);
+        const allowedUserIds = sameUnitStaffs.map(
+          (us: { userId: string }) => us.userId
+        );
 
         // 提出済み記録は全利用者閲覧可能、DRAFT記録は同一ユニット内のみ
         whereClause.OR = [
@@ -352,7 +365,9 @@ export const guideRecordRouter = router({
           select: { userId: true },
         });
 
-        const allowedUserIds = sameUnitStaffs.map((us: { userId: string }) => us.userId);
+        const allowedUserIds = sameUnitStaffs.map(
+          (us: { userId: string }) => us.userId
+        );
 
         // 同一ユニット内のスタッフの記録のみに制限
         whereClause.userId = { in: allowedUserIds };
@@ -454,7 +469,9 @@ export const guideRecordRouter = router({
           select: { userId: true },
         });
 
-        const allowedUserIds = sameUnitStaffs.map((us: { userId: string }) => us.userId);
+        const allowedUserIds = sameUnitStaffs.map(
+          (us: { userId: string }) => us.userId
+        );
 
         // 同一ユニット内のスタッフの記録のみに制限
         whereClause.userId = { in: allowedUserIds };
@@ -537,7 +554,9 @@ export const guideRecordRouter = router({
           select: { userId: true },
         });
 
-        const allowedUserIds = sameUnitStaffs.map((us: { userId: string }) => us.userId);
+        const allowedUserIds = sameUnitStaffs.map(
+          (us: { userId: string }) => us.userId
+        );
 
         // 同一ユニット内のスタッフの記録のみに制限
         whereClause.userId = { in: allowedUserIds };
@@ -650,7 +669,10 @@ export const guideRecordRouter = router({
         select: { role: true },
       });
 
-      if (!currentUser || (currentUser.role !== "LEAD" && currentUser.role !== "MANAGER")) {
+      if (
+        !currentUser ||
+        (currentUser.role !== "LEAD" && currentUser.role !== "MANAGER")
+      ) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "閲覧済みマークにはリーダー以上の権限が必要です。",

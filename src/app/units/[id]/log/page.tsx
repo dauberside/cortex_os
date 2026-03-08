@@ -54,9 +54,7 @@ export default function LogListPage() {
       <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold sm:text-3xl">業務日誌</h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {unit?.name}
-          </p>
+          <p className="text-muted-foreground mt-1 text-sm">{unit?.name}</p>
         </div>
         <Link href={`/units/${unitId}/log/new`}>
           <Button className="w-full sm:w-auto">
@@ -100,7 +98,8 @@ export default function LogListPage() {
                       <div className="mb-1 flex flex-wrap items-center gap-2">
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                            SHIFT_COLORS[log.shift] || "bg-gray-100 text-gray-700"
+                            SHIFT_COLORS[log.shift] ||
+                            "bg-gray-100 text-gray-700"
                           }`}
                         >
                           {SHIFT_LABELS[log.shift] || log.shift}
@@ -108,14 +107,21 @@ export default function LogListPage() {
                         {log.majorEvent && (
                           <span className="flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
                             <AlertTriangle className="h-3 w-3" />
-                            <span className="hidden sm:inline">重大イベント</span>
+                            <span className="hidden sm:inline">
+                              重大イベント
+                            </span>
                             <span className="sm:hidden">重大</span>
                           </span>
                         )}
                       </div>
                       <p className="text-muted-foreground truncate text-sm">
                         {log.staff.name || log.staff.email}
-                        {log.staffRole && <span className="hidden sm:inline"> ({log.staffRole})</span>}
+                        {log.staffRole && (
+                          <span className="hidden sm:inline">
+                            {" "}
+                            ({log.staffRole})
+                          </span>
+                        )}
                       </p>
                       <p className="text-muted-foreground text-xs">
                         {new Date(log.shiftStart).toLocaleTimeString("ja-JP", {

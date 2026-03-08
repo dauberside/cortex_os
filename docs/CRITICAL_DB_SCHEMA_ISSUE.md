@@ -11,17 +11,20 @@
 ### 1. **users テーブルに `role` 列が存在しない**
 
 **問題の詳細**:
+
 - `prisma/schema.prisma` には `role UserRole @default(STAFF)` が定義されている
 - しかし、実際のDBテーブル（migration/20260217143912）には `role` 列が含まれていない
 - **結果**: 権限制御（STAFF/LEAD/MANAGER）が完全に機能しない
 
 **影響**:
+
 - ✅ GuideRecordWorkflowActions の「提出」「レビュー済み」ボタン制御が動作しない
 - ✅ アクセス制御（誰が何を編集できるか）が動作しない
 - ✅ Test 4/5（権限テスト）が実行不可
 - ✅ Test 1-3 でも一部のボタン表示が意図通りに動作しない可能性
 
 **根本原因**:
+
 - schema.prisma と migration が同期していない
 - `role` 列を追加する migration が実行されていない
 
@@ -36,6 +39,7 @@
 **ファイルパス**: `prisma/migrations/20260303_add_user_role/migration.sql`
 
 **内容**:
+
 ```sql
 -- Create UserRole enum
 DO $$ BEGIN
@@ -58,11 +62,13 @@ CREATE INDEX IF NOT EXISTS "users_role_idx" ON "users"("role");
 ### ブロッカー
 
 **Neon データベースへの接続に失敗**:
+
 ```
 Error: P1001: Can't reach database server at 'ep-broad-haze-ai5806b4.c-4.us-east-1.aws.neon.tech:5432'
 ```
 
 **原因**:
+
 - ネットワーク接続の問題
 - Neon DB のスリープ状態（可能性）
 - DIRECT_URL の接続制限
@@ -79,11 +85,13 @@ Error: P1001: Can't reach database server at 'ep-broad-haze-ai5806b4.c-4.us-east
    - Compute が起動しているか確認
 
 2. **DIRECT_URL が正しいか確認**
+
    ```bash
    cat .env | grep DIRECT_URL
    ```
 
 3. **接続テスト**
+
    ```bash
    cd "/Volumes/Extreme Pro/cortex_os"
    pnpm prisma db push
@@ -122,6 +130,7 @@ ORDER BY ordinal_position;
 ```
 
 **期待される結果**:
+
 ```
 column_name | data_type
 ------------|----------
@@ -150,7 +159,9 @@ UPDATE users SET role = 'MANAGER' WHERE email = 'manager@example.com';
 3. コンソールで session を確認:
    ```javascript
    // ブラウザコンソールで実行
-   fetch('/api/auth/session').then(r => r.json()).then(console.log)
+   fetch("/api/auth/session")
+     .then((r) => r.json())
+     .then(console.log);
    ```
 4. `session.user.role` が `'STAFF'` であることを確認
 
@@ -180,6 +191,7 @@ UPDATE users SET role = 'MANAGER' WHERE email = 'manager@example.com';
 **現在の MVP 達成度**: 60% → **0%**（権限制御が動作しないため）
 
 **ブロックされるテスト**:
+
 - ❌ Test 1: DRAFT 作成（ボタン制御が動作しない可能性）
 - ❌ Test 2: DRAFT→SUBMITTED 遷移（権限チェック失敗）
 - ❌ Test 3: ServiceRecord 自動生成（権限チェック失敗でAPIエラー）
@@ -204,6 +216,7 @@ UPDATE users SET role = 'MANAGER' WHERE email = 'manager@example.com';
 **Neon Console で DB を確認し、接続を復旧させてください。**
 
 接続が復旧したら：
+
 ```bash
 cd "/Volumes/Extreme Pro/cortex_os"
 psql "$DIRECT_URL" < prisma/migrations/20260303_add_user_role/migration.sql

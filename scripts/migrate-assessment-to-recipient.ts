@@ -9,15 +9,15 @@
  *   --recipient-id: 特定の利用者のみ移行（テスト用）
  */
 
-import { PrismaClient } from '@prisma/client';
-import { PrismaNeon } from '@prisma/adapter-neon';
-import { neonConfig } from '@neondatabase/serverless';
-import * as dotenv from 'dotenv';
-import ws from 'ws';
+import { PrismaClient } from "@prisma/client";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { neonConfig } from "@neondatabase/serverless";
+import * as dotenv from "dotenv";
+import ws from "ws";
 
 // 環境変数を読み込み
-dotenv.config({ path: '.env' });
-dotenv.config({ path: '.env.local' });
+dotenv.config({ path: ".env" });
+dotenv.config({ path: ".env.local" });
 
 // WebSocket設定（Node.js環境用）
 neonConfig.webSocketConstructor = ws;
@@ -26,17 +26,20 @@ neonConfig.webSocketConstructor = ws;
 const connectionString = process.env.DIRECT_URL ?? process.env.DATABASE_URL;
 
 if (!connectionString) {
-  throw new Error('DIRECT_URL or DATABASE_URL is not defined');
+  throw new Error("DIRECT_URL or DATABASE_URL is not defined");
 }
 
-console.log('Connection string loaded:', connectionString ? '✓' : '✗');
-console.log('Using:', process.env.DIRECT_URL ? 'DIRECT_URL (non-pooled)' : 'DATABASE_URL');
+console.log("Connection string loaded:", connectionString ? "✓" : "✗");
+console.log(
+  "Using:",
+  process.env.DIRECT_URL ? "DIRECT_URL (non-pooled)" : "DATABASE_URL"
+);
 
 const adapter = new PrismaNeon({ connectionString });
 
 const prisma = new (PrismaClient as any)({
   adapter,
-  log: ['error'],
+  log: ["error"],
 });
 
 interface MigrationStats {
@@ -49,7 +52,7 @@ interface MigrationStats {
 interface MigrationResult {
   recipientId: string;
   recipientName: string;
-  status: 'success' | 'skipped' | 'error';
+  status: "success" | "skipped" | "error";
   changes: string[];
   error?: string;
 }
@@ -79,13 +82,15 @@ async function migrateAssessmentData(
     stats.total = assessments.length;
 
     console.log(`\n📊 移行対象: ${stats.total}件のアセスメント`);
-    console.log(`${dryRun ? '🔍 DRY RUN モード（実際の更新は行いません）' : '⚠️  実行モード（データを更新します）'}\n`);
+    console.log(
+      `${dryRun ? "🔍 DRY RUN モード（実際の更新は行いません）" : "⚠️  実行モード（データを更新します）"}\n`
+    );
 
     for (const assessment of assessments) {
       const result: MigrationResult = {
         recipientId: assessment.recipientId,
         recipientName: assessment.recipient.name,
-        status: 'success',
+        status: "success",
         changes: [],
       };
 
@@ -101,7 +106,9 @@ async function migrateAssessmentData(
 
         if (!recipient.personalityNote && assessment.personality) {
           updateData.personalityNote = assessment.personality;
-          result.changes.push(`性格: "${assessment.personality.substring(0, 50)}..."`);
+          result.changes.push(
+            `性格: "${assessment.personality.substring(0, 50)}..."`
+          );
         }
 
         if (!recipient.toiletFrequency && assessment.toiletInterval) {
@@ -134,8 +141,8 @@ async function migrateAssessmentData(
         // 4. toiletNoteのマージ
         if (assessment.toiletNote) {
           const toiletCareInfo = assessment.toiletCareTypes?.length
-            ? `【排泄支援種別】\n${assessment.toiletCareTypes.join(', ')}\n\n`
-            : '';
+            ? `【排泄支援種別】\n${assessment.toiletCareTypes.join(", ")}\n\n`
+            : "";
 
           const toiletNoteAddition = `${toiletCareInfo}${assessment.toiletNote}`;
 
@@ -155,15 +162,21 @@ async function migrateAssessmentData(
         }
 
         if (assessment.cautions) {
-          otherNotesAdditions.push(`【特記事項・注意事項】\n${assessment.cautions}`);
+          otherNotesAdditions.push(
+            `【特記事項・注意事項】\n${assessment.cautions}`
+          );
         }
 
         if (assessment.emergencyNote) {
-          otherNotesAdditions.push(`【緊急時対応】\n${assessment.emergencyNote}`);
+          otherNotesAdditions.push(
+            `【緊急時対応】\n${assessment.emergencyNote}`
+          );
         }
 
         if (assessment.familyStructure) {
-          otherNotesAdditions.push(`【家族構成】\n${assessment.familyStructure}`);
+          otherNotesAdditions.push(
+            `【家族構成】\n${assessment.familyStructure}`
+          );
         }
 
         if (assessment.supportSystem) {
@@ -171,19 +184,21 @@ async function migrateAssessmentData(
         }
 
         if (otherNotesAdditions.length > 0) {
-          const newContent = otherNotesAdditions.join('\n\n');
+          const newContent = otherNotesAdditions.join("\n\n");
           if (recipient.otherNotes) {
             updateData.otherNotes = `${recipient.otherNotes}\n\n---\n【Assessmentからの移行データ】\n${newContent}`;
           } else {
             updateData.otherNotes = newContent;
           }
-          result.changes.push(`その他メモに${otherNotesAdditions.length}項目を追加`);
+          result.changes.push(
+            `その他メモに${otherNotesAdditions.length}項目を追加`
+          );
         }
 
         // 変更がない場合はスキップ
         if (Object.keys(updateData).length === 0) {
-          result.status = 'skipped';
-          result.changes.push('移行対象データなし');
+          result.status = "skipped";
+          result.changes.push("移行対象データなし");
           stats.skipped++;
         } else {
           if (!dryRun) {
@@ -199,13 +214,14 @@ async function migrateAssessmentData(
         results.push(result);
 
         // 進捗表示
-        const progressIcon = result.status === 'success' ? '✅' : '⏭️';
-        console.log(`${progressIcon} ${recipient.name} (ID: ${recipient.id.substring(0, 8)}...)`);
+        const progressIcon = result.status === "success" ? "✅" : "⏭️";
+        console.log(
+          `${progressIcon} ${recipient.name} (ID: ${recipient.id.substring(0, 8)}...)`
+        );
         result.changes.forEach((change) => console.log(`   - ${change}`));
-        console.log('');
-
+        console.log("");
       } catch (error: any) {
-        result.status = 'error';
+        result.status = "error";
         result.error = error.message;
         stats.errors++;
         results.push(result);
@@ -213,9 +229,8 @@ async function migrateAssessmentData(
         console.error(`❌ ${assessment.recipient.name}: ${error.message}\n`);
       }
     }
-
   } catch (error) {
-    console.error('❌ 移行処理中にエラーが発生しました:', error);
+    console.error("❌ 移行処理中にエラーが発生しました:", error);
     throw error;
   }
 
@@ -224,43 +239,46 @@ async function migrateAssessmentData(
 
 async function main() {
   const args = process.argv.slice(2);
-  const dryRun = args.includes('--dry-run');
-  const recipientIdArg = args.find((arg) => arg.startsWith('--recipient-id='));
-  const recipientId = recipientIdArg?.split('=')[1];
+  const dryRun = args.includes("--dry-run");
+  const recipientIdArg = args.find((arg) => arg.startsWith("--recipient-id="));
+  const recipientId = recipientIdArg?.split("=")[1];
 
-  console.log('🚀 Assessment → CareRecipient データ移行スクリプト\n');
+  console.log("🚀 Assessment → CareRecipient データ移行スクリプト\n");
 
   try {
     const { stats, results } = await migrateAssessmentData(recipientId, dryRun);
 
-    console.log('\n' + '='.repeat(60));
-    console.log('📈 移行結果サマリー');
-    console.log('='.repeat(60));
+    console.log("\n" + "=".repeat(60));
+    console.log("📈 移行結果サマリー");
+    console.log("=".repeat(60));
     console.log(`総数:       ${stats.total}件`);
     console.log(`成功:       ${stats.success}件`);
     console.log(`スキップ:   ${stats.skipped}件`);
     console.log(`エラー:     ${stats.errors}件`);
-    console.log('='.repeat(60) + '\n');
+    console.log("=".repeat(60) + "\n");
 
     if (dryRun) {
-      console.log('ℹ️  DRY RUNモードで実行しました。実際のデータは変更されていません。');
-      console.log('ℹ️  実際に移行を実行する場合は、--dry-runオプションを外して実行してください。\n');
+      console.log(
+        "ℹ️  DRY RUNモードで実行しました。実際のデータは変更されていません。"
+      );
+      console.log(
+        "ℹ️  実際に移行を実行する場合は、--dry-runオプションを外して実行してください。\n"
+      );
     } else {
-      console.log('✅ データ移行が完了しました。\n');
+      console.log("✅ データ移行が完了しました。\n");
     }
 
     // エラーがあった場合は詳細を表示
-    const errorResults = results.filter((r) => r.status === 'error');
+    const errorResults = results.filter((r) => r.status === "error");
     if (errorResults.length > 0) {
-      console.log('⚠️  以下の利用者でエラーが発生しました:\n');
+      console.log("⚠️  以下の利用者でエラーが発生しました:\n");
       errorResults.forEach((r) => {
         console.log(`  - ${r.recipientName} (ID: ${r.recipientId})`);
         console.log(`    エラー: ${r.error}\n`);
       });
     }
-
   } catch (error) {
-    console.error('\n❌ 移行処理が失敗しました:', error);
+    console.error("\n❌ 移行処理が失敗しました:", error);
     process.exit(1);
   } finally {
     await prisma.$disconnect();

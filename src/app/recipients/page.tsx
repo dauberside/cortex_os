@@ -70,7 +70,9 @@ export default function RecipientsPage() {
     message: string;
     type: "success" | "error";
   } | null>(null);
-  const [importErrors, setImportErrors] = useState<Array<string | { row?: number; name?: string; error: string }>>([]);
+  const [importErrors, setImportErrors] = useState<
+    Array<string | { row?: number; name?: string; error: string }>
+  >([]);
   const [showImportErrors, setShowImportErrors] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const utils = trpc.useUtils();
@@ -133,7 +135,6 @@ export default function RecipientsPage() {
     },
   });
 
-
   const toggleSelectAll = () => {
     const activeRecipients =
       recipients?.filter((r) => !r.deletedAt).map((r) => r.id) ?? [];
@@ -153,7 +154,10 @@ export default function RecipientsPage() {
       const msg =
         `インポート成功: ${result.imported}件の利用者を登録しました` +
         (result.errors ? ` (エラー: ${result.errors.length}件)` : "");
-      showToast(msg, result.errors && result.errors.length > 0 ? "error" : "success");
+      showToast(
+        msg,
+        result.errors && result.errors.length > 0 ? "error" : "success"
+      );
 
       if (result.errors && result.errors.length > 0) {
         setImportErrors(result.errors);
@@ -260,24 +264,36 @@ export default function RecipientsPage() {
       {/* インポートエラーダイアログ */}
       {showImportErrors && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-2xl max-h-[80vh] overflow-auto rounded-lg border bg-white p-6 shadow-xl">
-            <h3 className="mb-4 text-lg font-semibold">CSVインポートエラー詳細</h3>
+          <div className="max-h-[80vh] w-full max-w-2xl overflow-auto rounded-lg border bg-white p-6 shadow-xl">
+            <h3 className="mb-4 text-lg font-semibold">
+              CSVインポートエラー詳細
+            </h3>
             <div className="mb-6 space-y-2">
               {importErrors.map((error, index) => {
                 // エラーが文字列の場合
-                if (typeof error === 'string') {
+                if (typeof error === "string") {
                   return (
-                    <div key={index} className="rounded bg-red-50 border border-red-200 p-3 text-sm text-red-800">
+                    <div
+                      key={index}
+                      className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-800"
+                    >
                       {error}
                     </div>
                   );
                 }
                 // エラーがオブジェクトの場合
                 const errorObj = error as any;
-                const location = errorObj.row ? `${errorObj.row}行目` : errorObj.name ? `${errorObj.name}` : '不明';
+                const location = errorObj.row
+                  ? `${errorObj.row}行目`
+                  : errorObj.name
+                    ? `${errorObj.name}`
+                    : "不明";
                 const message = errorObj.error || JSON.stringify(errorObj);
                 return (
-                  <div key={index} className="rounded bg-red-50 border border-red-200 p-3 text-sm text-red-800">
+                  <div
+                    key={index}
+                    className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-800"
+                  >
                     <strong>{location}:</strong> {message}
                   </div>
                 );
@@ -372,12 +388,15 @@ export default function RecipientsPage() {
 
       <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">利用者情報</h1>
+          <h1 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">
+            利用者情報
+          </h1>
           <p className="text-muted-foreground text-sm sm:text-base">
             重度障害者支援の利用者情報を管理します
           </p>
           <p className="text-muted-foreground mt-1 text-xs">
-            💡 CSV一括取込: 複数名をまとめて登録 | 新規登録: CSVから1名ずつ読み込み可能
+            💡 CSV一括取込: 複数名をまとめて登録 | 新規登録:
+            CSVから1名ずつ読み込み可能
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -429,7 +448,9 @@ export default function RecipientsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-sm">総利用者数</p>
-                <p className="mt-1 text-2xl font-bold sm:text-3xl">{stats.total}</p>
+                <p className="mt-1 text-2xl font-bold sm:text-3xl">
+                  {stats.total}
+                </p>
               </div>
               <Users className="text-muted-foreground h-6 w-6 sm:h-8 sm:w-8" />
             </div>
@@ -456,7 +477,9 @@ export default function RecipientsPage() {
                     <p className="text-muted-foreground text-sm">
                       障害支援区分{level.supportLevel}
                     </p>
-                    <p className="mt-1 text-2xl font-bold sm:text-3xl">{level._count}</p>
+                    <p className="mt-1 text-2xl font-bold sm:text-3xl">
+                      {level._count}
+                    </p>
                     <p className="text-muted-foreground mt-1 text-xs">名</p>
                   </div>
                 </button>
@@ -474,11 +497,14 @@ export default function RecipientsPage() {
             placeholder="氏名・フリガナで検索..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-md border py-2 pr-4 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="focus:ring-ring w-full rounded-md border py-2 pr-4 pl-9 text-sm focus:ring-2 focus:outline-none"
           />
           {searchQuery && (
             <button
-              onClick={() => { setSearchQuery(""); setDebouncedSearch(""); }}
+              onClick={() => {
+                setSearchQuery("");
+                setDebouncedSearch("");
+              }}
               className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
             >
               <X className="h-4 w-4" />
@@ -705,164 +731,164 @@ export default function RecipientsPage() {
                     href={`/recipients/${recipient.id}`}
                     className="hover:bg-accent block rounded transition-colors"
                   >
-                <div className="flex items-start justify-between gap-4">
-                  {/* 顔写真 */}
-                  {recipient.photoUrl ? (
-                    <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 border-gray-200">
-                      <Image
-                        src={recipient.photoUrl}
-                        alt={recipient.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border-2 border-gray-200 bg-gray-100">
-                      <Users className="h-8 w-8 text-gray-400" />
-                    </div>
-                  )}
+                    <div className="flex items-start justify-between gap-4">
+                      {/* 顔写真 */}
+                      {recipient.photoUrl ? (
+                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 border-gray-200">
+                          <Image
+                            src={recipient.photoUrl}
+                            alt={recipient.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg border-2 border-gray-200 bg-gray-100">
+                          <Users className="h-8 w-8 text-gray-400" />
+                        </div>
+                      )}
 
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-2 flex flex-wrap items-center gap-2">
-                      <h3 className="text-lg font-semibold">
-                        {recipient.name}
-                      </h3>
-                      {recipient.nameKana && (
-                        <span className="text-muted-foreground text-sm">
-                          ({recipient.nameKana})
-                        </span>
-                      )}
-                      {recipient.supportLevel && (
-                        <span className="rounded-full border bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
-                          区分{recipient.supportLevel}
-                        </span>
-                      )}
-                      {recipient.deletedAt && (
-                        <span className="bg-destructive/10 text-destructive rounded-full px-2 py-0.5 text-xs">
-                          削除済み
-                        </span>
-                      )}
-                    </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 flex flex-wrap items-center gap-2">
+                          <h3 className="text-lg font-semibold">
+                            {recipient.name}
+                          </h3>
+                          {recipient.nameKana && (
+                            <span className="text-muted-foreground text-sm">
+                              ({recipient.nameKana})
+                            </span>
+                          )}
+                          {recipient.supportLevel && (
+                            <span className="rounded-full border bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                              区分{recipient.supportLevel}
+                            </span>
+                          )}
+                          {recipient.deletedAt && (
+                            <span className="bg-destructive/10 text-destructive rounded-full px-2 py-0.5 text-xs">
+                              削除済み
+                            </span>
+                          )}
+                        </div>
 
-                    <div className="text-muted-foreground mb-2 flex flex-wrap gap-3 text-sm">
-                      <span>
-                        {new Date(recipient.birthDate).toLocaleDateString(
-                          "ja-JP"
+                        <div className="text-muted-foreground mb-2 flex flex-wrap gap-3 text-sm">
+                          <span>
+                            {new Date(recipient.birthDate).toLocaleDateString(
+                              "ja-JP"
+                            )}
+                          </span>
+                          <span>
+                            {recipient.gender === "Male"
+                              ? "男性"
+                              : recipient.gender === "Female"
+                                ? "女性"
+                                : "その他"}
+                          </span>
+                          {recipient.disabilityType.length > 0 && (
+                            <span>
+                              {recipient.disabilityType
+                                .map((t) =>
+                                  t === "Physical"
+                                    ? "身体障害"
+                                    : t === "Intellectual"
+                                      ? "知的障害"
+                                      : "精神障害"
+                                )
+                                .join(" / ")}
+                            </span>
+                          )}
+                          {(recipient as any).utilizationStatus && (
+                            <span>
+                              {UTILIZATION_STATUS_LABELS[
+                                (recipient as any).utilizationStatus
+                              ] || (recipient as any).utilizationStatus}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* サービス種別バッジ */}
+                        {(recipient as any).serviceTypes &&
+                          (recipient as any).serviceTypes.length > 0 && (
+                            <div className="mb-2 flex flex-wrap gap-1">
+                              {(recipient as any).serviceTypes.map(
+                                (type: string) => (
+                                  <span
+                                    key={type}
+                                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                                      SERVICE_TYPE_COLORS[type] ||
+                                      "bg-gray-100 text-gray-700"
+                                    }`}
+                                  >
+                                    {SERVICE_TYPE_LABELS[type] || type}
+                                  </span>
+                                )
+                              )}
+                              {(recipient as any).behaviorSupportNeeded && (
+                                <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700">
+                                  行動援護対象
+                                </span>
+                              )}
+                            </div>
+                          )}
+
+                        {/* 加算バッジ */}
+                        {(recipient as any).allowances &&
+                          (recipient as any).allowances.length > 0 && (
+                            <div className="mb-1 flex flex-wrap gap-1">
+                              {(recipient as any).allowances
+                                .slice(0, 3)
+                                .map((allowance: string) => (
+                                  <span
+                                    key={allowance}
+                                    className="rounded border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-700"
+                                  >
+                                    {ALLOWANCE_LABELS[allowance] || allowance}
+                                  </span>
+                                ))}
+                              {(recipient as any).allowances.length > 3 && (
+                                <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
+                                  +{(recipient as any).allowances.length - 3}件
+                                </span>
+                              )}
+                            </div>
+                          )}
+
+                        {recipient.allergies && (
+                          <div className="mt-1 text-sm">
+                            <span className="text-destructive font-medium">
+                              アレルギー:
+                            </span>{" "}
+                            <span className="text-destructive/80">
+                              {recipient.allergies}
+                            </span>
+                          </div>
                         )}
-                      </span>
-                      <span>
-                        {recipient.gender === "Male"
-                          ? "男性"
-                          : recipient.gender === "Female"
-                            ? "女性"
-                            : "その他"}
-                      </span>
-                      {recipient.disabilityType.length > 0 && (
-                        <span>
-                          {recipient.disabilityType
-                            .map((t) =>
-                              t === "Physical"
-                                ? "身体障害"
-                                : t === "Intellectual"
-                                  ? "知的障害"
-                                  : "精神障害"
-                            )
-                            .join(" / ")}
-                        </span>
-                      )}
-                      {(recipient as any).utilizationStatus && (
-                        <span>
-                          {UTILIZATION_STATUS_LABELS[
-                            (recipient as any).utilizationStatus
-                          ] || (recipient as any).utilizationStatus}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* サービス種別バッジ */}
-                    {(recipient as any).serviceTypes &&
-                      (recipient as any).serviceTypes.length > 0 && (
-                        <div className="mb-2 flex flex-wrap gap-1">
-                          {(recipient as any).serviceTypes.map(
-                            (type: string) => (
-                              <span
-                                key={type}
-                                className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                                  SERVICE_TYPE_COLORS[type] ||
-                                  "bg-gray-100 text-gray-700"
-                                }`}
-                              >
-                                {SERVICE_TYPE_LABELS[type] || type}
-                              </span>
-                            )
-                          )}
-                          {(recipient as any).behaviorSupportNeeded && (
-                            <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700">
-                              行動援護対象
-                            </span>
-                          )}
-                        </div>
-                      )}
-
-                    {/* 加算バッジ */}
-                    {(recipient as any).allowances &&
-                      (recipient as any).allowances.length > 0 && (
-                        <div className="mb-1 flex flex-wrap gap-1">
-                          {(recipient as any).allowances
-                            .slice(0, 3)
-                            .map((allowance: string) => (
-                              <span
-                                key={allowance}
-                                className="rounded border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-700"
-                              >
-                                {ALLOWANCE_LABELS[allowance] || allowance}
-                              </span>
-                            ))}
-                          {(recipient as any).allowances.length > 3 && (
-                            <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-xs">
-                              +{(recipient as any).allowances.length - 3}件
-                            </span>
-                          )}
-                        </div>
-                      )}
-
-                    {recipient.allergies && (
-                      <div className="mt-1 text-sm">
-                        <span className="text-destructive font-medium">
-                          アレルギー:
-                        </span>{" "}
-                        <span className="text-destructive/80">
-                          {recipient.allergies}
-                        </span>
                       </div>
-                    )}
-                  </div>
-                  {!recipient.deletedAt && (
-                    <div className="ml-2 flex shrink-0 items-center gap-1 sm:ml-4">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          router.push(`/recipients/${recipient.id}/edit`);
-                        }}
-                      >
-                        <Edit className="text-muted-foreground h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) =>
-                          handleDelete(recipient.id, recipient.name, e)
-                        }
-                        disabled={deleteMutation.isPending}
-                      >
-                        <Trash2 className="text-destructive h-4 w-4" />
-                      </Button>
+                      {!recipient.deletedAt && (
+                        <div className="ml-2 flex shrink-0 items-center gap-1 sm:ml-4">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              router.push(`/recipients/${recipient.id}/edit`);
+                            }}
+                          >
+                            <Edit className="text-muted-foreground h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) =>
+                              handleDelete(recipient.id, recipient.name, e)
+                            }
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Trash2 className="text-destructive h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
                   </Link>
                 </div>
               </div>

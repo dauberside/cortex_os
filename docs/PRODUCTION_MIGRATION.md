@@ -34,6 +34,7 @@ grep DIRECT_URL .env.local
 ```
 
 または、Vercel Dashboardから手動でコピー：
+
 - Project Settings > Environment Variables > Production
 - `DIRECT_URL` または `DATABASE_URL` をコピー
 
@@ -46,6 +47,7 @@ grep DIRECT_URL .env.local
 **追加フィールド数:** CareRecipientモデルに27フィールド
 
 **影響範囲:**
+
 - 既存データ: 影響なし（全てOptionalフィールド）
 - 後方互換性: 完全互換
 - ダウンタイム: なし
@@ -92,6 +94,7 @@ cat prisma/migrations/20260302121008_add_face_sheet_fields/migration.sql
 ```
 
 **確認ポイント:**
+
 - ✅ `ALTER TABLE` のみで `DROP` 文がないこと
 - ✅ `IF NOT EXISTS` が含まれているかを確認（含まれている場合は再実行可能）
 - ✅ 追加カラムが27個であること
@@ -103,38 +106,38 @@ cat prisma/migrations/20260302121008_add_face_sheet_fields/migration.sql
 `scripts/run-phase2-migration.js` を作成して実行：
 
 ```javascript
-const fs = require('fs');
-const { Client } = require('pg');
-require('dotenv').config();
+const fs = require("fs");
+const { Client } = require("pg");
+require("dotenv").config();
 
 async function runMigration() {
   const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
 
   if (!connectionString) {
-    console.error('❌ No DATABASE_URL or DIRECT_URL found');
+    console.error("❌ No DATABASE_URL or DIRECT_URL found");
     process.exit(1);
   }
 
-  console.log('🔗 Connecting to Neon database...');
+  console.log("🔗 Connecting to Neon database...");
 
   const client = new Client({
     connectionString,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
   });
 
   try {
     await client.connect();
-    console.log('✅ Connected successfully\\n');
+    console.log("✅ Connected successfully\\n");
 
     // マイグレーションSQL読み込み
     const sql = fs.readFileSync(
-      './prisma/migrations/20260302121008_add_face_sheet_fields/migration.sql',
-      'utf8'
+      "./prisma/migrations/20260302121008_add_face_sheet_fields/migration.sql",
+      "utf8"
     );
 
-    console.log('🚀 Executing Phase 2 migration (27 fields)...');
+    console.log("🚀 Executing Phase 2 migration (27 fields)...");
     await client.query(sql);
-    console.log('✅ Migration completed!\\n');
+    console.log("✅ Migration completed!\\n");
 
     // 確認: 新規フィールドが追加されたか
     const verify = await client.query(`
@@ -145,17 +148,19 @@ async function runMigration() {
       ORDER BY column_name
     `);
 
-    console.log('🔍 Verifying new fields:');
-    verify.rows.forEach(row => console.log(`  ✅ ${row.column_name}`));
+    console.log("🔍 Verifying new fields:");
+    verify.rows.forEach((row) => console.log(`  ✅ ${row.column_name}`));
 
     if (verify.rows.length === 3) {
-      console.log('\\n✨ Phase 2 migration successful!');
+      console.log("\\n✨ Phase 2 migration successful!");
     } else {
-      console.log('\\n⚠️  Warning: Expected 3 verification fields, found', verify.rows.length);
+      console.log(
+        "\\n⚠️  Warning: Expected 3 verification fields, found",
+        verify.rows.length
+      );
     }
-
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error("❌ Error:", error.message);
     console.error(error);
     process.exit(1);
   } finally {
@@ -252,6 +257,7 @@ ALTER TABLE "care_recipients"
 → 既にマイグレーション済みです。
 
 **対処法:**
+
 1. マイグレーションSQLに `IF NOT EXISTS` が含まれているか確認
 2. 含まれている場合は再実行しても安全（冪等性あり）
 3. 含まれていない場合は、既存カラムを確認してマイグレーションをスキップ
@@ -263,7 +269,9 @@ ALTER TABLE "care_recipients"
 **原因:** 本番DBとローカルマイグレーション履歴の不一致（手動SQLで本番を進めたため）
 
 **対処法:**
+
 1. **現状確認:** 本番DBの実際の状態を確認
+
    ```bash
    node scripts/run-phase2-migration.js --dry-run  # 実行前シミュレーション
    ```

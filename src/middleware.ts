@@ -10,7 +10,7 @@ import { PrismaClient } from "@prisma/client";
 export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET
+    secret: process.env.NEXTAUTH_SECRET,
   });
 
   // 認証されていない場合はログ記録をスキップ
@@ -21,7 +21,9 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Recipient Hub 閲覧（/recipients/[id] および /recipients/[id]/assessment）
-  const recipientHubMatch = pathname.match(/^\/recipients\/([a-z0-9]+)(?:\/assessment)?$/);
+  const recipientHubMatch = pathname.match(
+    /^\/recipients\/([a-z0-9]+)(?:\/assessment)?$/
+  );
 
   if (recipientHubMatch) {
     const recipientId = recipientHubMatch[1];

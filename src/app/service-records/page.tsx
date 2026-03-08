@@ -142,7 +142,9 @@ export default function ServiceRecordsPage() {
             <p className="text-muted-foreground text-sm">サービス種別</p>
             <p className="text-sm">
               {Object.entries(summary.byServiceType)
-                .map(([type, count]) => `${getServiceTypeLabel(type)}: ${count}`)
+                .map(
+                  ([type, count]) => `${getServiceTypeLabel(type)}: ${count}`
+                )
                 .join(", ")}
             </p>
           </div>

@@ -63,7 +63,10 @@ export function GuideRecordPrintView({
 }: GuideRecordPrintViewProps) {
   // 各カテゴリの費用を配列として取得
   const transportExpenses = Array.isArray(record.transportExpenses)
-    ? (record.transportExpenses as Array<{ amount: number; description?: string }>)
+    ? (record.transportExpenses as Array<{
+        amount: number;
+        description?: string;
+      }>)
     : [];
   const foodExpenses = Array.isArray(record.foodExpenses)
     ? (record.foodExpenses as Array<{ amount: number; description?: string }>)
@@ -73,14 +76,25 @@ export function GuideRecordPrintView({
     : [];
 
   // 各カテゴリの合計を計算
-  const totalTransport = transportExpenses.reduce((sum, item) => sum + (item.amount || 0), 0);
-  const totalFood = foodExpenses.reduce((sum, item) => sum + (item.amount || 0), 0);
-  const totalOther = otherExpenses.reduce((sum, item) => sum + (item.amount || 0), 0);
+  const totalTransport = transportExpenses.reduce(
+    (sum, item) => sum + (item.amount || 0),
+    0
+  );
+  const totalFood = foodExpenses.reduce(
+    (sum, item) => sum + (item.amount || 0),
+    0
+  );
+  const totalOther = otherExpenses.reduce(
+    (sum, item) => sum + (item.amount || 0),
+    0
+  );
   const staffMeal = record.staffMealExpense || 0;
   const totalUsed = totalTransport + totalFood + totalOther + staffMeal;
 
   // 経路情報を配列として取得
-  const routeArray = Array.isArray(record.route) ? (record.route as string[]) : [];
+  const routeArray = Array.isArray(record.route)
+    ? (record.route as string[])
+    : [];
 
   return (
     <div className="print-container hidden print:block">
@@ -503,7 +517,8 @@ export function GuideRecordPrintView({
         {/* 左カラム: 金銭管理 */}
         <div className="left-column">
           <div className="money-section-title">
-            最初にあったお金　{record.handedAmount ? record.handedAmount.toLocaleString() : ""}円
+            最初にあったお金　
+            {record.handedAmount ? record.handedAmount.toLocaleString() : ""}円
           </div>
 
           {/* 交通費 */}
@@ -515,7 +530,10 @@ export function GuideRecordPrintView({
                   {transportExpenses[i]?.description || ""}
                 </div>
                 <div className="money-yen">
-                  {transportExpenses[i]?.amount ? transportExpenses[i].amount.toLocaleString() : ""} 円
+                  {transportExpenses[i]?.amount
+                    ? transportExpenses[i].amount.toLocaleString()
+                    : ""}{" "}
+                  円
                 </div>
               </div>
             ))}
@@ -530,7 +548,10 @@ export function GuideRecordPrintView({
                   {foodExpenses[i]?.description || ""}
                 </div>
                 <div className="money-yen">
-                  {foodExpenses[i]?.amount ? foodExpenses[i].amount.toLocaleString() : ""} 円
+                  {foodExpenses[i]?.amount
+                    ? foodExpenses[i].amount.toLocaleString()
+                    : ""}{" "}
+                  円
                 </div>
               </div>
             ))}
@@ -545,7 +566,10 @@ export function GuideRecordPrintView({
                   {otherExpenses[i]?.description || ""}
                 </div>
                 <div className="money-yen">
-                  {otherExpenses[i]?.amount ? otherExpenses[i].amount.toLocaleString() : ""} 円
+                  {otherExpenses[i]?.amount
+                    ? otherExpenses[i].amount.toLocaleString()
+                    : ""}{" "}
+                  円
                 </div>
               </div>
             ))}
@@ -591,14 +615,18 @@ export function GuideRecordPrintView({
           <div className="assembly-row">
             <div className="assembly-cell">
               <span className="assembly-label">集合</span>
-              <span className="assembly-value">{record.assemblyLocation || ""}</span>
+              <span className="assembly-value">
+                {record.assemblyLocation || ""}
+              </span>
             </div>
             <div
               className="assembly-cell"
               style={{ borderLeft: "1px solid #000" }}
             >
               <span className="assembly-label">解散</span>
-              <span className="assembly-value">{record.dismissalLocation || ""}</span>
+              <span className="assembly-value">
+                {record.dismissalLocation || ""}
+              </span>
             </div>
           </div>
 
@@ -607,35 +635,62 @@ export function GuideRecordPrintView({
             <div className="route-grid">
               <div className="route-row">
                 <div className="route-cell" style={{ width: "33.33%" }}>
-                  経路【集→ <span className="route-cell-content">{routeArray[0] || ""}</span>
+                  経路【集→{" "}
+                  <span className="route-cell-content">
+                    {routeArray[0] || ""}
+                  </span>
                 </div>
                 <div className="route-cell" style={{ width: "33.33%" }}>
-                  → <span className="route-cell-content">{routeArray[1] || ""}</span>
+                  →{" "}
+                  <span className="route-cell-content">
+                    {routeArray[1] || ""}
+                  </span>
                 </div>
                 <div className="route-cell" style={{ width: "33.33%" }}>
-                  → <span className="route-cell-content">{routeArray[2] || ""}</span>
+                  →{" "}
+                  <span className="route-cell-content">
+                    {routeArray[2] || ""}
+                  </span>
                 </div>
               </div>
               <div className="route-row">
                 <div className="route-cell">
-                  → <span className="route-cell-content">{routeArray[3] || ""}</span>
+                  →{" "}
+                  <span className="route-cell-content">
+                    {routeArray[3] || ""}
+                  </span>
                 </div>
                 <div className="route-cell">
-                  → <span className="route-cell-content">{routeArray[4] || ""}</span>
+                  →{" "}
+                  <span className="route-cell-content">
+                    {routeArray[4] || ""}
+                  </span>
                 </div>
                 <div className="route-cell">
-                  → <span className="route-cell-content">{routeArray[5] || ""}</span>
+                  →{" "}
+                  <span className="route-cell-content">
+                    {routeArray[5] || ""}
+                  </span>
                 </div>
               </div>
               <div className="route-row">
                 <div className="route-cell">
-                  → <span className="route-cell-content">{routeArray[6] || ""}</span>
+                  →{" "}
+                  <span className="route-cell-content">
+                    {routeArray[6] || ""}
+                  </span>
                 </div>
                 <div className="route-cell">
-                  → <span className="route-cell-content">{routeArray[7] || ""}</span>
+                  →{" "}
+                  <span className="route-cell-content">
+                    {routeArray[7] || ""}
+                  </span>
                 </div>
                 <div className="route-cell">
-                  散】 <span className="route-cell-content">{routeArray[8] || ""}</span>
+                  散】{" "}
+                  <span className="route-cell-content">
+                    {routeArray[8] || ""}
+                  </span>
                 </div>
               </div>
             </div>
@@ -660,15 +715,21 @@ export function GuideRecordPrintView({
             <span>・食事内容（{record.mealContent || "　　　"}）</span>
           </div>
           <div className="bottom-item">
-            <span className="checkbox">{record.mealAmount === "全量" ? "✓" : ""}</span>
+            <span className="checkbox">
+              {record.mealAmount === "全量" ? "✓" : ""}
+            </span>
             <span>全量</span>
           </div>
           <div className="bottom-item">
-            <span className="checkbox">{record.mealAmount === "半量" ? "✓" : ""}</span>
+            <span className="checkbox">
+              {record.mealAmount === "半量" ? "✓" : ""}
+            </span>
             <span>半量</span>
           </div>
           <div className="bottom-item">
-            <span className="checkbox">{record.mealAmount === "食べず" ? "✓" : ""}</span>
+            <span className="checkbox">
+              {record.mealAmount === "食べず" ? "✓" : ""}
+            </span>
             <span>食べず</span>
           </div>
         </div>
@@ -677,11 +738,15 @@ export function GuideRecordPrintView({
             <span>・服薬</span>
           </div>
           <div className="bottom-item">
-            <span className="checkbox">{record.medicationTaken === true ? "✓" : ""}</span>
+            <span className="checkbox">
+              {record.medicationTaken === true ? "✓" : ""}
+            </span>
             <span>あり</span>
           </div>
           <div className="bottom-item">
-            <span className="checkbox">{record.medicationTaken === false ? "✓" : ""}</span>
+            <span className="checkbox">
+              {record.medicationTaken === false ? "✓" : ""}
+            </span>
             <span>なし</span>
           </div>
           <div className="bottom-item">

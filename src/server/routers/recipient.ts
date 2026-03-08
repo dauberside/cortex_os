@@ -19,13 +19,29 @@ const createRecipientSchema = z.object({
   nameKana: z.string().optional(),
   birthDate: z.date(),
   gender: z.enum(["Male", "Female", "Other"]),
-  disabilityType: z.union([z.array(z.string()), z.string()]).transform(val =>
-    typeof val === 'string' ? val.split(',').map(t => t.trim()).filter(t => t) : val
-  ).default([]),
+  disabilityType: z
+    .union([z.array(z.string()), z.string()])
+    .transform((val) =>
+      typeof val === "string"
+        ? val
+            .split(",")
+            .map((t) => t.trim())
+            .filter((t) => t)
+        : val
+    )
+    .default([]),
   supportLevel: z.number().int().min(0).max(6).nullable().optional(),
-  serviceTypes: z.union([z.array(z.string()), z.string()]).transform(val =>
-    typeof val === 'string' ? val.split(',').map(t => t.trim()).filter(t => t) : val
-  ).default([]),
+  serviceTypes: z
+    .union([z.array(z.string()), z.string()])
+    .transform((val) =>
+      typeof val === "string"
+        ? val
+            .split(",")
+            .map((t) => t.trim())
+            .filter((t) => t)
+        : val
+    )
+    .default([]),
   emergencyContact: z.string().optional(),
   emergencyRelation: z.string().optional(),
   doctor: z.string().optional(),
@@ -68,11 +84,19 @@ const createRecipientSchema = z.object({
   hasSeizures: z.boolean().optional(),
   seizureFrequency: z.string().optional(),
   seizureResponse: z.string().optional(),
-  medication: z.union([z.array(z.string()), z.string()], {
-    message: "服薬情報は文字列または配列で指定してください"
-  }).transform(val =>
-    typeof val === 'string' ? val.split(/[\n,]/).map(m => m.trim()).filter(m => m) : val
-  ).default([]),
+  medication: z
+    .union([z.array(z.string()), z.string()], {
+      message: "服薬情報は文字列または配列で指定してください",
+    })
+    .transform((val) =>
+      typeof val === "string"
+        ? val
+            .split(/[\n,]/)
+            .map((m) => m.trim())
+            .filter((m) => m)
+        : val
+    )
+    .default([]),
   hasPrnMedication: z.boolean().optional(),
   prnMedicationMethod: z.string().optional(),
   hasSeasonalMedication: z.boolean().optional(),
@@ -206,9 +230,17 @@ const createRecipientSchema = z.object({
   mentalHandicapGrade: z.string().optional(),
 
   // 手当・給付情報
-  allowances: z.union([z.array(z.string()), z.string()]).transform(val =>
-    typeof val === 'string' ? val.split(',').map(a => a.trim()).filter(a => a) : val
-  ).default([]),
+  allowances: z
+    .union([z.array(z.string()), z.string()])
+    .transform((val) =>
+      typeof val === "string"
+        ? val
+            .split(",")
+            .map((a) => a.trim())
+            .filter((a) => a)
+        : val
+    )
+    .default([]),
   specialChildAllowance: z.boolean().optional(),
   disabilityAllowance: z.boolean().optional(),
   specialDisabilityAllowance: z.boolean().optional(),
@@ -237,16 +269,18 @@ const createRecipientSchema = z.object({
   // ============================================
 
   // 書類ヘッダー情報
-  documentCreatedDate: z.union([z.date(), z.string()]).transform(val =>
-    typeof val === 'string' ? new Date(val) : val
-  ).optional(),
+  documentCreatedDate: z
+    .union([z.date(), z.string()])
+    .transform((val) => (typeof val === "string" ? new Date(val) : val))
+    .optional(),
   organizationName: z.string().optional(),
   documentHeaderGroupHomeName: z.string().optional(),
   serviceManagerName: z.string().optional(),
   documentEnteredBy: z.string().optional(),
-  documentEnteredAt: z.union([z.date(), z.string()]).transform(val =>
-    typeof val === 'string' ? new Date(val) : val
-  ).optional(),
+  documentEnteredAt: z
+    .union([z.date(), z.string()])
+    .transform((val) => (typeof val === "string" ? new Date(val) : val))
+    .optional(),
 
   // 基本情報拡張
   postalCode: z.string().optional(),
@@ -260,10 +294,9 @@ const createRecipientSchema = z.object({
   familyMembers: z.any().optional(),
 
   // 経済的状況
-  disabilityPensionAmount: z.union([
-    z.number().int().min(0),
-    z.literal("")
-  ]).optional(),
+  disabilityPensionAmount: z
+    .union([z.number().int().min(0), z.literal("")])
+    .optional(),
   publicMedicalCare: z.string().optional(),
   medicalInsuranceTypes: z.any().optional(), // JSON配列
   medicalInsuranceDetail: z.string().optional(),
@@ -338,17 +371,33 @@ function calculateDiff(existing: any, updates: any) {
       // 一方だけが配列（空配列とnullは同一視）
       const normalizedOld = normalizeValue(oldValue);
       const normalizedNew = normalizeValue(newValue);
-      if (Array.isArray(normalizedNew) && normalizedNew.length === 0 && normalizedOld === null) {
+      if (
+        Array.isArray(normalizedNew) &&
+        normalizedNew.length === 0 &&
+        normalizedOld === null
+      ) {
         hasChanged = false;
-      } else if (Array.isArray(normalizedOld) && normalizedOld.length === 0 && normalizedNew === null) {
+      } else if (
+        Array.isArray(normalizedOld) &&
+        normalizedOld.length === 0 &&
+        normalizedNew === null
+      ) {
         hasChanged = false;
       } else {
         hasChanged = true;
       }
-    } else if (typeof newValue === 'object' && newValue !== null && typeof oldValue === 'object' && oldValue !== null) {
+    } else if (
+      typeof newValue === "object" &&
+      newValue !== null &&
+      typeof oldValue === "object" &&
+      oldValue !== null
+    ) {
       // オブジェクト型（familyMembers, emergencyContacts, contactPolicyなど）: JSON.stringifyで比較
       hasChanged = JSON.stringify(newValue) !== JSON.stringify(oldValue);
-    } else if ((typeof newValue === 'object' && newValue !== null) || (typeof oldValue === 'object' && oldValue !== null)) {
+    } else if (
+      (typeof newValue === "object" && newValue !== null) ||
+      (typeof oldValue === "object" && oldValue !== null)
+    ) {
       // 一方だけがオブジェクト（nullオブジェクトとnull/undefinedは同一視）
       const normalizedOld = normalizeValue(oldValue);
       const normalizedNew = normalizeValue(newValue);
@@ -525,17 +574,17 @@ export const recipientRouter = router({
         console.log("Update debug - organizationName:", {
           existing: existing.organizationName,
           input: data.organizationName,
-          inPatch: 'organizationName' in patch,
+          inPatch: "organizationName" in patch,
         });
         console.log("Update debug - documentHeaderGroupHomeName:", {
           existing: existing.documentHeaderGroupHomeName,
           input: data.documentHeaderGroupHomeName,
-          inPatch: 'documentHeaderGroupHomeName' in patch,
+          inPatch: "documentHeaderGroupHomeName" in patch,
         });
         console.log("Update debug - serviceManagerName:", {
           existing: existing.serviceManagerName,
           input: data.serviceManagerName,
-          inPatch: 'serviceManagerName' in patch,
+          inPatch: "serviceManagerName" in patch,
         });
 
         // 変更がない場合はNoop（監査ログも作らない）
@@ -919,49 +968,68 @@ export const recipientRouter = router({
               mobilityNote: dataToCreate.mobilityNote,
             });
             console.log("Total fields:", Object.keys(dataToCreate).length);
-            console.log("All field names:", Object.keys(dataToCreate).sort().join(", "));
+            console.log(
+              "All field names:",
+              Object.keys(dataToCreate).sort().join(", ")
+            );
 
             // 各利用者を個別のトランザクションで作成
-            const recipient = await ctx.db.$transaction(async (tx: Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">) => {
-              // 利用者を作成
-              const newRecipient = await tx.careRecipient.create({
-                data: dataToCreate,
-              });
-
-              // アセスメント情報がある場合は作成
-              if (assessment) {
-                await tx.assessment.create({
-                  data: {
-                    recipientId: newRecipient.id,
-                    userId: currentUserId,
-                    adlMovement: assessment.adlMovement || null,
-                    adlEating: assessment.adlEating || null,
-                    adlToilet: assessment.adlToilet || null,
-                    adlBathing: assessment.adlBathing || null,
-                    adlDressing: assessment.adlDressing || null,
-                    adlGrooming: assessment.adlGrooming || null,
-                    commMethod: assessment.commMethod || null,
-                    commVision: assessment.commVision || null,
-                    commHearing: assessment.commHearing || null,
-                    commSpeech: assessment.commSpeech || null,
-                    lifeRhythm: assessment.lifeRhythm || null,
-                    hobbies: assessment.hobbies || null,
-                    personality: assessment.personality || null,
-                    medicationDetails: assessment.medicationDetails || null,
-                    cautions: assessment.cautions || null,
-                    emergencyNote: assessment.emergencyNote || null,
-                    familyStructure: assessment.familyStructure || null,
-                    supportSystem: assessment.supportSystem || null,
-                  },
+            const recipient = await ctx.db.$transaction(
+              async (
+                tx: Omit<
+                  PrismaClient,
+                  | "$connect"
+                  | "$disconnect"
+                  | "$on"
+                  | "$transaction"
+                  | "$use"
+                  | "$extends"
+                >
+              ) => {
+                // 利用者を作成
+                const newRecipient = await tx.careRecipient.create({
+                  data: dataToCreate,
                 });
-              }
 
-              return newRecipient;
-            });
+                // アセスメント情報がある場合は作成
+                if (assessment) {
+                  await tx.assessment.create({
+                    data: {
+                      recipientId: newRecipient.id,
+                      userId: currentUserId,
+                      adlMovement: assessment.adlMovement || null,
+                      adlEating: assessment.adlEating || null,
+                      adlToilet: assessment.adlToilet || null,
+                      adlBathing: assessment.adlBathing || null,
+                      adlDressing: assessment.adlDressing || null,
+                      adlGrooming: assessment.adlGrooming || null,
+                      commMethod: assessment.commMethod || null,
+                      commVision: assessment.commVision || null,
+                      commHearing: assessment.commHearing || null,
+                      commSpeech: assessment.commSpeech || null,
+                      lifeRhythm: assessment.lifeRhythm || null,
+                      hobbies: assessment.hobbies || null,
+                      personality: assessment.personality || null,
+                      medicationDetails: assessment.medicationDetails || null,
+                      cautions: assessment.cautions || null,
+                      emergencyNote: assessment.emergencyNote || null,
+                      familyStructure: assessment.familyStructure || null,
+                      supportSystem: assessment.supportSystem || null,
+                    },
+                  });
+                }
+
+                return newRecipient;
+              }
+            );
 
             createdRecipients.push(recipient);
           } catch (error) {
-            console.error("Failed to create recipient:", recipientData.name, error);
+            console.error(
+              "Failed to create recipient:",
+              recipientData.name,
+              error
+            );
             creationErrors.push({
               name: recipientData.name,
               error: error instanceof Error ? error.message : "作成エラー",

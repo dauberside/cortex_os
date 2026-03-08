@@ -8,9 +8,33 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 const SHIFTS = [
-  { value: "Day",   label: "日勤",  startH: 9,  startM: 30, endH: 15, endM: 30, nextDay: false },
-  { value: "Late",  label: "遅番",  startH: 12, startM: 0,  endH: 21, endM: 0,  nextDay: false },
-  { value: "Night", label: "夜勤",  startH: 15, startM: 30, endH: 9,  endM: 30, nextDay: true  },
+  {
+    value: "Day",
+    label: "日勤",
+    startH: 9,
+    startM: 30,
+    endH: 15,
+    endM: 30,
+    nextDay: false,
+  },
+  {
+    value: "Late",
+    label: "遅番",
+    startH: 12,
+    startM: 0,
+    endH: 21,
+    endM: 0,
+    nextDay: false,
+  },
+  {
+    value: "Night",
+    label: "夜勤",
+    startH: 15,
+    startM: 30,
+    endH: 9,
+    endM: 30,
+    nextDay: true,
+  },
 ];
 
 function toLocalDatetimeValue(date: Date): string {
@@ -18,9 +42,16 @@ function toLocalDatetimeValue(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-function applyShiftPreset(shiftValue: string, baseDate: Date): { start: string; end: string } {
+function applyShiftPreset(
+  shiftValue: string,
+  baseDate: Date
+): { start: string; end: string } {
   const s = SHIFTS.find((x) => x.value === shiftValue);
-  if (!s) return { start: toLocalDatetimeValue(baseDate), end: toLocalDatetimeValue(baseDate) };
+  if (!s)
+    return {
+      start: toLocalDatetimeValue(baseDate),
+      end: toLocalDatetimeValue(baseDate),
+    };
 
   const start = new Date(baseDate);
   start.setHours(s.startH, s.startM, 0, 0);
@@ -39,8 +70,12 @@ export default function NewLogPage() {
 
   const now = new Date();
   const [shift, setShift] = useState("Night");
-  const [shiftStart, setShiftStart] = useState(() => applyShiftPreset("Night", now).start);
-  const [shiftEnd, setShiftEnd] = useState(() => applyShiftPreset("Night", now).end);
+  const [shiftStart, setShiftStart] = useState(
+    () => applyShiftPreset("Night", now).start
+  );
+  const [shiftEnd, setShiftEnd] = useState(
+    () => applyShiftPreset("Night", now).end
+  );
 
   const handleShiftChange = (value: string) => {
     setShift(value);
@@ -175,7 +210,9 @@ export default function NewLogPage() {
 
         {/* 利用者在籍状況 */}
         <div className="bg-card rounded-lg border p-4 sm:p-6">
-          <h2 className="mb-4 text-base font-semibold sm:text-lg">利用者在籍状況</h2>
+          <h2 className="mb-4 text-base font-semibold sm:text-lg">
+            利用者在籍状況
+          </h2>
           <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-5">
             {[
               { key: "inHouse", label: "在寮" },
@@ -185,7 +222,9 @@ export default function NewLogPage() {
               { key: "homeLeave", label: "帰省" },
             ].map(({ key, label }) => (
               <div key={key}>
-                <label className="mb-1 block text-sm font-medium">{label}</label>
+                <label className="mb-1 block text-sm font-medium">
+                  {label}
+                </label>
                 <input
                   type="number"
                   min={0}
@@ -205,7 +244,9 @@ export default function NewLogPage() {
 
         {/* 重大イベント・申し送り */}
         <div className="bg-card rounded-lg border p-4 sm:p-6">
-          <h2 className="mb-4 text-base font-semibold sm:text-lg">全体トピック・申し送り</h2>
+          <h2 className="mb-4 text-base font-semibold sm:text-lg">
+            全体トピック・申し送り
+          </h2>
           <div className="mb-4">
             <label className="flex cursor-pointer items-center gap-2">
               <input
@@ -233,9 +274,7 @@ export default function NewLogPage() {
           </div>
         </div>
 
-        {error && (
-          <p className="text-destructive text-sm">{error}</p>
-        )}
+        {error && <p className="text-destructive text-sm">{error}</p>}
 
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
           <Link href={`/units/${unitId}/log`} className="w-full sm:w-auto">
@@ -243,7 +282,11 @@ export default function NewLogPage() {
               キャンセル
             </Button>
           </Link>
-          <Button type="submit" disabled={createMutation.isPending} className="w-full sm:w-auto">
+          <Button
+            type="submit"
+            disabled={createMutation.isPending}
+            className="w-full sm:w-auto"
+          >
             {createMutation.isPending ? "作成中..." : "作成して利用者記録へ"}
           </Button>
         </div>

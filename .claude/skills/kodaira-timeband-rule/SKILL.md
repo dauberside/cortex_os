@@ -11,6 +11,7 @@ metadata:
 # Kodaira TimeBandRule
 
 ## Requirements
+
 - Store time band definitions as settings (versioned)
 - Compute DAYTIME / EARLY_LATE / CROSSES_BANDS
 - Persist appliedRuleVersion on ServiceRecord/GuideRecord-derived facts

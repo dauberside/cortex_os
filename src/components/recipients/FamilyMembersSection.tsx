@@ -37,7 +37,15 @@ export function FamilyMembersSection({
     if (familyMembersData?.members && familyMembersData.members.length > 0) {
       return familyMembersData.members;
     }
-    return [{ relation: "", name: "", age: undefined, livingTogether: false, notes: "" }];
+    return [
+      {
+        relation: "",
+        name: "",
+        age: undefined,
+        livingTogether: false,
+        notes: "",
+      },
+    ];
   };
 
   const [diagram, setDiagram] = useState(getInitialDiagram);
@@ -55,7 +63,13 @@ export function FamilyMembersSection({
   const addMember = () => {
     setMembers([
       ...members,
-      { relation: "", name: "", age: undefined, livingTogether: false, notes: "" },
+      {
+        relation: "",
+        name: "",
+        age: undefined,
+        livingTogether: false,
+        notes: "",
+      },
     ]);
   };
 
@@ -77,7 +91,7 @@ export function FamilyMembersSection({
 
   // 家系図を自動生成する関数（3世代対応版）
   const generateDiagram = () => {
-    if (members.length === 0 || members.every(m => !m.relation && !m.name)) {
+    if (members.length === 0 || members.every((m) => !m.relation && !m.name)) {
       alert("家族メンバーを追加してから自動生成してください");
       return;
     }
@@ -88,7 +102,7 @@ export function FamilyMembersSection({
     const siblings: FamilyMember[] = [];
     const others: FamilyMember[] = [];
 
-    members.forEach(member => {
+    members.forEach((member) => {
       if (!member.relation) return;
 
       const relation = member.relation.toLowerCase();
@@ -96,9 +110,13 @@ export function FamilyMembersSection({
         grandparents.push(member);
       } else if (relation.includes("父") || relation.includes("母")) {
         parents.push(member);
-      } else if (relation.includes("兄") || relation.includes("姉") ||
-                 relation.includes("弟") || relation.includes("妹") ||
-                 relation.includes("本人")) {
+      } else if (
+        relation.includes("兄") ||
+        relation.includes("姉") ||
+        relation.includes("弟") ||
+        relation.includes("妹") ||
+        relation.includes("本人")
+      ) {
         siblings.push(member);
       } else {
         others.push(member);
@@ -109,7 +127,7 @@ export function FamilyMembersSection({
 
     // 祖父母の行
     if (grandparents.length > 0) {
-      const gpLabels = grandparents.map(gp => {
+      const gpLabels = grandparents.map((gp) => {
         let text = gp.relation;
         if (gp.livingTogether) text += "◎";
         return text;
@@ -124,7 +142,7 @@ export function FamilyMembersSection({
 
     // 両親の行
     if (parents.length > 0) {
-      const parentLabels = parents.map(p => {
+      const parentLabels = parents.map((p) => {
         let text = p.relation;
         if (p.livingTogether) text += "◎";
         return text;
@@ -143,7 +161,7 @@ export function FamilyMembersSection({
 
     // 兄弟姉妹と本人の行
     if (siblings.length > 0) {
-      const siblingLabels = siblings.map(s => {
+      const siblingLabels = siblings.map((s) => {
         let text = s.relation;
         if (s.livingTogether) text += "◎";
         return text;
@@ -164,14 +182,14 @@ export function FamilyMembersSection({
     // その他の家族
     if (others.length > 0) {
       diagramText += "\n【その他】\n";
-      others.forEach(m => {
+      others.forEach((m) => {
         let text = m.relation;
         if (m.livingTogether) text += "◎";
         diagramText += text + "\n";
       });
     }
 
-    if (members.some(m => m.livingTogether)) {
+    if (members.some((m) => m.livingTogether)) {
       diagramText += "\n※ ◎印は同居を表します";
     }
 
@@ -206,12 +224,13 @@ export function FamilyMembersSection({
         <textarea
           value={diagram}
           onChange={(e) => setDiagram(e.target.value)}
-          className="w-full rounded border px-3 py-2 text-sm font-mono"
+          className="w-full rounded border px-3 py-2 font-mono text-sm"
           rows={8}
           placeholder={`家系図を入力してください（例）：\n    父 ― 母\n      |\n    ┌─┴─┐\n    兄  本人`}
         />
         <p className="text-xs text-gray-500">
-          ※ 下の家族メンバー情報から「自動生成」できます。フェイスシート印刷時に図として表示されます。
+          ※
+          下の家族メンバー情報から「自動生成」できます。フェイスシート印刷時に図として表示されます。
         </p>
       </div>
 
@@ -257,7 +276,9 @@ export function FamilyMembersSection({
                   <input
                     type="text"
                     value={member.relation}
-                    onChange={(e) => updateMember(index, "relation", e.target.value)}
+                    onChange={(e) =>
+                      updateMember(index, "relation", e.target.value)
+                    }
                     className="w-full rounded border px-3 py-2 text-sm"
                     placeholder="父 / 母 / 兄 等"
                   />
@@ -271,7 +292,9 @@ export function FamilyMembersSection({
                   <input
                     type="text"
                     value={member.name}
-                    onChange={(e) => updateMember(index, "name", e.target.value)}
+                    onChange={(e) =>
+                      updateMember(index, "name", e.target.value)
+                    }
                     className="w-full rounded border px-3 py-2 text-sm"
                     placeholder="山田 太郎"
                   />
@@ -322,7 +345,9 @@ export function FamilyMembersSection({
                   <input
                     type="text"
                     value={member.notes || ""}
-                    onChange={(e) => updateMember(index, "notes", e.target.value)}
+                    onChange={(e) =>
+                      updateMember(index, "notes", e.target.value)
+                    }
                     className="w-full rounded border px-3 py-2 text-sm"
                     placeholder="例: キーパーソン、主介護者 等"
                   />

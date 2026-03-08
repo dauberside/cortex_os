@@ -71,7 +71,7 @@ export default function GuideRecordDetailPage() {
   return (
     <>
       {/* 画面表示用 */}
-      <div className="container mx-auto px-4 py-8 no-print">
+      <div className="no-print container mx-auto px-4 py-8">
         <Link href={`/recipients/${recipientId}/guide`}>
           <Button variant="ghost" className="mb-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -202,23 +202,25 @@ export default function GuideRecordDetailPage() {
                 <p className="font-medium">{record.dismissalLocation || "—"}</p>
               </div>
             </div>
-            {record.route && Array.isArray(record.route) && record.route.length > 0 && (
-              <div className="mt-4">
-                <p className="text-muted-foreground mb-2 text-sm">経路</p>
-                <div className="flex flex-wrap items-center gap-2">
-                  {(record.route as string[]).map((place, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm">
-                        {place}
-                      </span>
-                      {index < (record.route as string[]).length - 1 && (
-                        <span className="text-muted-foreground">→</span>
-                      )}
-                    </div>
-                  ))}
+            {record.route &&
+              Array.isArray(record.route) &&
+              record.route.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-muted-foreground mb-2 text-sm">経路</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {(record.route as string[]).map((place, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm">
+                          {place}
+                        </span>
+                        {index < (record.route as string[]).length - 1 && (
+                          <span className="text-muted-foreground">→</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
             {record.transport && record.transport.length > 0 && (
               <div className="mt-4">
                 <p className="text-muted-foreground mb-2 text-sm">移動手段</p>
@@ -245,9 +247,7 @@ export default function GuideRecordDetailPage() {
             <div className="space-y-4">
               {record.supportContent && (
                 <div>
-                  <p className="text-muted-foreground mb-1 text-sm">
-                    支援内容
-                  </p>
+                  <p className="text-muted-foreground mb-1 text-sm">支援内容</p>
                   <p className="whitespace-pre-wrap">{record.supportContent}</p>
                 </div>
               )}
@@ -280,9 +280,7 @@ export default function GuideRecordDetailPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground mb-1 text-sm">
-                    使用金額
-                  </p>
+                  <p className="text-muted-foreground mb-1 text-sm">使用金額</p>
                   <p className="text-2xl font-bold">
                     {usedAmount !== null ? usedAmount.toLocaleString() : "—"}
                     <span className="text-base font-normal">円</span>
@@ -300,70 +298,122 @@ export default function GuideRecordDetailPage() {
               </div>
 
               {/* 金銭詳細内訳 */}
-              {(record.transportExpenses || record.foodExpenses || record.otherExpenses || record.staffMealExpense) && (
+              {(record.transportExpenses ||
+                record.foodExpenses ||
+                record.otherExpenses ||
+                record.staffMealExpense) && (
                 <div className="mt-4 border-t pt-4">
                   <p className="text-muted-foreground mb-3 text-sm font-medium">
                     使用内訳
                   </p>
                   <div className="grid gap-4 md:grid-cols-2">
                     {/* 交通費 */}
-                    {record.transportExpenses && Array.isArray(record.transportExpenses) && (
-                      <div>
-                        <p className="text-muted-foreground mb-2 text-xs">交通費</p>
-                        <div className="space-y-1">
-                          {(record.transportExpenses as Array<{amount: number, description?: string}>)
-                            .filter(item => item.amount > 0)
-                            .map((item, index) => (
-                              <div key={index} className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">{item.description || "—"}</span>
-                                <span className="font-medium">{item.amount.toLocaleString()}円</span>
-                              </div>
-                            ))}
+                    {record.transportExpenses &&
+                      Array.isArray(record.transportExpenses) && (
+                        <div>
+                          <p className="text-muted-foreground mb-2 text-xs">
+                            交通費
+                          </p>
+                          <div className="space-y-1">
+                            {(
+                              record.transportExpenses as Array<{
+                                amount: number;
+                                description?: string;
+                              }>
+                            )
+                              .filter((item) => item.amount > 0)
+                              .map((item, index) => (
+                                <div
+                                  key={index}
+                                  className="flex justify-between text-sm"
+                                >
+                                  <span className="text-muted-foreground">
+                                    {item.description || "—"}
+                                  </span>
+                                  <span className="font-medium">
+                                    {item.amount.toLocaleString()}円
+                                  </span>
+                                </div>
+                              ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* 飲食費 */}
-                    {record.foodExpenses && Array.isArray(record.foodExpenses) && (
-                      <div>
-                        <p className="text-muted-foreground mb-2 text-xs">飲食費</p>
-                        <div className="space-y-1">
-                          {(record.foodExpenses as Array<{amount: number, description?: string}>)
-                            .filter(item => item.amount > 0)
-                            .map((item, index) => (
-                              <div key={index} className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">{item.description || "—"}</span>
-                                <span className="font-medium">{item.amount.toLocaleString()}円</span>
-                              </div>
-                            ))}
+                    {record.foodExpenses &&
+                      Array.isArray(record.foodExpenses) && (
+                        <div>
+                          <p className="text-muted-foreground mb-2 text-xs">
+                            飲食費
+                          </p>
+                          <div className="space-y-1">
+                            {(
+                              record.foodExpenses as Array<{
+                                amount: number;
+                                description?: string;
+                              }>
+                            )
+                              .filter((item) => item.amount > 0)
+                              .map((item, index) => (
+                                <div
+                                  key={index}
+                                  className="flex justify-between text-sm"
+                                >
+                                  <span className="text-muted-foreground">
+                                    {item.description || "—"}
+                                  </span>
+                                  <span className="font-medium">
+                                    {item.amount.toLocaleString()}円
+                                  </span>
+                                </div>
+                              ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* その他費用 */}
-                    {record.otherExpenses && Array.isArray(record.otherExpenses) && (
-                      <div>
-                        <p className="text-muted-foreground mb-2 text-xs">その他</p>
-                        <div className="space-y-1">
-                          {(record.otherExpenses as Array<{amount: number, description?: string}>)
-                            .filter(item => item.amount > 0)
-                            .map((item, index) => (
-                              <div key={index} className="flex justify-between text-sm">
-                                <span className="text-muted-foreground">{item.description || "—"}</span>
-                                <span className="font-medium">{item.amount.toLocaleString()}円</span>
-                              </div>
-                            ))}
+                    {record.otherExpenses &&
+                      Array.isArray(record.otherExpenses) && (
+                        <div>
+                          <p className="text-muted-foreground mb-2 text-xs">
+                            その他
+                          </p>
+                          <div className="space-y-1">
+                            {(
+                              record.otherExpenses as Array<{
+                                amount: number;
+                                description?: string;
+                              }>
+                            )
+                              .filter((item) => item.amount > 0)
+                              .map((item, index) => (
+                                <div
+                                  key={index}
+                                  className="flex justify-between text-sm"
+                                >
+                                  <span className="text-muted-foreground">
+                                    {item.description || "—"}
+                                  </span>
+                                  <span className="font-medium">
+                                    {item.amount.toLocaleString()}円
+                                  </span>
+                                </div>
+                              ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* サポーター食事代 */}
                     {record.staffMealExpense && record.staffMealExpense > 0 && (
                       <div>
-                        <p className="text-muted-foreground mb-2 text-xs">サポーター食事代</p>
+                        <p className="text-muted-foreground mb-2 text-xs">
+                          サポーター食事代
+                        </p>
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">—</span>
-                          <span className="font-medium">{record.staffMealExpense.toLocaleString()}円</span>
+                          <span className="font-medium">
+                            {record.staffMealExpense.toLocaleString()}円
+                          </span>
                         </div>
                       </div>
                     )}
@@ -383,13 +433,17 @@ export default function GuideRecordDetailPage() {
           )}
 
           {/* 食事・服薬情報 */}
-          {(record.mealContent || record.mealAmount || record.medicationTaken !== null) && (
+          {(record.mealContent ||
+            record.mealAmount ||
+            record.medicationTaken !== null) && (
             <div className="bg-card rounded-lg border p-6">
               <h2 className="mb-4 text-xl font-semibold">食事・服薬情報</h2>
               <div className="grid gap-4 md:grid-cols-2">
                 {record.mealContent && (
                   <div>
-                    <p className="text-muted-foreground mb-1 text-sm">食事内容</p>
+                    <p className="text-muted-foreground mb-1 text-sm">
+                      食事内容
+                    </p>
                     <p className="font-medium">{record.mealContent}</p>
                   </div>
                 )}
@@ -409,7 +463,9 @@ export default function GuideRecordDetailPage() {
                 )}
                 {record.medicationTime && (
                   <div>
-                    <p className="text-muted-foreground mb-1 text-sm">服薬時間</p>
+                    <p className="text-muted-foreground mb-1 text-sm">
+                      服薬時間
+                    </p>
                     <p className="font-medium">{record.medicationTime}</p>
                   </div>
                 )}

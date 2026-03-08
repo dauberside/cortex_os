@@ -46,18 +46,30 @@ const guideSchema = z.object({
   cashNote: z.string().optional(),
 
   // 金銭詳細内訳
-  transportExpenses: z.array(z.object({
-    amount: z.coerce.number().int().min(0),
-    description: z.string().optional(), // 交通機関の区間（例：「○○駅から△△駅」）
-  })).default([]),
-  foodExpenses: z.array(z.object({
-    amount: z.coerce.number().int().min(0),
-    description: z.string().optional(), // 飲食の品名（例：「ラーメン」）
-  })).default([]),
-  otherExpenses: z.array(z.object({
-    amount: z.coerce.number().int().min(0),
-    description: z.string().optional(), // その他の品目（例：「入場料」）
-  })).default([]),
+  transportExpenses: z
+    .array(
+      z.object({
+        amount: z.coerce.number().int().min(0),
+        description: z.string().optional(), // 交通機関の区間（例：「○○駅から△△駅」）
+      })
+    )
+    .default([]),
+  foodExpenses: z
+    .array(
+      z.object({
+        amount: z.coerce.number().int().min(0),
+        description: z.string().optional(), // 飲食の品名（例：「ラーメン」）
+      })
+    )
+    .default([]),
+  otherExpenses: z
+    .array(
+      z.object({
+        amount: z.coerce.number().int().min(0),
+        description: z.string().optional(), // その他の品目（例：「入場料」）
+      })
+    )
+    .default([]),
   staffMealExpense: z.coerce.number().int().min(0).optional().or(z.literal("")),
 
   // 食事情報
@@ -95,9 +107,15 @@ export default function NewGuideRecordPage() {
       cashHandled: false,
       medicationTaken: false,
       route: [""],
-      transportExpenses: Array(6).fill(null).map(() => ({ amount: 0, description: "" })),
-      foodExpenses: Array(4).fill(null).map(() => ({ amount: 0, description: "" })),
-      otherExpenses: Array(4).fill(null).map(() => ({ amount: 0, description: "" })),
+      transportExpenses: Array(6)
+        .fill(null)
+        .map(() => ({ amount: 0, description: "" })),
+      foodExpenses: Array(4)
+        .fill(null)
+        .map(() => ({ amount: 0, description: "" })),
+      otherExpenses: Array(4)
+        .fill(null)
+        .map(() => ({ amount: 0, description: "" })),
     },
   });
 
@@ -112,11 +130,24 @@ export default function NewGuideRecordPage() {
   const route = watch("route");
 
   // 金銭計算
-  const totalTransportExpenses = transportExpenses.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
-  const totalFoodExpenses = foodExpenses.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
-  const totalOtherExpenses = otherExpenses.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+  const totalTransportExpenses = transportExpenses.reduce(
+    (sum, item) => sum + (Number(item.amount) || 0),
+    0
+  );
+  const totalFoodExpenses = foodExpenses.reduce(
+    (sum, item) => sum + (Number(item.amount) || 0),
+    0
+  );
+  const totalOtherExpenses = otherExpenses.reduce(
+    (sum, item) => sum + (Number(item.amount) || 0),
+    0
+  );
   const totalStaffMealExpense = Number(staffMealExpense) || 0;
-  const totalExpenses = totalTransportExpenses + totalFoodExpenses + totalOtherExpenses + totalStaffMealExpense;
+  const totalExpenses =
+    totalTransportExpenses +
+    totalFoodExpenses +
+    totalOtherExpenses +
+    totalStaffMealExpense;
 
   const calculatedReturnedAmount =
     handedAmount && String(handedAmount) !== ""
@@ -167,13 +198,22 @@ export default function NewGuideRecordPage() {
         supportContent: data.supportContent || undefined,
         userCondition: data.userCondition || undefined,
         cashHandled: data.cashHandled,
-        handedAmount: data.handedAmount && String(data.handedAmount) !== "" ? Number(data.handedAmount) : undefined,
-        returnedAmount: calculatedReturnedAmount !== null ? calculatedReturnedAmount : undefined,
+        handedAmount:
+          data.handedAmount && String(data.handedAmount) !== ""
+            ? Number(data.handedAmount)
+            : undefined,
+        returnedAmount:
+          calculatedReturnedAmount !== null
+            ? calculatedReturnedAmount
+            : undefined,
         cashNote: data.cashNote || undefined,
         transportExpenses: data.transportExpenses.filter((e) => e.amount > 0),
         foodExpenses: data.foodExpenses.filter((e) => e.amount > 0),
         otherExpenses: data.otherExpenses.filter((e) => e.amount > 0),
-        staffMealExpense: data.staffMealExpense && String(data.staffMealExpense) !== "" ? Number(data.staffMealExpense) : undefined,
+        staffMealExpense:
+          data.staffMealExpense && String(data.staffMealExpense) !== ""
+            ? Number(data.staffMealExpense)
+            : undefined,
         mealContent: data.mealContent || undefined,
         mealAmount: data.mealAmount || undefined,
         medicationTaken: data.medicationTaken,
@@ -372,7 +412,9 @@ export default function NewGuideRecordPage() {
 
               {/* 交通費 */}
               <div>
-                <label className="mb-2 block text-sm font-medium">交通費（6行）</label>
+                <label className="mb-2 block text-sm font-medium">
+                  交通費（6行）
+                </label>
                 <div className="space-y-2">
                   {[0, 1, 2, 3, 4, 5].map((i) => (
                     <div key={`transport-${i}`} className="flex gap-2">
@@ -381,7 +423,10 @@ export default function NewGuideRecordPage() {
                         value={transportExpenses[i]?.description || ""}
                         onChange={(e) => {
                           const newExpenses = [...transportExpenses];
-                          newExpenses[i] = { ...newExpenses[i], description: e.target.value };
+                          newExpenses[i] = {
+                            ...newExpenses[i],
+                            description: e.target.value,
+                          };
                           setValue("transportExpenses", newExpenses);
                         }}
                         className="flex-1 rounded-md border px-3 py-2"
@@ -393,7 +438,10 @@ export default function NewGuideRecordPage() {
                         value={transportExpenses[i]?.amount || ""}
                         onChange={(e) => {
                           const newExpenses = [...transportExpenses];
-                          newExpenses[i] = { ...newExpenses[i], amount: Number(e.target.value) || 0 };
+                          newExpenses[i] = {
+                            ...newExpenses[i],
+                            amount: Number(e.target.value) || 0,
+                          };
                           setValue("transportExpenses", newExpenses);
                         }}
                         className="w-24 rounded-md border px-3 py-2"
@@ -410,7 +458,9 @@ export default function NewGuideRecordPage() {
 
               {/* 飲食費 */}
               <div>
-                <label className="mb-2 block text-sm font-medium">飲食費（4行）</label>
+                <label className="mb-2 block text-sm font-medium">
+                  飲食費（4行）
+                </label>
                 <div className="space-y-2">
                   {[0, 1, 2, 3].map((i) => (
                     <div key={`food-${i}`} className="flex gap-2">
@@ -419,7 +469,10 @@ export default function NewGuideRecordPage() {
                         value={foodExpenses[i]?.description || ""}
                         onChange={(e) => {
                           const newExpenses = [...foodExpenses];
-                          newExpenses[i] = { ...newExpenses[i], description: e.target.value };
+                          newExpenses[i] = {
+                            ...newExpenses[i],
+                            description: e.target.value,
+                          };
                           setValue("foodExpenses", newExpenses);
                         }}
                         className="flex-1 rounded-md border px-3 py-2"
@@ -431,7 +484,10 @@ export default function NewGuideRecordPage() {
                         value={foodExpenses[i]?.amount || ""}
                         onChange={(e) => {
                           const newExpenses = [...foodExpenses];
-                          newExpenses[i] = { ...newExpenses[i], amount: Number(e.target.value) || 0 };
+                          newExpenses[i] = {
+                            ...newExpenses[i],
+                            amount: Number(e.target.value) || 0,
+                          };
                           setValue("foodExpenses", newExpenses);
                         }}
                         className="w-24 rounded-md border px-3 py-2"
@@ -448,7 +504,9 @@ export default function NewGuideRecordPage() {
 
               {/* その他 */}
               <div>
-                <label className="mb-2 block text-sm font-medium">その他（4行）</label>
+                <label className="mb-2 block text-sm font-medium">
+                  その他（4行）
+                </label>
                 <div className="space-y-2">
                   {[0, 1, 2, 3].map((i) => (
                     <div key={`other-${i}`} className="flex gap-2">
@@ -457,7 +515,10 @@ export default function NewGuideRecordPage() {
                         value={otherExpenses[i]?.description || ""}
                         onChange={(e) => {
                           const newExpenses = [...otherExpenses];
-                          newExpenses[i] = { ...newExpenses[i], description: e.target.value };
+                          newExpenses[i] = {
+                            ...newExpenses[i],
+                            description: e.target.value,
+                          };
                           setValue("otherExpenses", newExpenses);
                         }}
                         className="flex-1 rounded-md border px-3 py-2"
@@ -469,7 +530,10 @@ export default function NewGuideRecordPage() {
                         value={otherExpenses[i]?.amount || ""}
                         onChange={(e) => {
                           const newExpenses = [...otherExpenses];
-                          newExpenses[i] = { ...newExpenses[i], amount: Number(e.target.value) || 0 };
+                          newExpenses[i] = {
+                            ...newExpenses[i],
+                            amount: Number(e.target.value) || 0,
+                          };
                           setValue("otherExpenses", newExpenses);
                         }}
                         className="w-24 rounded-md border px-3 py-2"
@@ -501,29 +565,31 @@ export default function NewGuideRecordPage() {
               {/* 合計・残金 */}
               <div className="rounded-md border border-orange-200 bg-orange-50 px-4 py-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">最初にあったお金</span>
+                  <span className="text-muted-foreground">
+                    最初にあったお金
+                  </span>
                   <span>{Number(handedAmount || 0).toLocaleString()}円</span>
                 </div>
 
                 {/* 使用内訳 */}
                 <div className="mt-2 space-y-1 border-t border-orange-200 pt-2">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center justify-between text-xs">
                     <span className="pl-2">交通費</span>
                     <span>{totalTransportExpenses.toLocaleString()}円</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center justify-between text-xs">
                     <span className="pl-2">飲食費</span>
                     <span>{totalFoodExpenses.toLocaleString()}円</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center justify-between text-xs">
                     <span className="pl-2">その他</span>
                     <span>{totalOtherExpenses.toLocaleString()}円</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="text-muted-foreground flex items-center justify-between text-xs">
                     <span className="pl-2">サポーター食事代</span>
                     <span>{totalStaffMealExpense.toLocaleString()}円</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm font-medium pt-1">
+                  <div className="flex items-center justify-between pt-1 text-sm font-medium">
                     <span className="text-muted-foreground">使用合計</span>
                     <span>{totalExpenses.toLocaleString()}円</span>
                   </div>
@@ -533,7 +599,8 @@ export default function NewGuideRecordPage() {
                   <span>のこったお金</span>
                   <span
                     className={
-                      calculatedReturnedAmount !== null && calculatedReturnedAmount < 0
+                      calculatedReturnedAmount !== null &&
+                      calculatedReturnedAmount < 0
                         ? "text-destructive"
                         : "text-orange-700"
                     }
@@ -544,11 +611,12 @@ export default function NewGuideRecordPage() {
                     円
                   </span>
                 </div>
-                {calculatedReturnedAmount !== null && calculatedReturnedAmount < 0 && (
-                  <p className="text-destructive mt-1 text-xs">
-                    使用金額が最初にあったお金を超えています
-                  </p>
-                )}
+                {calculatedReturnedAmount !== null &&
+                  calculatedReturnedAmount < 0 && (
+                    <p className="text-destructive mt-1 text-xs">
+                      使用金額が最初にあったお金を超えています
+                    </p>
+                  )}
               </div>
 
               <div>

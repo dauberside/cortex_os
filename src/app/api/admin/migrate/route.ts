@@ -1,17 +1,14 @@
-import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export async function POST() {
   try {
     const session = await auth();
 
     // MANAGER権限のみ実行可能
-    if (!session || session.user.role !== 'MANAGER') {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
+    if (!session || session.user.role !== "MANAGER") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     // マイグレーションSQL
@@ -26,13 +23,10 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: 'Migration executed successfully',
+      message: "Migration executed successfully",
     });
   } catch (error: any) {
-    console.error('Migration error:', error);
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    );
+    console.error("Migration error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

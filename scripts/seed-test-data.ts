@@ -183,14 +183,26 @@ async function main() {
 
   console.log("\n📊 Test Data Summary:");
   console.log("---");
-  console.log(`👤 Users: ${staffUser.email} (STAFF), ${leadUser.email} (LEAD), ${managerUser.email} (MANAGER)`);
-  console.log(`🏠 Units: ${unitA.name} (${unitA.id}), ${unitB.name} (${unitB.id})`);
-  console.log(`👥 Recipients: ${recipient1.name}, ${recipient2.name}, ${recipient3.name}`);
+  console.log(
+    `👤 Users: ${staffUser.email} (STAFF), ${leadUser.email} (LEAD), ${managerUser.email} (MANAGER)`
+  );
+  console.log(
+    `🏠 Units: ${unitA.name} (${unitA.id}), ${unitB.name} (${unitB.id})`
+  );
+  console.log(
+    `👥 Recipients: ${recipient1.name}, ${recipient2.name}, ${recipient3.name}`
+  );
   console.log("---");
   console.log("\n🔐 Access Control Test:");
-  console.log(`- STAFF (${staffUser.email}): ユニットA所属 → 利用者1,2を閲覧可、利用者1のみ編集可`);
-  console.log(`- LEAD (${leadUser.email}): ユニットA所属 → 利用者1,2を閲覧・編集可`);
-  console.log(`- MANAGER (${managerUser.email}): 全ユニット → 全利用者を閲覧・編集可`);
+  console.log(
+    `- STAFF (${staffUser.email}): ユニットA所属 → 利用者1,2を閲覧可、利用者1のみ編集可`
+  );
+  console.log(
+    `- LEAD (${leadUser.email}): ユニットA所属 → 利用者1,2を閲覧・編集可`
+  );
+  console.log(
+    `- MANAGER (${managerUser.email}): 全ユニット → 全利用者を閲覧・編集可`
+  );
 }
 
 main()

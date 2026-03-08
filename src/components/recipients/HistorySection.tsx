@@ -6,10 +6,7 @@ interface HistorySectionProps {
   register: UseFormRegister<RecipientFormData>;
 }
 
-export function HistorySection({
-  register,
-}: HistorySectionProps) {
-
+export function HistorySection({ register }: HistorySectionProps) {
   return (
     <div className="space-y-6">
       {/* 生活歴 */}
@@ -22,9 +19,7 @@ export function HistorySection({
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium">
-            主な生活歴
-          </label>
+          <label className="block text-sm font-medium">主な生活歴</label>
           <textarea
             {...register("lifeHistory")}
             className="w-full rounded border px-3 py-2 text-sm"

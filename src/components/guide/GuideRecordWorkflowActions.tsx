@@ -30,14 +30,16 @@ export function GuideRecordWorkflowActions({
   const { data: session } = useSession();
 
   // 閲覧済みマーク権限チェック（LEAD または MANAGER のみ）
-  const canReview = session?.user?.role === "LEAD" || session?.user?.role === "MANAGER";
+  const canReview =
+    session?.user?.role === "LEAD" || session?.user?.role === "MANAGER";
 
   // 提出権限チェック（STAFF: 自分が作成した利用者の記録のみ、LEAD/MANAGER: 同一ユニット内）
   const canSubmit =
     session?.user?.role === "MANAGER" ||
     session?.user?.role === "LEAD" ||
     (session?.user?.role === "STAFF" &&
-      (recipientCreatedBy === null || recipientCreatedBy === session?.user?.id));
+      (recipientCreatedBy === null ||
+        recipientCreatedBy === session?.user?.id));
 
   const submitMutation = trpc.guideRecord.submit.useMutation({
     onSuccess: () => {
@@ -95,7 +97,7 @@ export function GuideRecordWorkflowActions({
     // 閲覧済みの場合はバッジ表示
     if (reviewedAt) {
       return (
-        <div className="rounded-md border border-green-200 bg-green-50 px-3 py-1.5 text-xs text-green-800 flex items-center gap-1">
+        <div className="flex items-center gap-1 rounded-md border border-green-200 bg-green-50 px-3 py-1.5 text-xs text-green-800">
           <CheckCircle className="h-3 w-3" />
           閲覧済み
         </div>

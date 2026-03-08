@@ -55,7 +55,9 @@ export default function NewRecipientPage() {
     },
   });
 
-  const handleCSVUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCSVUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -75,10 +77,18 @@ export default function NewRecipientPage() {
       // フォームに値を設定
       reset({
         ...csvData,
-        birthDate: csvData.birthDate ? csvData.birthDate.toISOString().split('T')[0] : "",
-        receivedDate: csvData.receivedDate ? csvData.receivedDate.toISOString().split('T')[0] : undefined,
-        validUntil: csvData.validUntil ? csvData.validUntil.toISOString().split('T')[0] : undefined,
-        careInsuranceExpiry: csvData.careInsuranceExpiry ? csvData.careInsuranceExpiry.toISOString().split('T')[0] : undefined,
+        birthDate: csvData.birthDate
+          ? csvData.birthDate.toISOString().split("T")[0]
+          : "",
+        receivedDate: csvData.receivedDate
+          ? csvData.receivedDate.toISOString().split("T")[0]
+          : undefined,
+        validUntil: csvData.validUntil
+          ? csvData.validUntil.toISOString().split("T")[0]
+          : undefined,
+        careInsuranceExpiry: csvData.careInsuranceExpiry
+          ? csvData.careInsuranceExpiry.toISOString().split("T")[0]
+          : undefined,
         disabilityType: csvData.disabilityType || [],
         serviceTypes: csvData.serviceTypes || [],
         allowances: csvData.allowances || [],
@@ -87,7 +97,11 @@ export default function NewRecipientPage() {
       alert("CSVファイルからデータを読み込みました");
     } catch (error) {
       console.error("CSV読み込みエラー:", error);
-      setCsvError(error instanceof Error ? error.message : "CSVファイルの読み込みに失敗しました");
+      setCsvError(
+        error instanceof Error
+          ? error.message
+          : "CSVファイルの読み込みに失敗しました"
+      );
     }
   };
 
@@ -144,25 +158,21 @@ export default function NewRecipientPage() {
       </p>
 
       {/* CSVアップロード */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
         <div className="flex items-start gap-3">
-          <Upload className="h-5 w-5 text-blue-600 mt-0.5" />
+          <Upload className="mt-0.5 h-5 w-5 text-blue-600" />
           <div className="flex-1">
-            <h3 className="font-semibold text-blue-900 mb-2">CSVファイルから情報を読み込む</h3>
-            <p className="text-sm text-blue-800 mb-3">
+            <h3 className="mb-2 font-semibold text-blue-900">
+              CSVファイルから情報を読み込む
+            </h3>
+            <p className="mb-3 text-sm text-blue-800">
               利用者登録テンプレートCSVファイルをアップロードすると、フォームに自動入力されます。
             </p>
             <input
               type="file"
               accept=".csv"
               onChange={handleCSVUpload}
-              className="block w-full text-sm text-gray-500
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-md file:border-0
-                file:text-sm file:font-semibold
-                file:bg-blue-600 file:text-white
-                hover:file:bg-blue-700
-                cursor-pointer"
+              className="block w-full cursor-pointer text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-700"
             />
             {csvError && (
               <p className="mt-2 text-sm text-red-600">{csvError}</p>
@@ -201,10 +211,7 @@ export default function NewRecipientPage() {
             <label className="mb-2 block text-sm font-medium">
               氏名（カナ）
             </label>
-            <KanaInput
-              {...register("nameKana")}
-              hasError={!!errors.nameKana}
-            />
+            <KanaInput {...register("nameKana")} hasError={!!errors.nameKana} />
             <FieldError message={errors.nameKana?.message} />
             <p className="mt-1 text-xs text-gray-500">
               ※ひらがなで入力するとカタカナに自動変換されます
@@ -330,7 +337,9 @@ export default function NewRecipientPage() {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium">障害支援区分</label>
+              <label className="mb-2 block text-sm font-medium">
+                障害支援区分
+              </label>
               <select
                 {...register("supportLevel")}
                 className="w-full rounded-md border px-3 py-2"
@@ -360,9 +369,7 @@ export default function NewRecipientPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-2 block text-sm font-medium">
-                  主治医
-                </label>
+                <label className="mb-2 block text-sm font-medium">主治医</label>
                 <input
                   {...register("doctor")}
                   className="w-full rounded-md border px-3 py-2"
@@ -424,10 +431,15 @@ export default function NewRecipientPage() {
         >
           <div className="space-y-4">
             <div>
-              <label className="mb-2 block text-sm font-medium">利用サービス種別</label>
+              <label className="mb-2 block text-sm font-medium">
+                利用サービス種別
+              </label>
               <div className="grid grid-cols-2 gap-2">
                 {getEnabledServiceTypes().map((type) => (
-                  <label key={type.value} className="flex items-center gap-2 text-sm">
+                  <label
+                    key={type.value}
+                    className="flex items-center gap-2 text-sm"
+                  >
                     <input
                       type="checkbox"
                       value={type.value}
@@ -456,7 +468,9 @@ export default function NewRecipientPage() {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <label className="mb-2 block text-sm font-medium">受給者番号</label>
+                <label className="mb-2 block text-sm font-medium">
+                  受給者番号
+                </label>
                 <input
                   {...register("recipientNumber")}
                   className="w-full rounded-md border px-3 py-2"
@@ -464,7 +478,9 @@ export default function NewRecipientPage() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium">受給者証交付日</label>
+                <label className="mb-2 block text-sm font-medium">
+                  受給者証交付日
+                </label>
                 <input
                   type="date"
                   {...register("receivedDate")}
@@ -472,7 +488,9 @@ export default function NewRecipientPage() {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium">受給者証有効期限</label>
+                <label className="mb-2 block text-sm font-medium">
+                  受給者証有効期限
+                </label>
                 <input
                   type="date"
                   {...register("validUntil")}
@@ -495,7 +513,9 @@ export default function NewRecipientPage() {
                   行動援護サービスが必要（行動障害スコア10点以上）
                 </label>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">行動関連項目合計点数</label>
+                  <label className="mb-1 block text-sm font-medium">
+                    行動関連項目合計点数
+                  </label>
                   <input
                     type="number"
                     {...register("behaviorScore")}
@@ -504,7 +524,9 @@ export default function NewRecipientPage() {
                     min="0"
                     max="100"
                   />
-                  <p className="text-muted-foreground mt-1 text-xs">※10点以上で行動援護の対象となります</p>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    ※10点以上で行動援護の対象となります
+                  </p>
                 </div>
               </div>
             </div>
@@ -513,7 +535,10 @@ export default function NewRecipientPage() {
               <label className="mb-2 block text-sm font-medium">適用加算</label>
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {ALLOWANCE_OPTIONS.map((opt) => (
-                  <label key={opt.value} className="flex items-center gap-2 text-sm">
+                  <label
+                    key={opt.value}
+                    className="flex items-center gap-2 text-sm"
+                  >
                     <input
                       type="checkbox"
                       value={opt.value}
@@ -579,7 +604,9 @@ export default function NewRecipientPage() {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium">自宅電話</label>
+                <label className="mb-1 block text-sm font-medium">
+                  自宅電話
+                </label>
                 <PhoneInput
                   {...register("homePhone")}
                   hasError={!!errors.homePhone}
@@ -587,7 +614,7 @@ export default function NewRecipientPage() {
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="mb-2 flex items-center gap-2">
                     <input
                       type="checkbox"
                       {...register("hasMobilePhone")}
@@ -609,7 +636,9 @@ export default function NewRecipientPage() {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium">最寄り駅</label>
+                <label className="mb-1 block text-sm font-medium">
+                  最寄り駅
+                </label>
                 <input
                   type="text"
                   {...register("nearestStation")}
@@ -617,7 +646,9 @@ export default function NewRecipientPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">徒歩分数</label>
+                <label className="mb-1 block text-sm font-medium">
+                  徒歩分数
+                </label>
                 <input
                   type="text"
                   {...register("walkingMinutes")}
@@ -629,10 +660,14 @@ export default function NewRecipientPage() {
 
             {/* GH情報 */}
             <div className="border-t pt-4">
-              <h3 className="mb-3 text-base font-semibold">GH（グループホーム）情報</h3>
+              <h3 className="mb-3 text-base font-semibold">
+                GH（グループホーム）情報
+              </h3>
               <div className="space-y-3">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">生活形態</label>
+                  <label className="mb-1 block text-sm font-medium">
+                    生活形態
+                  </label>
                   <select
                     {...register("livingType")}
                     className="w-full rounded-md border px-3 py-2 text-sm"
@@ -645,7 +680,9 @@ export default function NewRecipientPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">GH名称</label>
+                  <label className="mb-1 block text-sm font-medium">
+                    GH名称
+                  </label>
                   <input
                     type="text"
                     {...register("ghName")}
@@ -653,7 +690,9 @@ export default function NewRecipientPage() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">GH住所</label>
+                  <label className="mb-1 block text-sm font-medium">
+                    GH住所
+                  </label>
                   <input
                     type="text"
                     {...register("ghAddress")}
@@ -819,7 +858,9 @@ export default function NewRecipientPage() {
               <h3 className="text-base font-semibold">健康・服薬</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">障害名</label>
+                  <label className="mb-1 block text-sm font-medium">
+                    障害名
+                  </label>
                   <input
                     type="text"
                     {...register("disabilityName")}
@@ -1038,9 +1079,7 @@ export default function NewRecipientPage() {
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">
-                  留意点
-                </label>
+                <label className="mb-1 block text-sm font-medium">留意点</label>
                 <textarea
                   {...register("toiletNote")}
                   className="w-full rounded-md border px-3 py-2 text-sm"
@@ -1072,9 +1111,7 @@ export default function NewRecipientPage() {
                 </div>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">
-                  留意点
-                </label>
+                <label className="mb-1 block text-sm font-medium">留意点</label>
                 <textarea
                   {...register("mobilityNote")}
                   className="w-full rounded-md border px-3 py-2 text-sm"
@@ -1138,9 +1175,7 @@ export default function NewRecipientPage() {
                 </div>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">
-                  留意点
-                </label>
+                <label className="mb-1 block text-sm font-medium">留意点</label>
                 <textarea
                   {...register("commNote")}
                   className="w-full rounded-md border px-3 py-2 text-sm"

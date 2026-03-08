@@ -181,7 +181,10 @@ export function formatFieldValue(fieldName: string, value: any): string {
   }
 
   // 日付
-  if (value instanceof Date || (typeof value === "string" && !isNaN(Date.parse(value)))) {
+  if (
+    value instanceof Date ||
+    (typeof value === "string" && !isNaN(Date.parse(value)))
+  ) {
     try {
       const date = value instanceof Date ? value : new Date(value);
       return date.toLocaleDateString("ja-JP");

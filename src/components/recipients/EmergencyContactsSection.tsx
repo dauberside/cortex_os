@@ -25,13 +25,18 @@ export function EmergencyContactsSection({
 
   // 初期値を計算（useStateの初期化時のみ実行される）
   const getInitialContacts = () => {
-    if (emergencyContactsData && Array.isArray(emergencyContactsData) && emergencyContactsData.length > 0) {
+    if (
+      emergencyContactsData &&
+      Array.isArray(emergencyContactsData) &&
+      emergencyContactsData.length > 0
+    ) {
       return emergencyContactsData;
     }
     return [{ nameKana: "", name: "", relationship: "", phone: "", fax: "" }];
   };
 
-  const [contacts, setContacts] = useState<EmergencyContact[]>(getInitialContacts);
+  const [contacts, setContacts] =
+    useState<EmergencyContact[]>(getInitialContacts);
 
   // データ変更時にフォームに反映
   useEffect(() => {
@@ -39,7 +44,10 @@ export function EmergencyContactsSection({
   }, [contacts, setValue]);
 
   const addContact = () => {
-    setContacts([...contacts, { nameKana: "", name: "", relationship: "", phone: "", fax: "" }]);
+    setContacts([
+      ...contacts,
+      { nameKana: "", name: "", relationship: "", phone: "", fax: "" },
+    ]);
   };
 
   const removeContact = (index: number) => {
@@ -48,7 +56,11 @@ export function EmergencyContactsSection({
     }
   };
 
-  const updateContact = (index: number, field: keyof EmergencyContact, value: string) => {
+  const updateContact = (
+    index: number,
+    field: keyof EmergencyContact,
+    value: string
+  ) => {
     const newContacts = [...contacts];
     newContacts[index] = { ...newContacts[index], [field]: value };
     setContacts(newContacts);
@@ -101,7 +113,9 @@ export function EmergencyContactsSection({
                 <input
                   type="text"
                   value={contact.nameKana}
-                  onChange={(e) => updateContact(index, "nameKana", e.target.value)}
+                  onChange={(e) =>
+                    updateContact(index, "nameKana", e.target.value)
+                  }
                   className="w-full rounded border px-3 py-2 text-sm"
                   placeholder="やまだ はなこ"
                 />
@@ -129,7 +143,9 @@ export function EmergencyContactsSection({
                 <input
                   type="text"
                   value={contact.relationship}
-                  onChange={(e) => updateContact(index, "relationship", e.target.value)}
+                  onChange={(e) =>
+                    updateContact(index, "relationship", e.target.value)
+                  }
                   className="w-full rounded border px-3 py-2 text-sm"
                   placeholder="母"
                 />
@@ -143,7 +159,9 @@ export function EmergencyContactsSection({
                 <input
                   type="tel"
                   value={contact.phone}
-                  onChange={(e) => updateContact(index, "phone", e.target.value)}
+                  onChange={(e) =>
+                    updateContact(index, "phone", e.target.value)
+                  }
                   className="w-full rounded border px-3 py-2 text-sm"
                   placeholder="03-1234-5678"
                 />

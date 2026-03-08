@@ -34,10 +34,7 @@ export default function Header() {
           <nav className="hidden items-center gap-4 sm:flex">
             {NAV_ITEMS.map((item) => {
               // STAFF はサービス実績にアクセス不可
-              if (
-                item.href === "/service-records" &&
-                userRole === "STAFF"
-              ) {
+              if (item.href === "/service-records" && userRole === "STAFF") {
                 return null;
               }
 

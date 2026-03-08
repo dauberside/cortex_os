@@ -64,10 +64,13 @@ Vercelダッシュボードで以下の環境変数を設定してください�
 ## トラブルシューティング
 
 ### エラー: "Invalid cloud_name"
+
 → `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`が正しく設定されているか確認してください。
 
 ### エラー: "Invalid API credentials"
+
 → `CLOUDINARY_API_KEY`と`CLOUDINARY_API_SECRET`が正しいか確認してください。
 
 ### アップロードが失敗する
+
 → ブラウザのコンソールでエラーメッセージを確認し、ファイルサイズが5MB以下か確認してください。

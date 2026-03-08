@@ -1,18 +1,22 @@
 # Prisma Schema 拡張提案
 
 ## 概要
+
 引き継ぎ文書（`docs/archive/引き継ぎ用.md`）で特定された紙ベースのフェイスシート・アセスメントシートの全項目を、デジタル化するためのPrismaスキーマ拡張提案。
 
 ## 分析結果サマリー
 
 ### 既存のCareRecipientモデルの状況
+
 - 基本情報の多くは実装済み（氏名、生年月日、性別、住所、電話など）
 - サービス・受給者証情報は実装済み
 - 障害福祉制度情報の基本は実装済み
 - 性格・支援方法の基本は実装済み
 
 ### 不足している項目
+
 以下のカテゴリーで追加フィールドが必要：
+
 1. **書類ヘッダー情報**（作成日、法人名、サービス管理責任者名など）
 2. **緊急連絡先詳細**（FAX番号）
 3. **家族構成**（構造化データまたは自由記述）
@@ -28,12 +32,14 @@
 13. **人柄**（自由記述）
 
 ### 既存のAssessmentモデルの状況
+
 - 基本的な評価項目は実装済み（ADL、コミュニケーション、認知など）
 - しかし、紙のアセスメントシートの詳細項目とは一部異なる
 
 ## 拡張案1: CareRecipientモデルの拡張
 
 ### 1-1. 書類ヘッダー情報（オプション）
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...
@@ -49,6 +55,7 @@ model CareRecipient {
 **推奨**: これらは別途DocumentHeaderテーブルを作成する方が適切かもしれない（複数バージョン管理の観点から）
 
 ### 1-2. 緊急連絡先詳細
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...
@@ -59,6 +66,7 @@ model CareRecipient {
 ```
 
 ### 1-3. 家族構成
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...
@@ -71,6 +79,7 @@ model CareRecipient {
 **検討事項**: 将来的にFamilyMemberテーブルとして正規化するか？
 
 ### 1-4. 経済的状況詳細
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...
@@ -90,6 +99,7 @@ model CareRecipient {
 ```
 
 ### 1-5. 生活歴（年表）
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...
@@ -104,6 +114,7 @@ model CareRecipient {
 **推奨**: 将来的にLifeHistoryEventテーブルとして正規化
 
 ### 1-6. 医療情報詳細
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...
@@ -145,6 +156,7 @@ model CareRecipient {
 ```
 
 ### 1-7. サービス利用状況詳細
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...
@@ -163,6 +175,7 @@ model CareRecipient {
 ```
 
 ### 1-8. 趣味・関心・余暇・嗜好
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...（既存のhobbiesに加えて）
@@ -180,6 +193,7 @@ model CareRecipient {
 ```
 
 ### 1-9. こだわり
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...
@@ -191,6 +205,7 @@ model CareRecipient {
 ```
 
 ### 1-10. 自傷・他害・パニック
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...
@@ -203,6 +218,7 @@ model CareRecipient {
 ```
 
 ### 1-11. 感覚（過敏・鈍麻）
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...（既存のsensoryNoteに加えて）
@@ -218,6 +234,7 @@ model CareRecipient {
 ```
 
 ### 1-12. 人柄
+
 ```prisma
 model CareRecipient {
   // ... 既存フィールド ...（既存のpersonalityNoteと重複確認）
@@ -234,6 +251,7 @@ model CareRecipient {
 紙のアセスメントシートとの対応を確認し、以下の項目を追加・調整：
 
 ### 2-1. ヘッダー情報の追加
+
 ```prisma
 model Assessment {
   // ... 既存フィールド ...
@@ -254,6 +272,7 @@ model Assessment {
 ```
 
 ### 2-2. 表現のコミュニケーション（チェックボックス形式）
+
 ```prisma
 model Assessment {
   // ... 既存フィールド ...
@@ -266,6 +285,7 @@ model Assessment {
 ```
 
 ### 2-3. 理解のコミュニケーション（チェックボックス形式）
+
 ```prisma
 model Assessment {
   // ... 既存フィールド ...
@@ -280,6 +300,7 @@ model Assessment {
 ```
 
 ### 2-4. 身辺自立（3段階評価＋支援メモ）
+
 ```prisma
 model Assessment {
   // ... 既存フィールド ...
@@ -306,6 +327,7 @@ model Assessment {
 データの正規化と将来の拡張性を考慮し、以下のテーブル作成を推奨：
 
 ### 3-1. FamilyMember（家族構成）
+
 ```prisma
 model FamilyMember {
   id              String        @id @default(cuid())
@@ -327,6 +349,7 @@ model FamilyMember {
 ```
 
 ### 3-2. LifeHistoryEvent（生活歴）
+
 ```prisma
 model LifeHistoryEvent {
   id              String        @id @default(cuid())
@@ -348,6 +371,7 @@ model LifeHistoryEvent {
 ```
 
 ### 3-3. MedicalVisit（通院情報）
+
 ```prisma
 model MedicalVisit {
   id              String        @id @default(cuid())
@@ -369,6 +393,7 @@ model MedicalVisit {
 ```
 
 ### 3-4. ServiceUsage（サービス利用状況）
+
 ```prisma
 model ServiceUsage {
   id              String        @id @default(cuid())
@@ -391,7 +416,9 @@ model ServiceUsage {
 ## 実装推奨順序
 
 ### Phase 1: 即時実装（高優先度）
+
 CareRecipientモデルに追加:
+
 1. 緊急連絡先FAX（emergencyContactFax）
 2. 感覚詳細フィールド（sensorySound, sensoryLight, sensoryTaste, sensoryTouch, sensorySmell, sensoryOther）
 3. こだわり（obsessionPast, obsessionCurrent）
@@ -401,17 +428,20 @@ CareRecipientモデルに追加:
 7. 発作詳細（seizureTimePattern, seizureResponse, seizureHistoryNote）
 
 Assessmentモデルに追加:
+
 1. ヘッダー情報（スナップショット）
 2. 表現のコミュニケーション（配列フィールド）
 3. 理解のコミュニケーション（配列フィールド）
 
 ### Phase 2: 中期実装（中優先度）
+
 1. 経済的状況詳細（年金、医療保険）
 2. サービス利用状況詳細（成年後見制度、権利擁護事業）
 3. 医療情報詳細（通院詳細、塗薬等）
 4. 家族構成（まずはfamilyStructureDiagramで自由記述、後にFamilyMemberテーブル化）
 
 ### Phase 3: 長期実装（正規化）
+
 1. FamilyMemberテーブル作成
 2. LifeHistoryEventテーブル作成
 3. MedicalVisitテーブル作成
@@ -419,6 +449,7 @@ Assessmentモデルに追加:
 5. 既存データの移行
 
 ### Phase 4: 最適化
+
 1. 書類ヘッダー情報の管理方法検討（DocumentHeaderテーブル？）
 2. JSON配列フィールドの専用テーブル化検討
 3. パフォーマンス最適化（インデックス追加等）
@@ -426,19 +457,25 @@ Assessmentモデルに追加:
 ## データ型とバリデーションの推奨
 
 ### String[] 配列フィールドの使用
+
 以下のフィールドは複数選択可能なため、String配列を推奨：
+
 - healthInsuranceTypes
 - commExpressionMethods
 - commUnderstandMethods
 - commCognitionLevels
 
 ### Enumの検討
+
 以下のフィールドはEnum化を検討：
+
 - guardianshipType: "補助" | "補佐" | "後見"
 - adlEating, adlToiletSmall, etc.: "自立" | "ある程度できる" | "できない"
 
 ### Jsonフィールドの使用
+
 以下のフィールドは構造化データのためJsonを推奨（Phase 3で正規化）：
+
 - lifeHistory
 - workHistory
 - medicalVisits
@@ -447,6 +484,7 @@ Assessmentモデルに追加:
 ## バックワード互換性
 
 既存データとの互換性を保つため：
+
 1. 新規フィールドはすべて`optional`（?）とする
 2. 既存フィールドとの重複がある場合は、既存フィールドを優先的に使用
 3. データ移行スクリプトを用意する（例：既存のsensoryNoteをsensoryOtherに移行）

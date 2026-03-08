@@ -36,15 +36,25 @@ export default function UnitDetailPage() {
   const [showAddStaff, setShowAddStaff] = useState(false);
   const [showAddRecipient, setShowAddRecipient] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState("");
-  const [staffRole, setStaffRole] = useState<"primary" | "temporary">("primary");
+  const [staffRole, setStaffRole] = useState<"primary" | "temporary">(
+    "primary"
+  );
   const [assignedDate, setAssignedDate] = useState("");
   const [selectedRecipientId, setSelectedRecipientId] = useState("");
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
   const { data: unit, isLoading } = trpc.unit.get.useQuery({ id: unitId });
   const { data: allUsers } = trpc.unit.listUsers.useQuery();
-  const { data: allRecipients } = trpc.recipient.list.useQuery({ includeDeleted: false });
-  const { data: recentLogs } = trpc.dailyLog.list.useQuery({ unitId, limit: 5 });
+  const { data: allRecipients } = trpc.recipient.list.useQuery({
+    includeDeleted: false,
+  });
+  const { data: recentLogs } = trpc.dailyLog.list.useQuery({
+    unitId,
+    limit: 5,
+  });
 
   const showToast = (message: string, type: "success" | "error") => {
     setToast({ message, type });
@@ -98,9 +108,13 @@ export default function UnitDetailPage() {
   if (!unit) return <div className="p-8">ユニットが見つかりません</div>;
 
   const existingStaffIds = new Set(unit.staffs.map((s) => s.userId));
-  const existingRecipientIds = new Set(unit.recipients.map((r) => r.recipientId));
-  const availableUsers = allUsers?.filter((u) => !existingStaffIds.has(u.id)) ?? [];
-  const availableRecipients = allRecipients?.filter((r) => !existingRecipientIds.has(r.id)) ?? [];
+  const existingRecipientIds = new Set(
+    unit.recipients.map((r) => r.recipientId)
+  );
+  const availableUsers =
+    allUsers?.filter((u) => !existingStaffIds.has(u.id)) ?? [];
+  const availableRecipients =
+    allRecipients?.filter((r) => !existingRecipientIds.has(r.id)) ?? [];
 
   const primaryStaffs = unit.staffs.filter((s) => s.role === "primary");
   const temporaryStaffs = unit.staffs.filter((s) => s.role === "temporary");
@@ -110,7 +124,9 @@ export default function UnitDetailPage() {
       {toast && (
         <div
           className={`fixed right-4 bottom-4 z-50 rounded-lg px-4 py-3 text-sm font-medium shadow-lg ${
-            toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
+            toast.type === "success"
+              ? "bg-green-600 text-white"
+              : "bg-red-600 text-white"
           }`}
         >
           {toast.message}
@@ -136,7 +152,9 @@ export default function UnitDetailPage() {
           </span>
         </div>
         {unit.description && (
-          <p className="text-muted-foreground mb-3 text-sm">{unit.description}</p>
+          <p className="text-muted-foreground mb-3 text-sm">
+            {unit.description}
+          </p>
         )}
         <div className="flex flex-wrap gap-2">
           <Link href={`/units/${unitId}/log/new`}>
@@ -191,7 +209,9 @@ export default function UnitDetailPage() {
                 </select>
                 <select
                   value={staffRole}
-                  onChange={(e) => setStaffRole(e.target.value as "primary" | "temporary")}
+                  onChange={(e) =>
+                    setStaffRole(e.target.value as "primary" | "temporary")
+                  }
                   className="w-full rounded-md border px-3 py-2 text-sm"
                 >
                   <option value="primary">固定担当</option>
@@ -214,15 +234,20 @@ export default function UnitDetailPage() {
                         unitId,
                         userId: selectedUserId,
                         role: staffRole,
-                        assignedDate: staffRole === "temporary" && assignedDate
-                          ? new Date(assignedDate)
-                          : undefined,
+                        assignedDate:
+                          staffRole === "temporary" && assignedDate
+                            ? new Date(assignedDate)
+                            : undefined,
                       })
                     }
                   >
                     追加する
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => setShowAddStaff(false)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowAddStaff(false)}
+                  >
                     キャンセル
                   </Button>
                 </div>
@@ -232,14 +257,23 @@ export default function UnitDetailPage() {
 
           <div className="divide-y">
             {primaryStaffs.length === 0 && temporaryStaffs.length === 0 ? (
-              <p className="text-muted-foreground p-4 text-sm">職員が登録されていません</p>
+              <p className="text-muted-foreground p-4 text-sm">
+                職員が登録されていません
+              </p>
             ) : (
               <>
                 {primaryStaffs.map((s) => (
-                  <div key={s.id} className="flex items-center justify-between p-4">
+                  <div
+                    key={s.id}
+                    className="flex items-center justify-between p-4"
+                  >
                     <div>
-                      <p className="font-medium">{s.user.name || s.user.email}</p>
-                      <span className="text-muted-foreground text-xs">固定担当</span>
+                      <p className="font-medium">
+                        {s.user.name || s.user.email}
+                      </p>
+                      <span className="text-muted-foreground text-xs">
+                        固定担当
+                      </span>
                     </div>
                     <Button
                       size="sm"
@@ -251,9 +285,14 @@ export default function UnitDetailPage() {
                   </div>
                 ))}
                 {temporaryStaffs.map((s) => (
-                  <div key={s.id} className="flex items-center justify-between p-4">
+                  <div
+                    key={s.id}
+                    className="flex items-center justify-between p-4"
+                  >
                     <div>
-                      <p className="font-medium">{s.user.name || s.user.email}</p>
+                      <p className="font-medium">
+                        {s.user.name || s.user.email}
+                      </p>
                       <span className="text-muted-foreground text-xs">
                         臨時
                         {s.assignedDate &&
@@ -311,7 +350,9 @@ export default function UnitDetailPage() {
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    disabled={!selectedRecipientId || addRecipientMutation.isPending}
+                    disabled={
+                      !selectedRecipientId || addRecipientMutation.isPending
+                    }
                     onClick={() =>
                       addRecipientMutation.mutate({
                         unitId,
@@ -321,7 +362,11 @@ export default function UnitDetailPage() {
                   >
                     追加する
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => setShowAddRecipient(false)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowAddRecipient(false)}
+                  >
                     キャンセル
                   </Button>
                 </div>
@@ -331,14 +376,21 @@ export default function UnitDetailPage() {
 
           <div className="divide-y">
             {unit.recipients.length === 0 ? (
-              <p className="text-muted-foreground p-4 text-sm">利用者が登録されていません</p>
+              <p className="text-muted-foreground p-4 text-sm">
+                利用者が登録されていません
+              </p>
             ) : (
               unit.recipients.map((r) => (
-                <div key={r.id} className="flex items-center justify-between p-4">
+                <div
+                  key={r.id}
+                  className="flex items-center justify-between p-4"
+                >
                   <div>
                     <p className="font-medium">{r.recipient.name}</p>
                     {r.recipient.nameKana && (
-                      <p className="text-muted-foreground text-xs">{r.recipient.nameKana}</p>
+                      <p className="text-muted-foreground text-xs">
+                        {r.recipient.nameKana}
+                      </p>
                     )}
                     <p className="text-muted-foreground text-xs">
                       入所: {new Date(r.joinedAt).toLocaleDateString("ja-JP")}
@@ -353,7 +405,9 @@ export default function UnitDetailPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => removeRecipientMutation.mutate({ id: r.id })}
+                      onClick={() =>
+                        removeRecipientMutation.mutate({ id: r.id })
+                      }
                     >
                       <Trash2 className="text-destructive h-4 w-4" />
                     </Button>
@@ -382,7 +436,9 @@ export default function UnitDetailPage() {
         </div>
         <div className="divide-y">
           {!recentLogs?.items.length ? (
-            <p className="text-muted-foreground p-4 text-sm">業務日誌がまだありません</p>
+            <p className="text-muted-foreground p-4 text-sm">
+              業務日誌がまだありません
+            </p>
           ) : (
             recentLogs.items.map((log) => (
               <Link key={log.id} href={`/units/${unitId}/log/${log.id}`}>
@@ -395,10 +451,12 @@ export default function UnitDetailPage() {
                       </span>
                     </p>
                     <p className="text-muted-foreground text-xs">
-                      担当: {log.staff.name || log.staff.email} ·
-                      記録: {log._count.entries}名
+                      担当: {log.staff.name || log.staff.email} · 記録:{" "}
+                      {log._count.entries}名
                       {log.majorEvent && (
-                        <span className="text-destructive ml-2 font-medium">⚠ 重大イベントあり</span>
+                        <span className="text-destructive ml-2 font-medium">
+                          ⚠ 重大イベントあり
+                        </span>
                       )}
                     </p>
                   </div>

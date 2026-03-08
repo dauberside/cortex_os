@@ -122,7 +122,9 @@ export default function PrintAssessmentSheetPage() {
                 </tr>
                 <tr>
                   <td className="label-cell">手帳等級</td>
-                  <td className="value-cell">{recipient.handbookGrade || ""}</td>
+                  <td className="value-cell">
+                    {recipient.handbookGrade || ""}
+                  </td>
                 </tr>
                 <tr>
                   <td className="label-cell">障害支援区分</td>
@@ -139,12 +141,16 @@ export default function PrintAssessmentSheetPage() {
               <tbody>
                 <tr>
                   <td className="label-cell">障害名</td>
-                  <td className="value-cell">{recipient.disabilityName || ""}</td>
+                  <td className="value-cell">
+                    {recipient.disabilityName || ""}
+                  </td>
                 </tr>
                 <tr>
                   <td className="label-cell">疾病状況</td>
                   <td className="value-cell">
-                    <pre className="pre-wrap">{recipient.diseaseStatus || ""}</pre>
+                    <pre className="pre-wrap">
+                      {recipient.diseaseStatus || ""}
+                    </pre>
                   </td>
                 </tr>
                 <tr>
@@ -157,12 +163,16 @@ export default function PrintAssessmentSheetPage() {
                   <>
                     <tr>
                       <td className="label-cell">発作の頻度</td>
-                      <td className="value-cell">{recipient.seizureFrequency || ""}</td>
+                      <td className="value-cell">
+                        {recipient.seizureFrequency || ""}
+                      </td>
                     </tr>
                     <tr>
                       <td className="label-cell">発作時の対処</td>
                       <td className="value-cell">
-                        <pre className="pre-wrap">{recipient.seizureResponse || ""}</pre>
+                        <pre className="pre-wrap">
+                          {recipient.seizureResponse || ""}
+                        </pre>
                       </td>
                     </tr>
                   </>
@@ -170,7 +180,9 @@ export default function PrintAssessmentSheetPage() {
                 <tr>
                   <td className="label-cell">服薬</td>
                   <td className="value-cell">
-                    <pre className="pre-wrap">{formatJSON(recipient.medication)}</pre>
+                    <pre className="pre-wrap">
+                      {formatJSON(recipient.medication)}
+                    </pre>
                   </td>
                 </tr>
                 <tr>
@@ -190,11 +202,15 @@ export default function PrintAssessmentSheetPage() {
               <tbody>
                 <tr>
                   <td className="label-cell">好きな食べ物</td>
-                  <td className="value-cell">{recipient.favoriteFoods || ""}</td>
+                  <td className="value-cell">
+                    {recipient.favoriteFoods || ""}
+                  </td>
                 </tr>
                 <tr>
                   <td className="label-cell">嫌いな食べ物</td>
-                  <td className="value-cell">{recipient.dislikedFoods || ""}</td>
+                  <td className="value-cell">
+                    {recipient.dislikedFoods || ""}
+                  </td>
                 </tr>
                 <tr>
                   <td className="label-cell">アレルギー</td>
@@ -219,7 +235,9 @@ export default function PrintAssessmentSheetPage() {
                 <tr>
                   <td className="label-cell">介助方法</td>
                   <td className="value-cell">
-                    <pre className="pre-wrap">{recipient.toiletAssistMethod || ""}</pre>
+                    <pre className="pre-wrap">
+                      {recipient.toiletAssistMethod || ""}
+                    </pre>
                   </td>
                 </tr>
               </tbody>
@@ -233,12 +251,16 @@ export default function PrintAssessmentSheetPage() {
               <tbody>
                 <tr>
                   <td className="label-cell">移動手段</td>
-                  <td className="value-cell">{recipient.mobilityMethod || ""}</td>
+                  <td className="value-cell">
+                    {recipient.mobilityMethod || ""}
+                  </td>
                 </tr>
                 <tr>
                   <td className="label-cell">移動介助</td>
                   <td className="value-cell">
-                    <pre className="pre-wrap">{recipient.mobilityAssist || ""}</pre>
+                    <pre className="pre-wrap">
+                      {recipient.mobilityAssist || ""}
+                    </pre>
                   </td>
                 </tr>
               </tbody>
@@ -259,13 +281,17 @@ export default function PrintAssessmentSheetPage() {
                 <tr>
                   <td className="label-cell">要求の表現</td>
                   <td className="value-cell">
-                    <pre className="pre-wrap">{recipient.commRequest || ""}</pre>
+                    <pre className="pre-wrap">
+                      {recipient.commRequest || ""}
+                    </pre>
                   </td>
                 </tr>
                 <tr>
                   <td className="label-cell">拒否の表現</td>
                   <td className="value-cell">
-                    <pre className="pre-wrap">{recipient.commRefusal || ""}</pre>
+                    <pre className="pre-wrap">
+                      {recipient.commRefusal || ""}
+                    </pre>
                   </td>
                 </tr>
               </tbody>
@@ -288,13 +314,17 @@ export default function PrintAssessmentSheetPage() {
                     <tr>
                       <td className="label-cell">状況</td>
                       <td className="value-cell">
-                        <pre className="pre-wrap">{recipient.obsessionSituation || ""}</pre>
+                        <pre className="pre-wrap">
+                          {recipient.obsessionSituation || ""}
+                        </pre>
                       </td>
                     </tr>
                     <tr>
                       <td className="label-cell">対応方法</td>
                       <td className="value-cell">
-                        <pre className="pre-wrap">{recipient.obsessionResponse || ""}</pre>
+                        <pre className="pre-wrap">
+                          {recipient.obsessionResponse || ""}
+                        </pre>
                       </td>
                     </tr>
                   </>
@@ -338,13 +368,17 @@ export default function PrintAssessmentSheetPage() {
                 <tr>
                   <td className="label-cell">性格</td>
                   <td className="value-cell">
-                    <pre className="pre-wrap">{recipient.personalityNote || ""}</pre>
+                    <pre className="pre-wrap">
+                      {recipient.personalityNote || ""}
+                    </pre>
                   </td>
                 </tr>
                 <tr>
                   <td className="label-cell">関わり方</td>
                   <td className="value-cell">
-                    <pre className="pre-wrap">{recipient.interactionNote || ""}</pre>
+                    <pre className="pre-wrap">
+                      {recipient.interactionNote || ""}
+                    </pre>
                   </td>
                 </tr>
                 <tr>
@@ -358,9 +392,7 @@ export default function PrintAssessmentSheetPage() {
           </section>
 
           {/* フッター */}
-          <div className="print-footer">
-            CortexOS - アセスメントシート
-          </div>
+          <div className="print-footer">CortexOS - アセスメントシート</div>
         </div>
       </div>
 

@@ -31,7 +31,9 @@ export const unitRouter = router({
         where: { id: input.id },
         include: {
           staffs: {
-            include: { user: { select: { id: true, name: true, email: true } } },
+            include: {
+              user: { select: { id: true, name: true, email: true } },
+            },
             orderBy: [{ role: "asc" }, { createdAt: "asc" }],
           },
           recipients: {

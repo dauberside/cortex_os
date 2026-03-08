@@ -42,6 +42,7 @@ npx tsx scripts/migrate-assessment-to-recipient.ts --dry-run
 ```
 
 **出力例:**
+
 ```
 🚀 Assessment → CareRecipient データ移行スクリプト
 
@@ -80,6 +81,7 @@ npx tsx scripts/migrate-assessment-to-recipient.ts --recipient-id=cmm49f8jf000fx
 ```
 
 **確認ポイント:**
+
 - データが正しく統合されているか
 - 既存のCareRecipientデータが保護されているか
 - フォーマットが読みやすいか
@@ -94,6 +96,7 @@ npx tsx scripts/migrate-assessment-to-recipient.ts
 ```
 
 **⚠️ 注意:**
+
 - このコマンドは実際にデータを更新します
 - 必ずバックアップを取得してから実行してください
 
@@ -109,6 +112,7 @@ npx prisma studio
 ```
 
 **確認項目:**
+
 - CareRecipientの各フィールドにデータが正しく移行されているか
 - 既存データが上書きされていないか
 - テキストフィールドのフォーマットが適切か
@@ -140,6 +144,7 @@ Error: Can't reach database server
 ```
 
 **解決方法:**
+
 - `.env`ファイルの`DATABASE_URL`を確認
 - データベースが起動しているか確認
 
@@ -150,6 +155,7 @@ Type error: Property 'xxx' does not exist
 ```
 
 **解決方法:**
+
 ```bash
 # Prismaクライアントを再生成
 npx prisma generate
@@ -162,6 +168,7 @@ Error: Foreign key constraint failed
 ```
 
 **解決方法:**
+
 - 移行対象のAssessmentに対応するCareRecipientが存在するか確認
 - データベースの整合性をチェック
 
@@ -222,4 +229,3 @@ psql -U your_username -d your_database < backup_YYYYMMDD_HHMMSS.sql
 - 実行したコマンド
 - DRY RUN時の出力結果
 - データベースのバージョン
-

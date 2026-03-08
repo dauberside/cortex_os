@@ -1,5 +1,9 @@
 import React from "react";
-import { UseFormRegister, UseFormWatch, UseFormSetValue } from "react-hook-form";
+import {
+  UseFormRegister,
+  UseFormWatch,
+  UseFormSetValue,
+} from "react-hook-form";
 import { RecipientFormData } from "@/lib/validations/recipientSchema";
 
 interface ContactPolicySectionProps {
@@ -12,7 +16,7 @@ export function ContactPolicySection({
   watch,
   setValue,
 }: ContactPolicySectionProps) {
-  const contactPolicy = watch("contactPolicy") as any || {};
+  const contactPolicy = (watch("contactPolicy") as any) || {};
 
   const updateContactPolicy = (field: string, value: string) => {
     setValue("contactPolicy", {
@@ -30,9 +34,7 @@ export function ContactPolicySection({
 
       {/* 昼間の連絡先 */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium">
-          昼間の連絡先・方法
-        </label>
+        <label className="block text-sm font-medium">昼間の連絡先・方法</label>
         <textarea
           value={contactPolicy.day || ""}
           onChange={(e) => updateContactPolicy("day", e.target.value)}
@@ -44,9 +46,7 @@ export function ContactPolicySection({
 
       {/* 夜間の連絡先 */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium">
-          夜間の連絡先・方法
-        </label>
+        <label className="block text-sm font-medium">夜間の連絡先・方法</label>
         <textarea
           value={contactPolicy.night || ""}
           onChange={(e) => updateContactPolicy("night", e.target.value)}
@@ -58,12 +58,12 @@ export function ContactPolicySection({
 
       {/* 緊急時の連絡順位 */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium">
-          緊急時の連絡順位
-        </label>
+        <label className="block text-sm font-medium">緊急時の連絡順位</label>
         <textarea
           value={contactPolicy.emergencyOrder || ""}
-          onChange={(e) => updateContactPolicy("emergencyOrder", e.target.value)}
+          onChange={(e) =>
+            updateContactPolicy("emergencyOrder", e.target.value)
+          }
           className="w-full rounded border border-red-300 bg-red-50 px-3 py-2 text-sm"
           rows={4}
           placeholder="例:&#10;1. 本人携帯&#10;2. 母（山田花子）090-XXXX-XXXX&#10;3. GH世話人 03-XXXX-XXXX"

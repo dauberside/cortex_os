@@ -290,7 +290,9 @@ export const dailyLogRouter = router({
             path: `/units/${dailyLog.unitId}/log/${dailyLogId}`,
             metadata: {
               recipientId,
-              updatedFields: Object.keys(data).filter((k) => data[k as keyof typeof data] !== undefined),
+              updatedFields: Object.keys(data).filter(
+                (k) => data[k as keyof typeof data] !== undefined
+              ),
             },
           },
         });

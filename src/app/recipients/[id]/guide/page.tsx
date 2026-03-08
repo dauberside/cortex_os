@@ -3,7 +3,14 @@
 import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
-import { Plus, ArrowLeft, MapPin, Pencil, Trash2, FileText } from "lucide-react";
+import {
+  Plus,
+  ArrowLeft,
+  MapPin,
+  Pencil,
+  Trash2,
+  FileText,
+} from "lucide-react";
 import Link from "next/link";
 import { GuideRecordStatusBadge } from "@/components/guide/GuideRecordStatusBadge";
 import { GuideRecordWorkflowActions } from "@/components/guide/GuideRecordWorkflowActions";
@@ -43,10 +50,12 @@ export default function GuideRecordListPage() {
     const currentUserId = session?.user?.id;
 
     // MANAGERは全記録編集・削除可能
-    if (userRole === "MANAGER") return { canEdit: true, canDelete: true, reason: null };
+    if (userRole === "MANAGER")
+      return { canEdit: true, canDelete: true, reason: null };
 
     // LEADは同一ユニット内の記録編集・削除可能（提出済みも可）
-    if (userRole === "LEAD") return { canEdit: true, canDelete: true, reason: null };
+    if (userRole === "LEAD")
+      return { canEdit: true, canDelete: true, reason: null };
 
     // STAFF: 自分が作成した利用者のDRAFT記録のみ編集・削除可能
     if (userRole === "STAFF") {
@@ -60,7 +69,10 @@ export default function GuideRecordListPage() {
       }
 
       // 利用者の作成者チェック（createdByがnullまたは自分が作成した利用者の場合のみ編集可能）
-      if (recipient?.createdBy !== null && recipient?.createdBy !== currentUserId) {
+      if (
+        recipient?.createdBy !== null &&
+        recipient?.createdBy !== currentUserId
+      ) {
         return {
           canEdit: false,
           canDelete: false,
@@ -94,7 +106,9 @@ export default function GuideRecordListPage() {
 
       <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">ガイド記録</h1>
+          <h1 className="mb-1 text-2xl font-bold sm:mb-2 sm:text-3xl">
+            ガイド記録
+          </h1>
           {recipient && (
             <p className="text-muted-foreground text-sm sm:text-base">
               {recipient.name} さんの行動援護・移動支援記録
@@ -158,7 +172,9 @@ export default function GuideRecordListPage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Link href={`/recipients/${recipientId}/guide/${record.id}`}>
+                    <Link
+                      href={`/recipients/${recipientId}/guide/${record.id}`}
+                    >
                       <Button variant="outline" size="sm">
                         <FileText className="mr-1 h-3 w-3" />
                         詳細

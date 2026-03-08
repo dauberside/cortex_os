@@ -19,10 +19,7 @@ if (!connectionString) {
   process.exit(1);
 }
 
-console.log(
-  "Using connection:",
-  connectionString.substring(0, 30) + "..."
-);
+console.log("Using connection:", connectionString.substring(0, 30) + "...");
 const pool = new Pool({ connectionString });
 const adapter = new PrismaNeon(pool);
 const prisma = new PrismaClient({ adapter });

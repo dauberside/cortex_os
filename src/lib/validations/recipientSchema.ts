@@ -116,7 +116,9 @@ export const ContactPolicySchema = z
   .object({
     dayPrimary: ContactTarget,
     nightPrimary: ContactTarget,
-    emergencyOrder: z.array(ContactTarget).min(1, "緊急時連絡順序は最低1件必要です"),
+    emergencyOrder: z
+      .array(ContactTarget)
+      .min(1, "緊急時連絡順序は最低1件必要です"),
     lateCancel: LateCancelPolicy,
     notes: z.string().optional().default(""),
   })
@@ -133,7 +135,9 @@ export const EmergencyContactSchema = z
   })
   .strict();
 
-export const EmergencyContactsSchema = z.array(EmergencyContactSchema).optional();
+export const EmergencyContactsSchema = z
+  .array(EmergencyContactSchema)
+  .optional();
 
 // 家族構成（複数）
 export const FamilyMemberSchema = z
@@ -908,7 +912,8 @@ export const recipientSchema = z
   .refine(
     (data) => {
       // 緊急連絡先がある場合、続柄も入力を推奨
-      const hasContact = data.emergencyContact && data.emergencyContact.trim().length > 0;
+      const hasContact =
+        data.emergencyContact && data.emergencyContact.trim().length > 0;
       if (!hasContact) return true; // 連絡先がなければOK
 
       const relation = data.emergencyRelation || "";

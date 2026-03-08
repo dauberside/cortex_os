@@ -11,9 +11,11 @@ metadata:
 # Minimal Audit Logging
 
 ## What to log
+
 - View: who/when/recipientId/path (especially Recipient hub and assessment)
 - Edit/Delete: who/when/resourceId/action + optional changeNote
 
 ## Rules
+
 - STAFF: no export/print for info tables; log views instead
 - Keep logs append-only

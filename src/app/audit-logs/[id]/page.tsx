@@ -10,7 +10,11 @@ export default function AuditLogDetailPage() {
   const params = useParams();
   const logId = params.id as string;
 
-  const { data: log, isLoading, error } = trpc.auditLog.get.useQuery({
+  const {
+    data: log,
+    isLoading,
+    error,
+  } = trpc.auditLog.get.useQuery({
     id: logId,
   });
 
@@ -75,9 +79,7 @@ export default function AuditLogDetailPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4">
         <div className="text-lg">監査ログが見つかりません</div>
-        {error && (
-          <p className="text-destructive text-sm">{error.message}</p>
-        )}
+        {error && <p className="text-destructive text-sm">{error.message}</p>}
         <Link href="/audit-logs">
           <Button>監査ログ一覧に戻る</Button>
         </Link>
@@ -170,9 +172,7 @@ export default function AuditLogDetailPage() {
               </span>
             </div>
             <div>
-              <p className="text-muted-foreground mb-1 text-sm">
-                リソース種別
-              </p>
+              <p className="text-muted-foreground mb-1 text-sm">リソース種別</p>
               <p className="font-medium">
                 {getResourceTypeLabel(log.resourceType)}
               </p>
@@ -218,7 +218,7 @@ export default function AuditLogDetailPage() {
         {log.changeNote && (
           <div className="bg-card rounded-lg border p-6">
             <h2 className="mb-4 text-xl font-semibold">変更理由</h2>
-            <div className="bg-gray-50 rounded-md p-4">
+            <div className="rounded-md bg-gray-50 p-4">
               <p className="whitespace-pre-wrap">{log.changeNote}</p>
             </div>
           </div>
@@ -228,7 +228,7 @@ export default function AuditLogDetailPage() {
         {log.metadata && Object.keys(log.metadata).length > 0 && (
           <div className="bg-card rounded-lg border p-6">
             <h2 className="mb-4 text-xl font-semibold">メタデータ</h2>
-            <div className="bg-gray-50 rounded-md p-4">
+            <div className="rounded-md bg-gray-50 p-4">
               <pre className="overflow-x-auto text-sm">
                 {JSON.stringify(log.metadata, null, 2)}
               </pre>
@@ -240,9 +240,7 @@ export default function AuditLogDetailPage() {
                 <div className="flex items-start gap-2">
                   <AlertTriangle className="mt-0.5 h-5 w-5 text-orange-600" />
                   <div>
-                    <p className="font-medium text-orange-800">
-                      提出後に修正
-                    </p>
+                    <p className="font-medium text-orange-800">提出後に修正</p>
                     <p className="mt-1 text-sm text-orange-700">
                       この操作は、提出済み（SUBMITTED）の記録を修正したものです。変更内容を慎重に確認してください。
                     </p>

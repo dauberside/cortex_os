@@ -40,7 +40,9 @@ export function FormErrorSummary({ errors }: { errors: FieldErrors }) {
       if (!error || typeof error.message !== "string") return null;
       return { field, message: error.message };
     })
-    .filter((item): item is { field: string; message: string } => item !== null);
+    .filter(
+      (item): item is { field: string; message: string } => item !== null
+    );
 
   if (errorMessages.length === 0) return null;
 
