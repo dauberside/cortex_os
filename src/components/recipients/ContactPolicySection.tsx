@@ -9,7 +9,6 @@ interface ContactPolicySectionProps {
 }
 
 export function ContactPolicySection({
-  register,
   watch,
   setValue,
 }: ContactPolicySectionProps) {

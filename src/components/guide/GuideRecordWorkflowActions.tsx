@@ -22,10 +22,8 @@ export function GuideRecordWorkflowActions({
   recordId,
   status,
   recipientId,
-  userId: _userId,
   recipientCreatedBy,
   reviewedAt,
-  reviewedBy: _reviewedBy,
   onSuccess,
 }: GuideRecordWorkflowActionsProps) {
   const utils = trpc.useUtils();

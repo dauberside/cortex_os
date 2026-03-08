@@ -30,7 +30,6 @@ const SHIFT_LABELS: Record<string, string> = {
 
 export default function UnitDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const unitId = params.id as string;
   const utils = trpc.useUtils();
 

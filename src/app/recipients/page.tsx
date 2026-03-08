@@ -133,15 +133,6 @@ export default function RecipientsPage() {
     },
   });
 
-  const toggleSelect = (id: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  };
 
   const toggleSelectAll = () => {
     const activeRecipients =
@@ -698,9 +689,11 @@ export default function RecipientsPage() {
                       e.stopPropagation();
                       setSelectedIds((prev) => {
                         const next = new Set(prev);
-                        next.has(recipient.id)
-                          ? next.delete(recipient.id)
-                          : next.add(recipient.id);
+                        if (next.has(recipient.id)) {
+                          next.delete(recipient.id);
+                        } else {
+                          next.add(recipient.id);
+                        }
                         return next;
                       });
                     }}

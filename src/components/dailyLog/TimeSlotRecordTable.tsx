@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { TimeSlotRecord } from "@/types/dailyLog";
 
 interface TimeSlotRecordTableProps {

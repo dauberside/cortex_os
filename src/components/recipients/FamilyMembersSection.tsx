@@ -32,20 +32,20 @@ export function FamilyMembersSection({
   const [members, setMembers] = useState<FamilyMember[]>([
     { relation: "", name: "", age: undefined, livingTogether: false, notes: "" },
   ]);
-  const [hasInitialized, setHasInitialized] = useState(false);
+  const initializedRef = useRef(false);
 
   // 初期データの読み込み（1回のみ）
   useEffect(() => {
-    if (familyMembersData && !hasInitialized) {
+    if (familyMembersData && !initializedRef.current) {
       setDiagram(familyMembersData.diagram || "");
       setMembers(
         familyMembersData.members && familyMembersData.members.length > 0
           ? familyMembersData.members
           : [{ relation: "", name: "", age: undefined, livingTogether: false, notes: "" }]
       );
-      setHasInitialized(true);
+      initializedRef.current = true;
     }
-  }, [familyMembersData, hasInitialized]);
+  }, [familyMembersData]);
 
   // データ変更時にフォームに反映
   useEffect(() => {
