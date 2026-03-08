@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,6 @@ import {
 import {
   PhoneInput,
   KanaInput,
-  FormProgress,
 } from "@/components/recipients/EnhancedFormInputs";
 import { ImageUpload } from "@/components/recipients/ImageUpload";
 import { calculateAge } from "@/lib/utils/age";
@@ -45,7 +44,6 @@ export default function NewRecipientPage() {
     handleSubmit,
     watch,
     setValue,
-    control,
     reset,
     formState: { errors },
   } = useForm<RecipientFormData>({

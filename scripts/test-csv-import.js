@@ -77,7 +77,7 @@ async function testImport() {
       console.log('  留意点:', recipient.commNote);
 
       console.log('\n=== Field Count ===');
-      const nonNullFields = Object.entries(recipient).filter(([key, value]) => {
+      const nonNullFields = Object.entries(recipient).filter(([, value]) => {
         if (value === null || value === undefined) return false;
         if (Array.isArray(value) && value.length === 0) return false;
         if (typeof value === 'string' && value === '') return false;

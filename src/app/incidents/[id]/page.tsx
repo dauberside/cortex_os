@@ -11,7 +11,7 @@ type RoleType = "IC" | "Comms" | "SME";
 type ActionStatus = "Open" | "InProgress" | "Done";
 
 export default function IncidentDetailPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const params = useParams();
   const incidentId = params.id as string;

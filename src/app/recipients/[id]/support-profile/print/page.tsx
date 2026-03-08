@@ -5,6 +5,7 @@ import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Printer } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 
 // サービス種別の日本語ラベル
@@ -110,9 +111,11 @@ export default function PrintSupportProfileSheetPage() {
                   {/* 写真枠セル（右上） */}
                   <td rowSpan={6} className="photo-cell">
                     {recipient.photoUrl ? (
-                      <img
+                      <Image
                         src={recipient.photoUrl}
                         alt="写真"
+                        width={150}
+                        height={200}
                         className="photo-img"
                       />
                     ) : (

@@ -69,7 +69,7 @@ export function generateTimeSlotsFromShift(
     end.setDate(end.getDate() + 1);
   }
 
-  let current = new Date(start);
+  const current = new Date(start);
   while (current <= end) {
     const hours = current.getHours();
     const minutes = current.getMinutes();

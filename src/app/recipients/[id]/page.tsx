@@ -27,6 +27,7 @@ import {
   MoreVertical,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useRef } from "react";
 import { ChangeHistory } from "@/components/recipients/ChangeHistory";
 import {
@@ -140,7 +141,11 @@ export default function RecipientDetailPage() {
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) => {
       const next = new Set(prev);
-      next.has(sectionId) ? next.delete(sectionId) : next.add(sectionId);
+      if (next.has(sectionId)) {
+        next.delete(sectionId);
+      } else {
+        next.add(sectionId);
+      }
       return next;
     });
   };
@@ -387,9 +392,11 @@ export default function RecipientDetailPage() {
           {/* 写真 */}
           {recipient.photoUrl && (
             <div className="flex-shrink-0">
-              <img
+              <Image
                 src={recipient.photoUrl}
                 alt={`${recipient.name}さんの写真`}
+                width={192}
+                height={192}
                 className="h-48 w-48 rounded-lg object-cover"
               />
             </div>

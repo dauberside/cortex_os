@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, User, FileText, Clock, AlertTriangle } from "lucide-react";
@@ -8,7 +8,6 @@ import Link from "next/link";
 
 export default function AuditLogDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const logId = params.id as string;
 
   const { data: log, isLoading, error } = trpc.auditLog.get.useQuery({
