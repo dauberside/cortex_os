@@ -21,6 +21,13 @@ import { dailyLogRouter } from "./dailyLog";
 import { auditLogRouter } from "./auditLog";
 import { serviceRecordRouter } from "./serviceRecord";
 import { assessmentRouter } from "./assessment";
+import { shiftTypeRouter } from "./shiftType";
+import { shiftRouter } from "./shift";
+import { timeClockRouter } from "./timeClock";
+import { attendanceRouter } from "./attendance";
+import { approvalRouter } from "./approval";
+import { monthlyClosingRouter } from "./monthlyClosing";
+import { supportRecordRouter } from "./supportRecord";
 
 export const appRouter = router({
   note: noteRouter,
@@ -45,6 +52,15 @@ export const appRouter = router({
   auditLog: auditLogRouter,
   serviceRecord: serviceRecordRouter,
   assessment: assessmentRouter,
+  // 勤怠管理
+  shiftType: shiftTypeRouter,
+  shift: shiftRouter,
+  timeClock: timeClockRouter,
+  attendance: attendanceRouter,
+  approval: approvalRouter,
+  monthlyClosing: monthlyClosingRouter,
+  // 支援記録
+  supportRecord: supportRecordRouter,
 });
 
 export type AppRouter = typeof appRouter;

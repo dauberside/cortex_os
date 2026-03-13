@@ -120,6 +120,11 @@ export function TimeSlotRecordTable({
               </th>
               {!simpleMode && (
                 <th className="border border-gray-300 bg-gray-100 px-2 py-1 text-center">
+                  服薬
+                </th>
+              )}
+              {!simpleMode && (
+                <th className="border border-gray-300 bg-gray-100 px-2 py-1 text-center">
                   トイレ
                 </th>
               )}
@@ -301,6 +306,23 @@ export function TimeSlotRecordTable({
                       )}
                   </div>
                 </td>
+                {!simpleMode && (
+                  <td className="border border-gray-300 px-1 py-1 text-center">
+                    <input
+                      type="checkbox"
+                      checked={record.medication ?? false}
+                      onChange={(e) =>
+                        updateRecord(
+                          index,
+                          "medication",
+                          e.target.checked ? true : null
+                        )
+                      }
+                      disabled={readOnly}
+                      className="h-4 w-4"
+                    />
+                  </td>
+                )}
                 {!simpleMode && (
                   <td className="group relative border border-gray-300 px-1 py-1">
                     <div className="relative">

@@ -51,121 +51,25 @@ export const assessmentRouter = router({
       return assessment;
     }),
 
-  // アセスメント作成または更新
+  // アセスメント作成または更新（廃止: 利用者基本情報で管理）
   upsert: protectedProcedure
     .input(assessmentSchema)
-    .mutation(async ({ ctx, input }) => {
-      const { recipientId, ...data } = input;
-
-      // 利用者の存在確認
-      const recipient = await ctx.prisma.careRecipient.findUnique({
-        where: { id: recipientId },
+    .mutation(async () => {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message:
+          "アセスメントの編集機能は廃止されました。利用者基本情報（CareRecipient）で管理してください。既存データは参照・印刷のみ可能です。",
       });
-
-      if (!recipient) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "利用者が見つかりません",
-        });
-      }
-
-      // 既存のアセスメント確認
-      const existing = await ctx.prisma.assessment.findUnique({
-        where: { recipientId },
-      });
-
-      if (existing) {
-        // 更新
-        const updated = await ctx.prisma.assessment.update({
-          where: { id: existing.id },
-          data: {
-            ...data,
-            userId: ctx.session.user.id,
-          },
-        });
-
-        // 監査ログ記録
-        await ctx.prisma.auditLog.create({
-          data: {
-            userId: ctx.session.user.id,
-            action: "Edit",
-            resourceType: "Assessment",
-            resourceId: updated.id,
-            metadata: {
-              recipientId,
-              recipientName: recipient.name,
-            },
-          },
-        });
-
-        return updated;
-      } else {
-        // 新規作成
-        const created = await ctx.prisma.assessment.create({
-          data: {
-            recipientId,
-            userId: ctx.session.user.id,
-            ...data,
-          },
-        });
-
-        // 監査ログ記録
-        await ctx.prisma.auditLog.create({
-          data: {
-            userId: ctx.session.user.id,
-            action: "Create",
-            resourceType: "Assessment",
-            resourceId: created.id,
-            metadata: {
-              recipientId,
-              recipientName: recipient.name,
-            },
-          },
-        });
-
-        return created;
-      }
     }),
 
-  // アセスメント削除
+  // アセスメント削除（廃止: 利用者基本情報で管理）
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const assessment = await ctx.prisma.assessment.findUnique({
-        where: { id: input.id },
-        include: {
-          recipient: {
-            select: { name: true },
-          },
-        },
+    .mutation(async () => {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message:
+          "アセスメントの削除機能は廃止されました。既存データは参照・印刷のみ可能です。",
       });
-
-      if (!assessment) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "アセスメントが見つかりません",
-        });
-      }
-
-      // 削除
-      await ctx.prisma.assessment.delete({
-        where: { id: input.id },
-      });
-
-      // 監査ログ記録
-      await ctx.prisma.auditLog.create({
-        data: {
-          userId: ctx.session.user.id,
-          action: "Delete",
-          resourceType: "Assessment",
-          resourceId: input.id,
-          metadata: {
-            recipientId: assessment.recipientId,
-            recipientName: assessment.recipient.name,
-          },
-        },
-      });
-
-      return { success: true };
     }),
 });

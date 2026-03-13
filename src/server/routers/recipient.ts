@@ -494,6 +494,25 @@ export const recipientRouter = router({
       return ctx.db.careRecipient.findMany({
         where,
         orderBy: { createdAt: "desc" },
+        // パフォーマンス最適化: リスト表示に必要なフィールドのみ取得
+        select: {
+          id: true,
+          name: true,
+          nameKana: true,
+          birthDate: true,
+          gender: true,
+          photoUrl: true,
+          disabilityType: true,
+          supportLevel: true,
+          serviceTypes: true,
+          utilizationStatus: true,
+          behaviorSupportNeeded: true,
+          allowances: true,
+          allergies: true,
+          deletedAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
     }),
 

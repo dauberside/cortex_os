@@ -99,8 +99,8 @@ export const dailyLogRouter = router({
       });
 
       const activeRecipientIds = unitRecipients
-        .filter((ur) => !ur.recipient.deletedAt)
-        .map((ur) => ur.recipientId);
+        .filter((ur: any) => !ur.recipient.deletedAt)
+        .map((ur: any) => ur.recipientId);
 
       // 日誌ヘッダー＋所属利用者全員分のエントリを同時作成
       const dailyLog = await ctx.db.dailyLog.create({
@@ -108,7 +108,7 @@ export const dailyLogRouter = router({
           ...input,
           staffId: ctx.session.user.id,
           entries: {
-            create: activeRecipientIds.map((recipientId) => ({ recipientId })),
+            create: activeRecipientIds.map((recipientId: any) => ({ recipientId })),
           },
         },
         include: {
@@ -163,6 +163,39 @@ export const dailyLogRouter = router({
       const { id, changeNote, ...data } = input;
 
       const dailyLog = await ctx.db.dailyLog.update({ where: { id }, data });
+
+      // shiftStart/shiftEnd が変更された場合、関連する ServiceRecord を更新
+      if (data.shiftStart || data.shiftEnd) {
+        const entries = await ctx.db.dailyLogEntry.findMany({
+          where: { dailyLogId: id },
+          include: { serviceRecord: true },
+        });
+
+        const updatedDailyLog = await ctx.db.dailyLog.findUniqueOrThrow({
+          where: { id },
+          select: { shiftStart: true, shiftEnd: true },
+        });
+
+        const duration = Math.round(
+          (updatedDailyLog.shiftEnd.getTime() -
+            updatedDailyLog.shiftStart.getTime()) /
+            (1000 * 60)
+        );
+
+        // 各エントリの ServiceRecord を更新
+        for (const entry of entries) {
+          if (entry.serviceRecord) {
+            await ctx.db.serviceRecord.update({
+              where: { id: entry.serviceRecord.id },
+              data: {
+                startTime: updatedDailyLog.shiftStart,
+                endTime: updatedDailyLog.shiftEnd,
+                duration,
+              },
+            });
+          }
+        }
+      }
 
       // 監査ログ記録
       await ctx.db.auditLog.create({
@@ -222,6 +255,7 @@ export const dailyLogRouter = router({
         temperature: z.number().optional(),
         bloodPressure: z.string().optional(),
         spo2: z.number().int().optional(),
+        weight: z.number().optional(),
         vitalAlert: z.boolean().optional(),
         sleepTime: z.date().optional(),
         wakeTime: z.date().optional(),
@@ -263,9 +297,25 @@ export const dailyLogRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { dailyLogId, recipientId, ...data } = input;
 
+      // DailyLog情報を取得（ServiceRecord生成に必要）
+      const dailyLog = await ctx.db.dailyLog.findUniqueOrThrow({
+        where: { id: dailyLogId },
+        select: {
+          id: true,
+          unitId: true,
+          logDate: true,
+          shift: true,
+          shiftStart: true,
+          shiftEnd: true,
+          staffId: true,
+          unit: { select: { serviceType: true } },
+        },
+      });
+
       // 既存のエントリがあるかチェック
       const existing = await ctx.db.dailyLogEntry.findUnique({
         where: { dailyLogId_recipientId: { dailyLogId, recipientId } },
+        include: { serviceRecord: true },
       });
 
       const entry = await ctx.db.dailyLogEntry.upsert({
@@ -274,13 +324,68 @@ export const dailyLogRouter = router({
         update: data,
       });
 
+      // ServiceRecord の自動生成・更新（GH/居宅/通所等の場合）
+      const shouldGenerateServiceRecord = ["GH", "KAIGO", "JUSHO"].includes(
+        dailyLog.unit.serviceType
+      );
+
+      if (shouldGenerateServiceRecord) {
+        // サービス詳細の生成
+        const serviceDetailParts: string[] = [];
+        if (data.mealAmount) serviceDetailParts.push(`食事: ${data.mealAmount}`);
+        if (data.waterIntake)
+          serviceDetailParts.push(`水分: ${data.waterIntake}`);
+        if (data.bathDone) serviceDetailParts.push("入浴: 実施");
+        if (data.oralCareDone) serviceDetailParts.push("口腔ケア: 実施");
+        if (data.medicationChecks)
+          serviceDetailParts.push("服薬: 実施");
+        if (data.behaviorNote)
+          serviceDetailParts.push(`様子: ${data.behaviorNote}`);
+        if (data.notes) serviceDetailParts.push(`特記: ${data.notes}`);
+
+        const serviceDetail =
+          serviceDetailParts.length > 0
+            ? serviceDetailParts.join("\n")
+            : "業務日誌による日常生活支援";
+
+        // 所要時間の計算（分）
+        const duration = Math.round(
+          (dailyLog.shiftEnd.getTime() - dailyLog.shiftStart.getTime()) /
+            (1000 * 60)
+        );
+
+        const serviceRecordData = {
+          recipientId,
+          userId: dailyLog.staffId,
+          serviceType: dailyLog.unit.serviceType === "GH" ? "GroupHome" : dailyLog.unit.serviceType === "KAIGO" ? "DayCare" : "HomeHelp",
+          serviceDate: dailyLog.logDate,
+          startTime: dailyLog.shiftStart,
+          endTime: dailyLog.shiftEnd,
+          duration,
+          serviceDetail,
+          userCondition: data.behaviorNote || null,
+          incidents: data.notes || null,
+        };
+
+        if (existing?.serviceRecord) {
+          // 既存のServiceRecordを更新
+          await ctx.db.serviceRecord.update({
+            where: { id: existing.serviceRecord.id },
+            data: serviceRecordData,
+          });
+        } else {
+          // 新規ServiceRecordを作成
+          await ctx.db.serviceRecord.create({
+            data: {
+              ...serviceRecordData,
+              dailyLogEntryId: entry.id,
+            },
+          });
+        }
+      }
+
       // 監査ログ記録（編集時のみ）
       if (existing) {
-        const dailyLog = await ctx.db.dailyLog.findUniqueOrThrow({
-          where: { id: dailyLogId },
-          select: { unitId: true },
-        });
-
         await ctx.db.auditLog.create({
           data: {
             userId: ctx.session.user.id,

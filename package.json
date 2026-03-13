@@ -24,6 +24,7 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "concurrently \"prisma studio --port 5555 --browser none\" \"local-ssl-proxy --source 5556 --target 5555 --cert .cert/localhost+3.pem --key .cert/localhost+3-key.pem --hostname 0.0.0.0\"",
     "db:studio:http": "prisma studio --port 5555 --browser none",
+    "db:seed": "tsx prisma/seed.ts",
     "db:seed:users": "node scripts/create-admin-users.js",
     "db:seed:test": "node scripts/run-seed-sql.js"
   },
@@ -65,7 +66,11 @@
     "react-hook-form": "^7.71.1",
     "superjson": "^2.2.6",
     "tailwind-merge": "^3.4.0",
+    "xlsx": "^0.18.5",
     "zod": "^4.3.6"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "devDependencies": {
     "@neondatabase/serverless": "^1.0.2",

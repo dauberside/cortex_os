@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, UserPlus, X } from "lucide-react";
 
 const SHIFTS = [
   {
@@ -85,7 +85,8 @@ export default function NewLogPage() {
     setShiftStart(preset.start);
     setShiftEnd(preset.end);
   };
-  const [staffRole, setStaffRole] = useState("");
+  const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
+  const [showAddStaff, setShowAddStaff] = useState(false);
   const [majorEvent, setMajorEvent] = useState(false);
   const [handover, setHandover] = useState("");
   const [residentSummary, setResidentSummary] = useState({
@@ -99,6 +100,22 @@ export default function NewLogPage() {
 
   const { data: unit } = trpc.unit.get.useQuery({ id: unitId });
 
+  // ユニット所属職員リスト（unit.staffs から user を取得）
+  const staffOptions = unit?.staffs?.map((s: any) => s.user) || [];
+
+  // 職員追加
+  const handleAddStaff = (userId: string) => {
+    if (!selectedStaffIds.includes(userId)) {
+      setSelectedStaffIds([...selectedStaffIds, userId]);
+    }
+    setShowAddStaff(false);
+  };
+
+  // 職員削除
+  const handleRemoveStaff = (userId: string) => {
+    setSelectedStaffIds(selectedStaffIds.filter((id) => id !== userId));
+  };
+
   const createMutation = trpc.dailyLog.create.useMutation({
     onSuccess: (log) => {
       router.push(`/units/${unitId}/log/${log.id}`);
@@ -108,7 +125,7 @@ export default function NewLogPage() {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -124,13 +141,19 @@ export default function NewLogPage() {
       return;
     }
 
+    // 選択した職員名を取得して結合
+    const selectedStaffNames = selectedStaffIds
+      .map((id) => staffOptions.find((s: any) => s.id === id)?.name)
+      .filter(Boolean)
+      .join("/");
+
     createMutation.mutate({
       unitId,
       logDate: start,
       shift: shift as "Day" | "Late" | "Night",
       shiftStart: start,
       shiftEnd: end,
-      staffRole: staffRole.trim() || undefined,
+      staffRole: selectedStaffNames || undefined,
       majorEvent,
       handover: handover.trim() || undefined,
       residentSummary,
@@ -196,15 +219,88 @@ export default function NewLogPage() {
               />
             </div>
           </div>
-          <div className="mt-4">
-            <label className="mb-1 block text-sm font-medium">担当役割</label>
-            <input
-              type="text"
-              value={staffRole}
-              onChange={(e) => setStaffRole(e.target.value)}
-              placeholder="例: リーダー、見守り、服薬確認"
-              className="w-full rounded-md border px-3 py-2 text-sm"
-            />
+
+          {/* 担当職員 */}
+          <div className="mt-6 border-t pt-4">
+            <div className="mb-3 flex items-center justify-between">
+              <label className="block text-sm font-medium">担当職員</label>
+              {!showAddStaff && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowAddStaff(true)}
+                  disabled={staffOptions.length === 0}
+                >
+                  <UserPlus className="mr-1 h-4 w-4" />
+                  担当職員を追加
+                </Button>
+              )}
+            </div>
+
+            {/* 職員選択UI */}
+            {showAddStaff && (
+              <div className="mb-4 rounded-md border bg-gray-50 p-3">
+                <div className="mb-2 text-sm font-medium">
+                  職員を選択してください
+                </div>
+                <div className="space-y-2">
+                  {staffOptions.map((staff: any) => (
+                    <button
+                      key={staff.id}
+                      type="button"
+                      onClick={() => handleAddStaff(staff.id)}
+                      className="w-full rounded-md border bg-white px-3 py-2 text-left text-sm hover:bg-gray-100"
+                    >
+                      {staff.name || staff.email}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setShowAddStaff(false)}
+                  className="mt-2 w-full"
+                >
+                  キャンセル
+                </Button>
+              </div>
+            )}
+
+            {/* 選択済み職員リスト */}
+            {selectedStaffIds.length > 0 ? (
+              <div className="space-y-2">
+                {selectedStaffIds.map((staffId) => {
+                  const staff = staffOptions.find((s: any) => s.id === staffId);
+                  return (
+                    <div
+                      key={staffId}
+                      className="flex items-center justify-between rounded-md border bg-white px-3 py-2"
+                    >
+                      <span className="text-sm">
+                        {staff?.name || staff?.email}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveStaff(staffId)}
+                        className="text-gray-400 hover:text-red-500"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              !showAddStaff && (
+                <div className="rounded-md border border-dashed p-4 text-center text-sm text-gray-500">
+                  {staffOptions.length === 0
+                    ? "所属職員が登録されていません。ユニット詳細画面から職員を登録してください。"
+                    : "担当職員を追加してください"}
+                </div>
+              )
+            )}
           </div>
         </div>
 

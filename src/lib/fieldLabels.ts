@@ -136,11 +136,11 @@ export const FIELD_LABELS: Record<string, string> = {
 
   // 障害福祉制度情報
   physicalHandicapBook: "身体障害者手帳",
-  physicalHandicapGrade: "身体障害者手帳等級",
+  physicalHandicapGrade: "等級",
   intellectualHandicapBook: "愛の手帳（療育手帳）",
-  intellectualHandicapGrade: "愛の手帳等級",
+  intellectualHandicapGrade: "等級",
   mentalHandicapBook: "精神障害者保健福祉手帳",
-  mentalHandicapGrade: "精神障害者保健福祉手帳等級",
+  mentalHandicapGrade: "等級",
 
   disabilityPension: "障害年金",
   disabilityPensionType: "障害年金種別",
@@ -198,6 +198,19 @@ export function formatFieldValue(fieldName: string, value: any): string {
     if (value.length === 0) {
       return "（なし）";
     }
+
+    // 障害種別の場合は英語→日本語に変換
+    if (fieldName === "disabilityType") {
+      return value
+        .map((type: string) => {
+          if (type === "Physical") return "身体障害";
+          if (type === "Intellectual") return "知的障害";
+          if (type === "Mental") return "精神障害";
+          return type;
+        })
+        .join(", ");
+    }
+
     return value.join(", ");
   }
 

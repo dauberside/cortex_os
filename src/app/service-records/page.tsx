@@ -194,7 +194,7 @@ export default function ServiceRecordsPage() {
               className="w-full rounded-md border px-3 py-2"
             >
               <option value="">全員</option>
-              {recipients?.map((r) => (
+              {recipients?.map((r: any) => (
                 <option key={r.id} value={r.id}>
                   {r.name}
                 </option>

@@ -14,14 +14,18 @@ import {
   Download,
   Trash2,
   Pencil,
+  UserPlus,
+  X,
 } from "lucide-react";
 import { TimeSlotRecordTable } from "@/components/dailyLog/TimeSlotRecordTable";
+import { TimeSlotRecordTimeline } from "@/components/dailyLog/TimeSlotRecordTimeline";
 import {
   TimeSlotRecord,
   initializeTimeSlotRecordsFromShift,
 } from "@/types/dailyLog";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useSession } from "next-auth/react";
+import * as XLSX from "xlsx";
 
 const SHIFT_LABELS: Record<string, string> = {
   Day: "日勤",
@@ -49,6 +53,7 @@ function RecipientEntryForm({
   currentUserId,
   shiftStart,
   shiftEnd,
+  log,
 }: {
   dailyLogId: string;
   recipient: {
@@ -71,6 +76,7 @@ function RecipientEntryForm({
   currentUserId?: string;
   shiftStart: Date;
   shiftEnd: Date;
+  log: any;
 }) {
   const utils = trpc.useUtils();
   const [open, setOpen] = useState(false);
@@ -78,29 +84,7 @@ function RecipientEntryForm({
 
   const entry = existingEntry || {};
 
-  // A. 状態
-  const [temperature, setTemperature] = useState<string>(
-    entry.temperature?.toString() ?? ""
-  );
-  const [bloodPressure, setBloodPressure] = useState(entry.bloodPressure ?? "");
-  const [spo2, setSpo2] = useState<string>(entry.spo2?.toString() ?? "");
-  const [weight, setWeight] = useState<string>(entry.weight?.toString() ?? "");
-  const [vitalAlert, setVitalAlert] = useState(entry.vitalAlert ?? false);
-  const [behaviorNote, setBehaviorNote] = useState(entry.behaviorNote ?? "");
-  const [nightWaking, setNightWaking] = useState(entry.nightWaking ?? "");
-
-  // B. 生活支援
-  const [dinnerAmount, setDinnerAmount] = useState(entry.mealAmount ?? ""); // 夕食
-  const [breakfastAmount, setBreakfastAmount] = useState(
-    entry.mealTexture ?? ""
-  ); // 朝食（mealTextureを流用）
-  const [waterIntake, setWaterIntake] = useState(entry.waterIntake ?? "");
-  const [bathDone, setBathDone] = useState(entry.bathDone ?? false);
-  const [bathRefusal, setBathRefusal] = useState(entry.bathRefusal ?? "");
-  const [oralCareDone, setOralCareDone] = useState(entry.oralCareDone ?? false);
-  const [dressingDone, setDressingDone] = useState(entry.dressingDone ?? false);
-
-  // C. 服薬チェック
+  // 服薬チェック
   const [medChecks, setMedChecks] = useState<Record<string, boolean>>(() => {
     const checks: Record<string, boolean> = {};
     if (entry.medicationChecks) {
@@ -128,6 +112,9 @@ function RecipientEntryForm({
       return initializeTimeSlotRecordsFromShift(shiftStart, shiftEnd);
     }
   );
+
+  // 表示モード（table or timeline）
+  const [viewMode, setViewMode] = useState<"table" | "timeline">("timeline");
 
   // 自動保存: 時間帯別記録が変更されたら3秒後に自動保存
   const debouncedTimeSlotRecords = useDebounce(timeSlotRecords, 3000);
@@ -199,19 +186,6 @@ function RecipientEntryForm({
     upsertMutation.mutate({
       dailyLogId,
       recipientId: recipient.id,
-      temperature: temperature ? parseFloat(temperature) : undefined,
-      bloodPressure: bloodPressure || undefined,
-      spo2: spo2 ? parseInt(spo2) : undefined,
-      vitalAlert,
-      behaviorNote: behaviorNote || undefined,
-      nightWaking: nightWaking || undefined,
-      mealAmount: dinnerAmount || undefined, // 夕食
-      mealTexture: breakfastAmount || undefined, // 朝食（mealTextureを流用）
-      waterIntake: waterIntake || undefined,
-      bathDone,
-      bathRefusal: bathRefusal || undefined,
-      oralCareDone,
-      dressingDone,
       medicationChecks:
         medicationChecks.length > 0 ? medicationChecks : undefined,
       toiletRecords: toiletRecords.length > 0 ? toiletRecords : undefined,
@@ -241,12 +215,6 @@ function RecipientEntryForm({
               記録済み
             </span>
           )}
-          {vitalAlert && (
-            <span className="flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs text-red-800">
-              <AlertTriangle className="h-3 w-3" />
-              異常値
-            </span>
-          )}
         </div>
         {open ? (
           <ChevronUp className="h-4 w-4" />
@@ -258,198 +226,7 @@ function RecipientEntryForm({
       {open && (
         <div className="border-t p-4">
           <div className="space-y-6">
-            {/* A. バイタル・状態 */}
-            <div>
-              <h3 className="mb-3 font-medium">A. バイタル・状態</h3>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-                <div>
-                  <label className="mb-1 block text-xs font-medium">
-                    体温 (℃)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={temperature}
-                    onChange={(e) => setTemperature(e.target.value)}
-                    placeholder="36.5"
-                    className="w-full rounded-md border px-2 py-1.5 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium">血圧</label>
-                  <input
-                    type="text"
-                    value={bloodPressure}
-                    onChange={(e) => setBloodPressure(e.target.value)}
-                    placeholder="120/80"
-                    className="w-full rounded-md border px-2 py-1.5 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium">
-                    SpO2 (%)
-                  </label>
-                  <input
-                    type="number"
-                    value={spo2}
-                    onChange={(e) => setSpo2(e.target.value)}
-                    placeholder="98"
-                    className="w-full rounded-md border px-2 py-1.5 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium">
-                    体重 (kg)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
-                    placeholder="55.0"
-                    className="w-full rounded-md border px-2 py-1.5 text-sm"
-                  />
-                </div>
-                <div className="flex items-end">
-                  <label className="flex cursor-pointer items-center gap-1 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={vitalAlert}
-                      onChange={(e) => setVitalAlert(e.target.checked)}
-                      className="h-4 w-4"
-                    />
-                    異常値あり
-                  </label>
-                </div>
-              </div>
-              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-xs font-medium">
-                    夜間覚醒の原因
-                  </label>
-                  <input
-                    type="text"
-                    value={nightWaking}
-                    onChange={(e) => setNightWaking(e.target.value)}
-                    placeholder="例: トイレ、不穏"
-                    className="w-full rounded-md border px-2 py-1.5 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium">
-                    行動・心理状態
-                  </label>
-                  <input
-                    type="text"
-                    value={behaviorNote}
-                    onChange={(e) => setBehaviorNote(e.target.value)}
-                    placeholder="症状→対応→結果"
-                    className="w-full rounded-md border px-2 py-1.5 text-sm"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* B. 生活支援 */}
-            <div>
-              <h3 className="mb-3 font-medium">B. 生活支援</h3>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div>
-                  <label className="mb-1 block text-xs font-medium">夕食</label>
-                  <select
-                    value={dinnerAmount}
-                    onChange={(e) => setDinnerAmount(e.target.value)}
-                    className="w-full rounded-md border px-2 py-1.5 text-sm"
-                  >
-                    <option value="">-</option>
-                    <option value="全量">全量</option>
-                    <option value="3/4">3/4</option>
-                    <option value="1/2">1/2</option>
-                    <option value="1/4">1/4</option>
-                    <option value="少量">少量</option>
-                    <option value="なし">なし</option>
-                    <option value="拒否">拒否</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium">朝食</label>
-                  <select
-                    value={breakfastAmount}
-                    onChange={(e) => setBreakfastAmount(e.target.value)}
-                    className="w-full rounded-md border px-2 py-1.5 text-sm"
-                  >
-                    <option value="">-</option>
-                    <option value="全量">全量</option>
-                    <option value="3/4">3/4</option>
-                    <option value="1/2">1/2</option>
-                    <option value="1/4">1/4</option>
-                    <option value="少量">少量</option>
-                    <option value="なし">なし</option>
-                    <option value="拒否">拒否</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium">
-                    水分摂取
-                  </label>
-                  <select
-                    value={waterIntake}
-                    onChange={(e) => setWaterIntake(e.target.value)}
-                    className="w-full rounded-md border px-2 py-1.5 text-sm"
-                  >
-                    <option value="">-</option>
-                    <option value="良好">良好</option>
-                    <option value="少ない">少ない</option>
-                    <option value="拒否">拒否</option>
-                  </select>
-                </div>
-                <div className="flex flex-col gap-1 pt-5">
-                  <label className="flex cursor-pointer items-center gap-1 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={bathDone}
-                      onChange={(e) => setBathDone(e.target.checked)}
-                      className="h-4 w-4"
-                    />
-                    入浴実施
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-1 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={oralCareDone}
-                      onChange={(e) => setOralCareDone(e.target.checked)}
-                      className="h-4 w-4"
-                    />
-                    口腔ケア
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-1 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={dressingDone}
-                      onChange={(e) => setDressingDone(e.target.checked)}
-                      className="h-4 w-4"
-                    />
-                    更衣
-                  </label>
-                </div>
-                {!bathDone && (
-                  <div>
-                    <label className="mb-1 block text-xs font-medium">
-                      入浴拒否の理由
-                    </label>
-                    <input
-                      type="text"
-                      value={bathRefusal}
-                      onChange={(e) => setBathRefusal(e.target.value)}
-                      placeholder="例: 体調不良"
-                      className="w-full rounded-md border px-2 py-1.5 text-sm"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* B2. 排泄記録 */}
+            {/* 排泄記録 */}
             {(recipient.assessment?.toiletCareTypes?.length ?? 0) > 0 && (
               <div>
                 <div className="mb-2 flex items-center justify-between">
@@ -565,13 +342,69 @@ function RecipientEntryForm({
 
             {/* H. 時間帯別記録 */}
             <div>
-              <h3 className="mb-3 font-medium">H. 時間帯別記録（30分刻み）</h3>
-              <TimeSlotRecordTable
-                records={timeSlotRecords}
-                onChange={setTimeSlotRecords}
-                readOnly={false}
-                currentUserId={currentUserId}
-              />
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="font-medium">H. 時間帯別記録（30分刻み）</h3>
+                <div className="flex items-center gap-2">
+                  {/* 表示モード切り替え */}
+                  <div className="flex rounded-md border border-gray-300 bg-white">
+                    <button
+                      type="button"
+                      onClick={() => setViewMode("timeline")}
+                      className={`px-3 py-1 text-sm transition-colors ${
+                        viewMode === "timeline"
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-50"
+                      } rounded-l-md`}
+                    >
+                      タイムライン
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewMode("table")}
+                      className={`px-3 py-1 text-sm transition-colors ${
+                        viewMode === "table"
+                          ? "bg-blue-600 text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-50"
+                      } rounded-r-md border-l border-gray-300`}
+                    >
+                      表
+                    </button>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      exportTimeSlotExcel(log, {
+                        ...existingEntry,
+                        recipient,
+                        timeSlotRecords,
+                      })
+                    }
+                    className="flex items-center gap-1"
+                  >
+                    <Download className="h-4 w-4" />
+                    Excel出力
+                  </Button>
+                </div>
+              </div>
+
+              {/* 条件付きレンダリング */}
+              {viewMode === "timeline" ? (
+                <TimeSlotRecordTimeline
+                  records={timeSlotRecords}
+                  onChange={setTimeSlotRecords}
+                  readOnly={false}
+                  currentUserId={currentUserId}
+                />
+              ) : (
+                <TimeSlotRecordTable
+                  records={timeSlotRecords}
+                  onChange={setTimeSlotRecords}
+                  readOnly={false}
+                  currentUserId={currentUserId}
+                />
+              )}
             </div>
 
             {/* G. 特記事項 */}
@@ -658,24 +491,46 @@ function exportLogCsv(log: any) {
     "夜間覚醒",
     "行動・心理状態",
     "服薬確認",
+    "時間帯別記録",
     "特記事項",
   ];
 
-  const rows = log.entries.map((entry) => {
+  const rows = log.entries.map((entry: any) => {
     const e = entry as any;
     const medChecks: { scheduleId: string; done: boolean }[] =
       e.medicationChecks ?? [];
     const medSummary = entry.recipient.medicationSchedules
       .sort(
-        (a, b) =>
+        (a: any, b: any) =>
           TIMING_ORDER.indexOf(a.timing) - TIMING_ORDER.indexOf(b.timing)
       )
-      .map((s) => {
+      .map((s: any) => {
         const done =
           medChecks.find((c) => c.scheduleId === s.id)?.done ?? false;
         return `${TIMING_LABELS[s.timing] || s.timing}:${s.medicationName}:${done ? "済" : "未"}`;
       })
       .join(" / ");
+
+    // 時間帯別記録をフォーマット
+    const timeSlots = e.timeSlotRecords ?? [];
+    const timeSlotSummary = Array.isArray(timeSlots)
+      ? timeSlots
+          .map((slot: any) => {
+            const parts: string[] = [];
+            if (slot.time) parts.push(`[${slot.time}]`);
+            if (slot.water) parts.push(`水:${slot.water}`);
+            if (slot.meal) parts.push(`食:${slot.meal}`);
+            if (slot.leisure) parts.push(`余:${slot.leisure}`);
+            if (slot.oral) parts.push(`口腔:済`);
+            if (slot.bath) parts.push(`入浴:済`);
+            if (slot.condition) parts.push(`状態:${slot.condition}`);
+            if (slot.toilet) parts.push(`排:${slot.toilet}`);
+            if (slot.sleep) parts.push(`睡:${slot.sleep}`);
+            if (slot.notes) parts.push(`備:${slot.notes}`);
+            return parts.join(" ");
+          })
+          .join(" | ")
+      : "";
 
     return [
       entry.recipient.name,
@@ -694,6 +549,7 @@ function exportLogCsv(log: any) {
       e.nightWaking ?? "",
       e.behaviorNote ?? "",
       medSummary,
+      timeSlotSummary,
       e.notes ?? "",
     ]
       .map(escCsv)
@@ -722,6 +578,133 @@ function exportLogCsv(log: any) {
   URL.revokeObjectURL(url);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function exportTimeSlotExcel(log: any, entry: any) {
+  const logDate = new Date(log.logDate);
+  const year = logDate.getFullYear();
+  const month = logDate.getMonth() + 1;
+  const day = logDate.getDate();
+  const dayOfWeek = ["日", "月", "火", "水", "木", "金", "土"][logDate.getDay()];
+
+  const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  const shiftLabel: Record<string, string> = {
+    Day: "日勤",
+    Late: "遅番",
+    Night: "夜勤",
+  };
+
+  // 30分刻みの時間スロットを生成（15:00から翌9:30まで）
+  const timeSlots: string[] = [];
+  for (let h = 15; h < 24; h++) {
+    timeSlots.push(`${h}:00`);
+    timeSlots.push(`${h}:30`);
+  }
+  for (let h = 0; h < 10; h++) {
+    timeSlots.push(`${h}:00`);
+    timeSlots.push(`${h}:30`);
+  }
+
+  // timeSlotRecordsをマップ化
+  const timeSlotMap = new Map<string, any>();
+  if (entry.timeSlotRecords && Array.isArray(entry.timeSlotRecords)) {
+    entry.timeSlotRecords.forEach((slot: any) => {
+      if (slot.time) {
+        timeSlotMap.set(slot.time, slot);
+      }
+    });
+  }
+
+  // 担当職員名
+  const staffName = log.staffRole || log.staff?.name || "";
+
+  // Excelデータを作成（紙の帳票形式に合わせる）
+  const wsData: any[][] = [
+    // タイトル行
+    ["業務日誌", `利用者名（${entry.recipient.name}）`, `${year}年${month}月${day}日（${dayOfWeek}）`],
+    // 記録責任者行
+    [`記録責任者（${staffName}）`],
+    // ヘッダー行
+    ["時間", "水分量", "食事量", "余暇", "口腔", "入浴", "体調", "服薬", "トイレ", "睡眠", "特記事項"],
+  ];
+
+  // 時間帯別のデータ行を追加
+  timeSlots.forEach((time) => {
+    const slot = timeSlotMap.get(time);
+    wsData.push([
+      time,
+      slot?.water || "",
+      slot?.meal || "",
+      slot?.leisure || "",
+      slot?.oral ? "○" : "",
+      slot?.bath ? "○" : "",
+      slot?.condition || "",
+      slot?.medication ? "○" : "",
+      slot?.toilet || "",
+      slot?.sleep || "",
+      slot?.notes || "",
+    ]);
+  });
+
+  // フッター: 職員連絡事項・気づき
+  const notesContent = entry.notes || "";
+  wsData.push([]);
+  wsData.push(["職員連絡事項・気づき"]);
+  wsData.push([notesContent]);
+
+  // ワークブックとワークシートを作成
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // セルのマージ設定
+  ws["!merges"] = [
+    // 1行目: 業務日誌（A1）、利用者名（B1:G1）、日付（H1:K1）
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 6 } }, // B1:G1 利用者名
+    { s: { r: 0, c: 7 }, e: { r: 0, c: 10 } }, // H1:K1 日付
+    // 2行目: 記録責任者（A2:K2）
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 10 } }, // A2:K2 記録責任者
+  ];
+
+  // フッターのマージ（職員連絡事項・気づき）
+  const footerRowIndex = wsData.length - 2; // "職員連絡事項・気づき"の行
+  const contentRowIndex = wsData.length - 1; // 内容の行
+
+  if (!ws["!merges"]) ws["!merges"] = [];
+  ws["!merges"].push(
+    { s: { r: footerRowIndex, c: 0 }, e: { r: footerRowIndex, c: 10 } }, // ラベル行
+    { s: { r: contentRowIndex, c: 0 }, e: { r: contentRowIndex, c: 10 } }  // 内容行
+  );
+
+  // 列幅を設定
+  ws["!cols"] = [
+    { wch: 6 },  // 時間
+    { wch: 10 }, // 水分量
+    { wch: 10 }, // 食事量
+    { wch: 12 }, // 余暇
+    { wch: 6 },  // 口腔
+    { wch: 6 },  // 入浴
+    { wch: 10 }, // 体調
+    { wch: 8 },  // 服薬
+    { wch: 10 }, // トイレ
+    { wch: 10 }, // 睡眠
+    { wch: 20 }, // 特記事項
+  ];
+
+  // 行の高さを設定
+  ws["!rows"] = [
+    { hpt: 25 }, // 1行目（タイトル）
+    { hpt: 20 }, // 2行目（記録責任者）
+    { hpt: 20 }, // 3行目（ヘッダー）
+  ];
+
+  XLSX.utils.book_append_sheet(wb, ws, "時間帯別記録");
+
+  // ファイルをダウンロード
+  XLSX.writeFile(
+    wb,
+    `時間帯別記録_${entry.recipient.name}_${dateStr}_${shiftLabel[log.shift] || log.shift}.xlsx`
+  );
+}
+
 export default function LogDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -734,12 +717,14 @@ export default function LogDetailPage() {
 
   const { data: session } = useSession();
   const { data: log, isLoading } = trpc.dailyLog.get.useQuery({ id: logId });
+  const { data: unit } = trpc.unit.get.useQuery({ id: unitId });
 
   // 編集フォーム用 state（log がロードされてから初期化）
   const [editShift, setEditShift] = useState("");
   const [editShiftStart, setEditShiftStart] = useState("");
   const [editShiftEnd, setEditShiftEnd] = useState("");
-  const [editStaffRole, setEditStaffRole] = useState("");
+  const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
+  const [showAddStaff, setShowAddStaff] = useState(false);
   const [editMajorEvent, setEditMajorEvent] = useState(false);
   const [editHandover, setEditHandover] = useState("");
 
@@ -757,25 +742,43 @@ export default function LogDetailPage() {
   });
 
   function openEdit() {
-    if (!log) return;
+    if (!log || !unit) return;
     setEditShift(log.shift);
     setEditShiftStart(toLocalDatetimeValue(new Date(log.shiftStart)));
     setEditShiftEnd(toLocalDatetimeValue(new Date(log.shiftEnd)));
-    setEditStaffRole(log.staffRole ?? "");
+
+    // staffRoleから職員名を抽出してIDに変換
+    const staffNames = (log.staffRole ?? "").split("/").map((n: string) => n.trim()).filter(Boolean);
+    const staffOptions = unit.staffs?.map((s: any) => s.user) || [];
+    const matchedIds = staffNames
+      .map((name: string) => staffOptions.find((s: any) => s.name === name)?.id)
+      .filter((id: string | undefined): id is string => !!id);
+    setSelectedStaffIds(matchedIds);
+
     setEditMajorEvent(log.majorEvent);
     setEditHandover(log.handover ?? "");
     setEditMode(true);
   }
 
   function handleUpdate() {
+    if (!unit) return;
+
     const start = new Date(editShiftStart);
     const end = new Date(editShiftEnd);
+
+    // 選択した職員名を取得して結合
+    const staffOptions = unit.staffs?.map((s: any) => s.user) || [];
+    const selectedStaffNames = selectedStaffIds
+      .map((id) => staffOptions.find((s: any) => s.id === id)?.name)
+      .filter(Boolean)
+      .join("/");
+
     updateMutation.mutate({
       id: logId,
       shift: editShift as "Day" | "Late" | "Night",
       shiftStart: start,
       shiftEnd: end,
-      staffRole: editStaffRole.trim() || undefined,
+      staffRole: selectedStaffNames || undefined,
       majorEvent: editMajorEvent,
       handover: editHandover.trim() || undefined,
     });
@@ -792,11 +795,11 @@ export default function LogDetailPage() {
   if (!log) return <div className="p-8">業務日誌が見つかりません</div>;
 
   const entryMap = new Map<string, (typeof log.entries)[number]>(
-    log.entries.map((e) => [e.recipientId, e])
+    log.entries.map((e: any) => [e.recipientId, e])
   );
 
   // ユニットの利用者を取得（この日誌に紐づく利用者 or 全利用者）
-  const unitRecipients = log.entries.map((e) => e.recipient);
+  const unitRecipients = log.entries.map((e: any) => e.recipient);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -945,14 +948,96 @@ export default function LogDetailPage() {
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">担当役割</label>
-              <input
-                type="text"
-                value={editStaffRole}
-                onChange={(e) => setEditStaffRole(e.target.value)}
-                placeholder="例: リーダー、服薬確認"
-                className="w-full rounded-md border px-3 py-2 text-sm"
-              />
+              <div className="mb-3 flex items-center justify-between">
+                <label className="block text-sm font-medium">担当職員</label>
+                {!showAddStaff && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowAddStaff(true)}
+                    disabled={!unit || (unit.staffs?.length ?? 0) === 0}
+                  >
+                    <UserPlus className="mr-1 h-4 w-4" />
+                    追加
+                  </Button>
+                )}
+              </div>
+
+              {/* 職員選択UI */}
+              {showAddStaff && unit && (
+                <div className="mb-4 rounded-md border bg-gray-50 p-3">
+                  <div className="mb-2 text-sm font-medium">
+                    職員を選択してください
+                  </div>
+                  <div className="space-y-2">
+                    {(unit.staffs?.map((s: any) => s.user) || []).map((staff: any) => (
+                      <button
+                        key={staff.id}
+                        type="button"
+                        onClick={() => {
+                          if (!selectedStaffIds.includes(staff.id)) {
+                            setSelectedStaffIds([...selectedStaffIds, staff.id]);
+                          }
+                          setShowAddStaff(false);
+                        }}
+                        className="w-full rounded-md border bg-white px-3 py-2 text-left text-sm hover:bg-gray-100"
+                      >
+                        {staff.name || staff.email}
+                      </button>
+                    ))}
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setShowAddStaff(false)}
+                    className="mt-2 w-full"
+                  >
+                    キャンセル
+                  </Button>
+                </div>
+              )}
+
+              {/* 選択済み職員リスト */}
+              {selectedStaffIds.length > 0 && unit ? (
+                <div className="space-y-2">
+                  {selectedStaffIds.map((staffId) => {
+                    const staff = (unit.staffs?.map((s: any) => s.user) || []).find(
+                      (s: any) => s.id === staffId
+                    );
+                    return (
+                      <div
+                        key={staffId}
+                        className="flex items-center justify-between rounded-md border bg-white px-3 py-2"
+                      >
+                        <span className="text-sm">
+                          {staff?.name || staff?.email}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setSelectedStaffIds(
+                              selectedStaffIds.filter((id) => id !== staffId)
+                            )
+                          }
+                          className="text-gray-400 hover:text-red-500"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                !showAddStaff && (
+                  <div className="rounded-md border border-dashed p-4 text-center text-sm text-gray-500">
+                    {!unit || (unit.staffs?.length ?? 0) === 0
+                      ? "所属職員が登録されていません。ユニット詳細画面から職員を登録してください。"
+                      : "担当職員を追加してください"}
+                  </div>
+                )
+              )}
             </div>
             <div>
               <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
@@ -1046,7 +1131,7 @@ export default function LogDetailPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {unitRecipients.map((recipient) => (
+          {unitRecipients.map((recipient: any) => (
             <RecipientEntryForm
               key={recipient.id}
               dailyLogId={logId}
@@ -1055,6 +1140,7 @@ export default function LogDetailPage() {
               currentUserId={session?.user?.id}
               shiftStart={new Date(log.shiftStart)}
               shiftEnd={new Date(log.shiftEnd)}
+              log={log}
             />
           ))}
         </div>
@@ -1086,7 +1172,7 @@ function UnitRecipientsAdder({
   });
 
   const available =
-    allRecipients?.filter((r) => !existingRecipientIds.has(r.id)) ?? [];
+    allRecipients?.filter((r: any) => !existingRecipientIds.has(r.id)) ?? [];
 
   return (
     <div className="flex items-center gap-2">
@@ -1098,7 +1184,7 @@ function UnitRecipientsAdder({
             className="rounded-md border px-3 py-1.5 text-sm"
           >
             <option value="">利用者を選択...</option>
-            {available.map((r) => (
+            {available.map((r: any) => (
               <option key={r.id} value={r.id}>
                 {r.name}
               </option>

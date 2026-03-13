@@ -6,7 +6,8 @@ const japanesePhoneNumber = z
   .optional()
   .refine(
     (val) => {
-      if (!val) return true;
+      // 空文字列またはundefinedの場合はOK
+      if (!val || val.trim() === "") return true;
       // 日本の電話番号形式: 090-1234-5678, 03-1234-5678, 0312345678など
       const phoneRegex = /^0\d{1,4}-?\d{1,4}-?\d{4}$/;
       return phoneRegex.test(val.replace(/\s/g, ""));
@@ -251,6 +252,11 @@ export const recipientSchema = z
     mentalHandicapBook: z.boolean().optional(),
     mentalHandicapGrade: z.string().optional(),
 
+    // マル障（心身障害者医療費助成制度）
+    hasMarusho: z.boolean().optional(),
+    marushoNumber: z.string().optional(),
+    marushoExpiry: z.string().optional(),
+
     // 手当・給付
     specialChildAllowance: z.boolean().optional(),
     disabilityAllowance: z.boolean().optional(),
@@ -315,7 +321,7 @@ export const recipientSchema = z
       .string()
       .max(500, "GH住所は500文字以内で入力してください")
       .optional(),
-    ghPhone: japanesePhoneNumber,
+    ghPhone: z.string().optional().or(z.literal("")),
     ghCorporation: z
       .string()
       .max(200, "法人名は200文字以内で入力してください")

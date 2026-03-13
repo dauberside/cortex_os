@@ -168,7 +168,7 @@ export const serviceRecordRouter = router({
       let totalDuration = 0;
       let crossesBandsCount = 0;
 
-      records.forEach((record) => {
+      records.forEach((record: any) => {
         // サービス種別集計
         byServiceType[record.serviceType] =
           (byServiceType[record.serviceType] || 0) + 1;

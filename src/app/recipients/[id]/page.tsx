@@ -7,9 +7,6 @@ import {
   ArrowLeft,
   Activity,
   FileText,
-  Pill,
-  MessageSquare,
-  AlertTriangle,
   Edit,
   Trash2,
   Download,
@@ -23,13 +20,13 @@ import {
   Shield,
   Smile,
   MapPin,
-  Navigation,
   MoreVertical,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChangeHistory } from "@/components/recipients/ChangeHistory";
+import { GuideRecordStatusBadge } from "@/components/guide/GuideRecordStatusBadge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -106,6 +103,31 @@ export default function RecipientDetailPage() {
   const { data: recipient, isLoading } = trpc.recipient.get.useQuery({
     id: recipientId,
   });
+
+  // ガイド記録を取得（最新5件）
+  const { data: guideRecords } = trpc.guideRecord.list.useQuery({
+    recipientId,
+    limit: 5,
+  });
+
+  // 閲覧ログを記録（1回のみ）
+  const logViewMutation = trpc.auditLog.log.useMutation();
+  const hasLoggedViewRef = useRef(false);
+
+  useEffect(() => {
+    if (recipient && !hasLoggedViewRef.current) {
+      hasLoggedViewRef.current = true;
+      logViewMutation.mutate({
+        action: "View",
+        resourceType: "CareRecipient",
+        resourceId: recipientId,
+        path: `/recipients/${recipientId}`,
+        metadata: {
+          recipientName: recipient.name,
+        },
+      });
+    }
+  }, [recipient, recipientId, logViewMutation]);
 
   const deleteMutation = trpc.recipient.delete.useMutation({
     onSuccess: () => {
@@ -407,7 +429,7 @@ export default function RecipientDetailPage() {
         <div className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
           <button
             onClick={() => toggleSection("basic")}
-            className="mb-6 flex w-full items-center justify-between transition-opacity hover:opacity-70"
+            className="mb-6 flex w-full cursor-pointer items-center justify-between rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50"
           >
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-blue-100 p-2">
@@ -422,77 +444,86 @@ export default function RecipientDetailPage() {
             )}
           </button>
           {expandedSections.has("basic") && (
-            <div className="flex flex-col gap-4 md:flex-row">
-              {/* 写真 */}
-              {recipient.photoUrl && (
-                <div className="flex-shrink-0">
-                  <Image
-                    src={recipient.photoUrl}
-                    alt={`${recipient.name}さんの写真`}
-                    width={192}
-                    height={192}
-                    className="h-48 w-48 rounded-lg object-cover"
-                  />
-                </div>
-              )}
-
-              {/* 基本情報グリッド */}
-              <div className="grid flex-1 grid-cols-1 gap-1.5 md:grid-cols-2">
-                <div className="rounded-lg bg-gray-50 p-3">
-                  <p className="text-muted-foreground mb-0.5 text-xs">
-                    生年月日
-                  </p>
-                  <p className="">
-                    {new Date(recipient.birthDate).toLocaleDateString("ja-JP")}
-                  </p>
-                </div>
-                <div className="rounded-lg bg-gray-50 p-3">
-                  <p className="text-muted-foreground mb-0.5 text-xs">年齢</p>
-                  <p className="">
-                    {Math.floor(
-                      (new Date().getTime() -
-                        new Date(recipient.birthDate).getTime()) /
-                        (365.25 * 24 * 60 * 60 * 1000)
-                    )}
-                    歳
-                  </p>
-                </div>
-                <div className="rounded-lg bg-gray-50 p-3">
-                  <p className="text-muted-foreground mb-0.5 text-xs">性別</p>
-                  <p className="">
-                    {recipient.gender === "Male"
-                      ? "男性"
-                      : recipient.gender === "Female"
-                        ? "女性"
-                        : "その他"}
-                  </p>
-                </div>
-                {recipient.supportLevel && (
-                  <div className="rounded-lg bg-gray-50 p-3">
-                    <p className="text-muted-foreground mb-0.5 text-xs">
-                      障害支援区分
-                    </p>
-                    <p className="">区分{recipient.supportLevel}</p>
+            <div className="space-y-4">
+              {/* 上段: 写真と基本情報 */}
+              <div className="flex flex-col gap-4 md:flex-row">
+                {/* 写真 */}
+                {recipient.photoUrl && (
+                  <div className="flex-shrink-0">
+                    <Image
+                      src={recipient.photoUrl}
+                      alt={`${recipient.name}さんの写真`}
+                      width={192}
+                      height={192}
+                      className="h-48 w-48 rounded-lg object-cover"
+                    />
                   </div>
                 )}
-                {recipient.disabilityType.length > 0 && (
-                  <div className="rounded-lg bg-gray-50 p-3 md:col-span-2">
+
+                {/* 基本情報グリッド（写真の右側） */}
+                <div className="grid flex-1 grid-cols-1 gap-1.5 md:grid-cols-2">
+                  <div className="rounded-lg bg-gray-50 p-3">
+                    <p className="text-muted-foreground mb-0.5 text-xs">
+                      生年月日
+                    </p>
+                    <p className="">
+                      {new Date(recipient.birthDate).toLocaleDateString("ja-JP")}
+                    </p>
+                  </div>
+                  <div className="rounded-lg bg-gray-50 p-3">
+                    <p className="text-muted-foreground mb-0.5 text-xs">年齢</p>
+                    <p className="">
+                      {Math.floor(
+                        (new Date().getTime() -
+                          new Date(recipient.birthDate).getTime()) /
+                          (365.25 * 24 * 60 * 60 * 1000)
+                      )}
+                      歳
+                    </p>
+                  </div>
+                  <div className="rounded-lg bg-gray-50 p-3">
+                    <p className="text-muted-foreground mb-0.5 text-xs">性別</p>
+                    <p className="">
+                      {recipient.gender === "Male"
+                        ? "男性"
+                        : recipient.gender === "Female"
+                          ? "女性"
+                          : "その他"}
+                    </p>
+                  </div>
+                  <div className="rounded-lg bg-gray-50 p-3 md:col-start-1">
                     <p className="text-muted-foreground mb-0.5 text-xs">
                       障害種別
                     </p>
                     <p className="">
-                      {recipient.disabilityType
-                        .map((t) =>
-                          t === "Physical"
-                            ? "身体障害"
-                            : t === "Intellectual"
-                              ? "知的障害"
-                              : "精神障害"
-                        )
-                        .join(", ")}
+                      {recipient.disabilityType.length > 0
+                        ? recipient.disabilityType
+                            .map((t: string) =>
+                              t === "Physical"
+                                ? "身体障害"
+                                : t === "Intellectual"
+                                  ? "知的障害"
+                                  : "精神障害"
+                            )
+                            .join(", ")
+                        : "未設定"}
                     </p>
                   </div>
-                )}
+                  <div className="rounded-lg bg-gray-50 p-3 md:col-start-2">
+                    <p className="text-muted-foreground mb-0.5 text-xs">
+                      障害支援区分
+                    </p>
+                    <p className="">
+                      {recipient.supportLevel
+                        ? `区分${recipient.supportLevel}`
+                        : "未設定"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 下段: 所持手帳以降は全幅 */}
+              <div className="grid grid-cols-1 gap-1.5 md:grid-cols-2">
 
                 {/* 所持手帳 */}
                 {((recipient as any).physicalHandicapBook ||
@@ -851,7 +882,7 @@ export default function RecipientDetailPage() {
           <div className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
             <button
               onClick={() => toggleSection("service")}
-              className="mb-6 flex w-full items-center justify-between transition-opacity hover:opacity-70"
+              className="mb-6 flex w-full cursor-pointer items-center justify-between rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-green-100 p-2">
@@ -997,7 +1028,7 @@ export default function RecipientDetailPage() {
           <div className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
             <button
               onClick={() => toggleSection("welfare")}
-              className="mb-6 flex w-full items-center justify-between transition-opacity hover:opacity-70"
+              className="mb-6 flex w-full cursor-pointer items-center justify-between rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-purple-100 p-2">
@@ -1266,7 +1297,7 @@ export default function RecipientDetailPage() {
           <div className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
             <button
               onClick={() => toggleSection("personality")}
-              className="mb-6 flex w-full items-center justify-between transition-opacity hover:opacity-70"
+              className="mb-6 flex w-full cursor-pointer items-center justify-between rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-amber-100 p-2">
@@ -1323,7 +1354,7 @@ export default function RecipientDetailPage() {
         <div className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
           <button
             onClick={() => toggleSection("contact")}
-            className="mb-6 flex w-full items-center justify-between transition-opacity hover:opacity-70"
+            className="mb-6 flex w-full cursor-pointer items-center justify-between rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50"
           >
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-red-100 p-2">
@@ -1399,7 +1430,7 @@ export default function RecipientDetailPage() {
           <div className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
             <button
               onClick={() => toggleSection("outing")}
-              className="mb-6 flex w-full items-center justify-between transition-opacity hover:opacity-70"
+              className="mb-6 flex w-full cursor-pointer items-center justify-between rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-teal-100 p-2">
@@ -1511,92 +1542,127 @@ export default function RecipientDetailPage() {
         <div className="mb-8">
           <h2 className="mb-6 text-2xl font-bold">機能メニュー</h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Link href={`/recipients/${recipientId}/assessment`}>
-              <div className="bg-card cursor-pointer rounded-lg border-2 border-transparent p-6 shadow-sm transition-all hover:border-blue-200 hover:shadow-md">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
-                  <FileText className="h-6 w-6 text-blue-600" />
-                </div>
-                <h3 className="mb-2 text-lg font-bold">アセスメント</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  ADL・コミュニケーション・行動特性などの評価
-                </p>
-              </div>
-            </Link>
-
             <Link href={`/recipients/${recipientId}/guide`}>
-              <div className="bg-card cursor-pointer rounded-lg border-2 border-transparent p-6 shadow-sm transition-all hover:border-green-200 hover:shadow-md">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
-                  <Navigation className="h-6 w-6 text-green-600" />
-                </div>
-                <h3 className="mb-2 text-lg font-bold">ガイド記録</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+              <div className="group cursor-pointer rounded-lg border border-gray-300 bg-white p-6 transition-all hover:border-gray-400 hover:shadow-sm">
+                <h3 className="mb-2 text-lg font-semibold text-gray-900 group-hover:text-green-600 transition-colors">
+                  ガイド記録
+                </h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
                   外出支援の記録・活動内容の管理
                 </p>
               </div>
             </Link>
-
-            <div className="bg-card rounded-lg border p-6 opacity-60 shadow-sm">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-                <FileText className="h-6 w-6 text-gray-500" />
-              </div>
-              <h3 className="mb-2 text-lg font-bold text-gray-600">支援記録</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                日々の支援内容を記録
-              </p>
-              <p className="text-muted-foreground mt-2 text-xs font-medium">
-                ※実装予定
-              </p>
-            </div>
-
-            <div className="bg-card rounded-lg border p-6 opacity-60 shadow-sm">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-                <Pill className="h-6 w-6 text-gray-500" />
-              </div>
-              <h3 className="mb-2 text-lg font-bold text-gray-600">服薬管理</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                服薬記録・予定管理
-              </p>
-              <p className="text-muted-foreground mt-2 text-xs font-medium">
-                ※実装予定
-              </p>
-            </div>
-
-            <div className="bg-card rounded-lg border p-6 opacity-60 shadow-sm">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-                <MessageSquare className="h-6 w-6 text-gray-500" />
-              </div>
-              <h3 className="mb-2 text-lg font-bold text-gray-600">申し送り</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                引継ぎ事項の管理
-              </p>
-              <p className="text-muted-foreground mt-2 text-xs font-medium">
-                ※実装予定
-              </p>
-            </div>
-
-            <div className="bg-card rounded-lg border p-6 opacity-60 shadow-sm">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-                <AlertTriangle className="h-6 w-6 text-gray-500" />
-              </div>
-              <h3 className="mb-2 text-lg font-bold text-gray-600">
-                ヒヤリハット
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                事故報告・統計分析
-              </p>
-              <p className="text-muted-foreground mt-2 text-xs font-medium">
-                ※実装予定
-              </p>
-            </div>
           </div>
         </div>
+
+        {/* 最近のガイド記録 */}
+        {guideRecords && guideRecords.length > 0 && (
+          <div className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
+            <button
+              onClick={() => toggleSection("guide")}
+              className="mb-6 flex w-full cursor-pointer items-center justify-between rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50"
+            >
+              <div className="flex items-center gap-3">
+                <div className="rounded-lg bg-green-100 p-2">
+                  <MapPin className="h-5 w-5 text-green-600" />
+                </div>
+                <h2 className="text-2xl font-bold">最近のガイド記録</h2>
+              </div>
+              {expandedSections.has("guide") ? (
+                <ChevronUp className="text-muted-foreground h-6 w-6" />
+              ) : (
+                <ChevronDown className="text-muted-foreground h-6 w-6" />
+              )}
+            </button>
+            {expandedSections.has("guide") && (
+              <div>
+                <div className="mb-6 flex items-center justify-end">
+                  <Link href={`/recipients/${recipientId}/guide`}>
+                    <Button variant="outline" size="sm">
+                      すべて表示 →
+                    </Button>
+                  </Link>
+                </div>
+                <div className="space-y-3">
+                  {guideRecords.map((record: any) => (
+                    <Link
+                      key={record.id}
+                      href={`/recipients/${recipientId}/guide/${record.id}`}
+                      className="block"
+                    >
+                      <div className="rounded-lg border-l-4 border-green-500 bg-gray-50 p-4 transition-shadow hover:shadow-md cursor-pointer">
+                        <div className="mb-3 flex items-center justify-between">
+                          <p className="text-sm font-bold text-gray-700">
+                            {new Date(record.outingDate).toLocaleDateString(
+                              "ja-JP",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              }
+                            )}
+                          </p>
+                          <GuideRecordStatusBadge status={record.status} />
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-start gap-2">
+                            <MapPin className="h-4 w-4 text-gray-500 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">
+                                {record.destination || "行先未記録"}
+                              </p>
+                              {record.purpose && (
+                                <p className="text-xs text-gray-600 mt-1">
+                                  {record.purpose}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          {record.user && (
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                              <p className="text-xs text-gray-600">
+                                同行職員: {record.user.name}
+                              </p>
+                            </div>
+                          )}
+                          {record.departureTime && record.arrivalTime && (
+                            <div className="flex items-center gap-2">
+                              <History className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                              <p className="text-xs text-gray-600">
+                                {new Date(
+                                  record.departureTime
+                                ).toLocaleTimeString("ja-JP", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}{" "}
+                                -{" "}
+                                {new Date(record.arrivalTime).toLocaleTimeString(
+                                  "ja-JP",
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  }
+                                )}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* 最近のVPN記録 */}
         {recipient.vitalSigns && recipient.vitalSigns.length > 0 && (
           <div className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
             <button
               onClick={() => toggleSection("vpn")}
-              className="mb-6 flex w-full items-center justify-between transition-opacity hover:opacity-70"
+              className="mb-6 flex w-full cursor-pointer items-center justify-between rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-pink-100 p-2">
@@ -1670,12 +1736,13 @@ export default function RecipientDetailPage() {
           </div>
         )}
 
+
         {/* 変更履歴 */}
         {showChangeHistory && (
           <div className="bg-card mb-6 rounded-lg border p-6 shadow-sm">
             <button
               onClick={() => setShowChangeHistory(!showChangeHistory)}
-              className="mb-6 flex w-full items-center justify-between transition-opacity hover:opacity-70"
+              className="mb-6 flex w-full cursor-pointer items-center justify-between rounded-lg p-2 -m-2 transition-colors hover:bg-gray-50"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-lg bg-gray-100 p-2">

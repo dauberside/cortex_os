@@ -49,6 +49,21 @@ model User {
   dailyLogs      DailyLog[]
   auditLogs      AuditLog[]
 
+  // Attendance Relations
+  shiftsAsStaff             Shift[]              @relation("ShiftStaff")
+  shiftsPublished           Shift[]              @relation("ShiftPublisher")
+  shiftsCreated             Shift[]              @relation("ShiftCreator")
+  timeClockEvents           TimeClockEvent[]     @relation("TimeClockEvents")
+  timeClockModifications    TimeClockEvent[]     @relation("TimeClockModifier")
+  attendanceRecords         AttendanceRecord[]   @relation("AttendanceRecords")
+  attendanceApprovals       AttendanceRecord[]   @relation("AttendanceApprover")
+  approvalRequests          ApprovalRequest[]    @relation("ApprovalRequester")
+  approvalApprovalsGiven    ApprovalRequest[]    @relation("ApprovalApprover")
+  approvalRejectionsGiven   ApprovalRequest[]    @relation("ApprovalRejecter")
+  monthlyClosingsCreated    MonthlyClosing[]     @relation("ClosedBy")
+  monthlyClosingsReopened   MonthlyClosing[]     @relation("ReopenedBy")
+  supportRecordsCreated     SupportRecord[]      @relation("SupportRecordStaff")
+
   @@index([email])
   @@index([role])
   @@map("users")
@@ -230,6 +245,11 @@ model CareRecipient {
   handbookGrade   String?   // 等級（例: A1/1級/2級など）
   supportLevel    Int?      // 障害支援区分 1-6
   serviceTypes    String[]  @default([]) // 利用サービス（行動援護/移動支援/利用会員など）
+
+  // マル障（心身障害者医療費助成制度）
+  hasMarusho      Boolean   @default(false) // マル障受給の有無
+  marushoNumber   String?   // マル障受給者番号
+  marushoExpiry   DateTime? // マル障有効期限
 
   // 住所・連絡
   homeAddress     String?   // 自宅住所
@@ -528,6 +548,7 @@ model CareRecipient {
   unitRecipients       UnitRecipient[]
   medicationSchedules  MedicationSchedule[]
   dailyLogEntries      DailyLogEntry[]
+  supportRecords       SupportRecord[]
 
   @@index([userId])
   @@index([userId, deletedAt])
@@ -834,6 +855,9 @@ model ServiceRecord {
   // 将来、Submittedでも編集可にする場合は、監査ログ（変更理由・差分）を必須化する。
   guideRecordId String? @unique
 
+  // DailyLogEntry連携（GH/居宅等の日常的サービス実績）
+  dailyLogEntryId String? @unique
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -841,6 +865,7 @@ model ServiceRecord {
   recipient     CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   guideRecord   GuideRecord? @relation(fields: [guideRecordId], references: [id], onDelete: SetNull)
+  dailyLogEntry DailyLogEntry? @relation(fields: [dailyLogEntryId], references: [id], onDelete: Cascade)
 
   @@index([recipientId, serviceDate])
   @@index([userId])
@@ -866,6 +891,10 @@ model Unit {
   staffs     UnitStaff[]
   recipients UnitRecipient[]
   dailyLogs  DailyLog[]
+
+  // Attendance Relations
+  shifts           Shift[]
+  monthlyClosings  MonthlyClosing[]
 
   @@map("units")
 }
@@ -1016,6 +1045,7 @@ model DailyLogEntry {
   // リレーション
   dailyLog  DailyLog      @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
   recipient CareRecipient @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  serviceRecord ServiceRecord? // DailyLogEntry→ServiceRecord自動生成
 
   @@unique([dailyLogId, recipientId])
   @@index([dailyLogId])
@@ -1163,3 +1193,303 @@ model TimeBandRule {
   @@map("time_band_rules")
 }
 
+// ============================================
+// Attendance Management Models - 勤怠管理
+// ============================================
+
+// ShiftType - 勤務区分マスタ
+model ShiftType {
+  id          String   @id @default(cuid())
+  name        String   // 早番/日勤/遅番/夜勤
+  code        String   @unique // EARLY/DAY/LATE/NIGHT
+  description String?
+
+  // 基本時間設定
+  startTime   String   // 開始時刻（例："07:00"）
+  endTime     String   // 終了時刻（例："16:00"）
+  breakMinutes Int     @default(0) // 休憩時間（分）
+
+  // 日跨ぎ設定
+  crossesDay  Boolean  @default(false) // 日跨ぎ勤務か（夜勤等）
+
+  // 計算設定
+  standardWorkMinutes Int // 標準労働時間（分）
+
+  // 色設定（UI表示用）
+  color       String?  // カレンダー表示時の背景色
+
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // リレーション
+  shifts      Shift[]
+
+  @@index([code])
+  @@index([isActive])
+  @@map("shift_types")
+}
+
+// ShiftStatus - シフトステータス
+enum ShiftStatus {
+  DRAFT      // 下書き
+  PUBLISHED  // 公開済み
+  CONFIRMED  // 確定
+  LOCKED     // ロック（締め後）
+}
+
+// Shift - シフト予定
+model Shift {
+  id            String      @id @default(cuid())
+  staffId       String      // スタッフID
+  unitId        String      // ユニットID
+  shiftTypeId   String      // 勤務区分ID
+
+  // 日時（基準日は勤務開始日）
+  date          DateTime    @db.Date // 勤務日（基準日 = 勤務開始日）
+  startAt       DateTime    // 開始日時
+  endAt         DateTime    // 終了日時（日跨ぎ対応）
+  breakMinutes  Int         @default(0) // 休憩時間（分）
+
+  // ステータス
+  status        ShiftStatus @default(DRAFT)
+  publishedAt   DateTime?   // 公開日時
+  publishedBy   String?     // 公開者ID
+
+  // 備考
+  notes         String?     @db.Text
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  createdBy     String      // 作成者ID
+
+  // リレーション
+  staff         User        @relation("ShiftStaff", fields: [staffId], references: [id], onDelete: Cascade)
+  unit          Unit        @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  shiftType     ShiftType   @relation(fields: [shiftTypeId], references: [id])
+  publishedByUser User?     @relation("ShiftPublisher", fields: [publishedBy], references: [id])
+  createdByUser   User      @relation("ShiftCreator", fields: [createdBy], references: [id])
+
+  @@index([staffId, date])
+  @@index([unitId, date])
+  @@index([date, status])
+  @@map("shifts")
+}
+
+// ClockEventType - 打刻イベントタイプ
+enum ClockEventType {
+  CLOCK_IN       // 出勤（MVP1実装対象）
+  CLOCK_OUT      // 退勤（MVP1実装対象）
+  BREAK_START    // 休憩開始（MVP2以降）
+  BREAK_END      // 休憩終了（MVP2以降）
+  VISIT_START    // 訪問開始（将来）
+  VISIT_END      // 訪問終了（将来）
+}
+
+// TimeClockEvent - 打刻イベント
+model TimeClockEvent {
+  id            String          @id @default(cuid())
+  staffId       String          // スタッフID
+  type          ClockEventType  // イベントタイプ
+  occurredAt    DateTime        // 発生日時
+
+  // 位置情報（任意）
+  latitude      Float?          // 緯度
+  longitude     Float?          // 経度
+  accuracy      Float?          // 精度（メートル）
+
+  // デバイス情報
+  device        String?         // デバイス種別（mobile/tablet/pc）
+  ipAddress     String?         // IPアドレス
+  userAgent     String?         // ユーザーエージェント
+
+  // 備考
+  notes         String?         @db.Text
+
+  // 修正履歴
+  isModified    Boolean         @default(false) // 修正済みか
+  modifiedBy    String?         // 修正者ID
+  modifiedAt    DateTime?       // 修正日時
+  modifiedReason String?        @db.Text // 修正理由
+  originalOccurredAt DateTime?  // 修正前の日時
+
+  createdAt     DateTime        @default(now())
+
+  // リレーション
+  staff         User            @relation("TimeClockEvents", fields: [staffId], references: [id], onDelete: Cascade)
+  modifier      User?           @relation("TimeClockModifier", fields: [modifiedBy], references: [id])
+
+  @@index([staffId, occurredAt])
+  @@index([type])
+  @@map("time_clock_events")
+}
+
+// AttendanceStatus - 勤怠ステータス
+enum AttendanceStatus {
+  OPEN      // 未確定
+  SUBMITTED // 提出済み
+  APPROVED  // 承認済み
+  LOCKED    // ロック（締め後）
+}
+
+// AttendanceRecord - 勤怠実績（日次集約）
+model AttendanceRecord {
+  id            String            @id @default(cuid())
+  staffId       String            // スタッフID
+  date          DateTime          @db.Date // 勤務日（基準日 = 勤務開始日）
+
+  // 時刻（代表値）
+  clockInAt     DateTime?         // 最初の出勤時刻
+  clockOutAt    DateTime?         // 最後の退勤時刻
+
+  // 時間集計（分単位）- 日次合算値
+  workMinutes      Int  @default(0) // 実働時間
+  breakMinutes     Int  @default(0) // 休憩時間
+  overtimeMinutes  Int  @default(0) // 残業時間（8時間超）
+  midnightMinutes  Int  @default(0) // 深夜時間（22:00-5:00）
+  holidayMinutes   Int  @default(0) // 休日勤務時間
+
+  // ステータス
+  status        AttendanceStatus  @default(OPEN)
+  submittedAt   DateTime?         // 提出日時
+  approvedAt    DateTime?         // 承認日時
+  approvedBy    String?           // 承認者ID
+
+  // 備考
+  notes         String?           @db.Text
+
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // リレーション
+  staff         User              @relation("AttendanceRecords", fields: [staffId], references: [id], onDelete: Cascade)
+  approver      User?             @relation("AttendanceApprover", fields: [approvedBy], references: [id])
+
+  @@unique([staffId, date])  // 1日1レコード制約
+  @@index([staffId, date])
+  @@index([date, status])
+  @@map("attendance_records")
+}
+
+// ApprovalRequestType - 申請種別
+enum ApprovalRequestType {
+  TIME_EDIT     // 打刻修正
+  SHIFT_CHANGE  // シフト変更
+}
+
+// ApprovalRequestStatus - 申請ステータス
+enum ApprovalRequestStatus {
+  PENDING    // 承認待ち
+  APPROVED   // 承認済み
+  REJECTED   // 却下
+  CANCELLED  // 取り下げ
+}
+
+// ApprovalRequest - 申請
+model ApprovalRequest {
+  id            String                  @id @default(cuid())
+  type          ApprovalRequestType     // 申請種別
+  requesterId   String                  // 申請者ID
+
+  // 申請内容（JSON）
+  // TIME_EDIT: {clockEventId, before, after, reason}
+  // SHIFT_CHANGE: {shiftId, changes, reason}
+  payload       Json                    @db.JsonB
+
+  // 承認フロー
+  status        ApprovalRequestStatus   @default(PENDING)
+  approverChain Json?                   @db.JsonB // 承認者リスト（順序付き）
+  currentStep   Int                     @default(0) // 現在のステップ
+
+  // 承認情報
+  approvedBy    String?                 // 承認者ID
+  approvedAt    DateTime?               // 承認日時
+  rejectedBy    String?                 // 却下者ID
+  rejectedAt    DateTime?               // 却下日時
+  rejectReason  String?                 @db.Text // 却下理由
+
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+
+  // リレーション
+  requester     User                    @relation("ApprovalRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  approver      User?                   @relation("ApprovalApprover", fields: [approvedBy], references: [id])
+  rejecter      User?                   @relation("ApprovalRejecter", fields: [rejectedBy], references: [id])
+
+  @@index([requesterId])
+  @@index([status])
+  @@index([type])
+  @@map("approval_requests")
+}
+
+// MonthlyClosing - 月次締め
+model MonthlyClosing {
+  id            String   @id @default(cuid())
+  yearMonth     String   // YYYY-MM形式
+  unitId        String?  // ユニットID（null=全体）
+
+  closedAt      DateTime // 締め日時
+  closedBy      String   // 締め処理者ID
+
+  // 集計情報（JSON）
+  summary       Json     @db.JsonB // {totalStaff, totalWorkMinutes, totalOvertime, etc.}
+
+  // 差戻し
+  reopenedAt    DateTime?
+  reopenedBy    String?
+  reopenReason  String?  @db.Text
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // リレーション
+  closer        User     @relation("ClosedBy", fields: [closedBy], references: [id])
+  reopener      User?    @relation("ReopenedBy", fields: [reopenedBy], references: [id])
+  unit          Unit?    @relation(fields: [unitId], references: [id], onDelete: Cascade)
+
+  @@unique([yearMonth, unitId])
+  @@index([yearMonth])
+  @@index([unitId])
+  @@map("monthly_closings")
+}
+
+
+// ============================================
+// Support Record - 支援記録
+// ============================================
+
+enum SupportCategory {
+  MEAL          // 食事
+  EXCRETION     // 排泄
+  BATH          // 入浴
+  MOBILITY      // 移動・外出
+  COMMUNICATION // コミュニケーション
+  HEALTH        // 健康状態
+}
+
+model SupportRecord {
+  id            String          @id @default(cuid())
+  recipientId   String
+  recipient     CareRecipient   @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  recordDate    DateTime        @db.Timestamptz // 実際の支援実施日時
+  category      SupportCategory
+
+  // カテゴリ別の詳細データ（JSON）
+  content       Json            @db.JsonB
+
+  // メモ・特記事項
+  notes         String?         @db.Text
+
+  // 記録者
+  staffId       String
+  staff         User            @relation("SupportRecordStaff", fields: [staffId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([recipientId, recordDate])
+  @@index([recipientId, category])
+  @@index([staffId])
+  @@map("support_records")
+}

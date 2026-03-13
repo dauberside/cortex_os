@@ -8,6 +8,7 @@ export interface TimeSlotRecord {
   oral?: boolean | null; // 口腔ケア実施 (null=未入力, false=未実施)
   bath?: boolean | null; // 入浴実施 (null=未入力, false=未実施)
   condition?: string | null; // 体調 "良好", "不調" 等 (null=未入力)
+  medication?: boolean | null; // 服薬実施 (null=未入力, false=未実施)
   toilet?: string | null; // トイレ "排尿", "排便" 等 (null=未入力)
   sleep?: string | null; // 睡眠 "入眠", "覚醒" 等 (null=未入力)
   notes?: string | null; // 特記事項 (null=未入力)
@@ -67,6 +68,7 @@ export function initializeTimeSlotRecords(): TimeSlotRecord[] {
     oral: null,
     bath: null,
     condition: null,
+    medication: null,
     toilet: null,
     sleep: null,
     notes: null,
@@ -118,6 +120,7 @@ export function initializeTimeSlotRecordsFromShift(
     oral: null,
     bath: null,
     condition: null,
+    medication: null,
     toilet: null,
     sleep: null,
     notes: null,

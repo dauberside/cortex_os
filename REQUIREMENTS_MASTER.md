@@ -7,6 +7,20 @@ REQUIREMENTS_MASTER.md（統合版）目次案
 0.3 変更管理（RFC / Hotfix / レビュー頻度 / リリースゲート）
 0.4 RACI（要件・設計・実装・運用・監査）
 0.5 決定ログ（Decision Log）
+
+**DL-001: Assessment編集機能の廃止 (2026-03-09)**
+- **決定内容**: Assessmentテーブルの編集機能（upsert/delete mutation）を無効化
+- **理由**:
+  - 利用者基本情報（CareRecipient）とAssessmentで情報が重複し、メンテナンスコストが高い
+  - 実運用では編集画面が存在せず、利用されていない
+  - Assessmentデータは初期移行データとして存在するのみ
+- **影響範囲**:
+  - ✅ 残す: 参照API（getByRecipient/get）、印刷機能（/print/assessment）
+  - ❌ 無効化: upsert mutation、delete mutation（エラー返却で無効化）
+  - 📝 変更なし: CareRecipientテーブルで全情報を一元管理
+- **実装**: `src/server/routers/assessment.ts` のupsert/deleteがFORBIDDENエラーを返す
+- **将来計画**: データ移行後にAssessmentテーブル完全削除を検討
+
 0.6 TBDレジスター（Blocker / 期限 / オーナー）
 0.7 トレーサビリティ規約（要件ID → 設計 → テスト → 運用） ￼
 0.8 実装状況ダッシュボード（Schema / Router / UI の一致を集約）

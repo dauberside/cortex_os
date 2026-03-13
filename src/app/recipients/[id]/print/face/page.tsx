@@ -306,7 +306,7 @@ export default function FaceSheetPrintPage() {
                   </td>
                 </tr>
                 <tr>
-                  <td className="label-cell">区分</td>
+                  <td className="label-cell">障害支援区分</td>
                   <td className="value-cell" colSpan={3}>
                     {recipient.supportLevel
                       ? `区分${recipient.supportLevel}`
@@ -323,7 +323,8 @@ export default function FaceSheetPrintPage() {
                   <td className="value-cell" colSpan={3}>
                     {(recipient as any).physicalHandicapBook &&
                       "身体障害者手帳"}
-                    {(recipient as any).intellectualHandicapBook && " 療育手帳"}
+                    {(recipient as any).intellectualHandicapBook &&
+                      " 愛の手帳（療育手帳）"}
                     {(recipient as any).mentalHandicapBook &&
                       " 精神障害者保健福祉手帳"}
                   </td>

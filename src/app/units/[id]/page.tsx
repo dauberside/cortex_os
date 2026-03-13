@@ -187,7 +187,7 @@ export default function UnitDetailPage() {
                 onClick={() => setShowAddStaff(!showAddStaff)}
               >
                 <UserPlus className="mr-1 h-4 w-4" />
-                追加
+                所属職員を登録
               </Button>
             </div>
           </div>

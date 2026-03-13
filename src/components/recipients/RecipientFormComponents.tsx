@@ -166,6 +166,51 @@ export function DisabilitySystemSection({ register }: { register: any }) {
         </div>
       </div>
 
+      {/* マル障（心身障害者医療費助成制度） */}
+      <div className="bg-card space-y-4 rounded-lg border p-6">
+        <h2 className="mb-1 text-xl font-semibold">
+          心身障害者医療費助成制度（マル障）
+        </h2>
+        <p className="text-muted-foreground mb-4 text-sm">
+          東京都の医療費助成制度。身体障害者手帳1・2級、愛の手帳1・2度、精神障害者保健福祉手帳1級の方が対象です。
+        </p>
+
+        <div className="space-y-3">
+          <label className="flex items-center gap-2 text-sm font-medium">
+            <input
+              type="checkbox"
+              {...register("hasMarusho")}
+              className="rounded"
+            />
+            マル障受給者証を持っている
+          </label>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="text-muted-foreground mb-1 block text-xs">
+                受給者番号（任意）
+              </label>
+              <input
+                type="text"
+                {...register("marushoNumber")}
+                placeholder="例: 1234567890"
+                className="w-full rounded border px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-muted-foreground mb-1 block text-xs">
+                有効期限（任意）
+              </label>
+              <input
+                type="date"
+                {...register("marushoExpiry")}
+                className="w-full rounded border px-3 py-2 text-sm"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 障害年金・手当 */}
       <div className="bg-card space-y-4 rounded-lg border p-6">
         <h2 className="mb-1 text-xl font-semibold">障害年金・各種手当</h2>

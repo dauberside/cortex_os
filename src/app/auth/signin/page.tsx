@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 
 export default function SignInPage() {
-  const [email, setEmail] = useState("dev@example.com");
+  const [email, setEmail] = useState("manager@test.com");
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,13 +28,13 @@ export default function SignInPage() {
           <p className="mb-2 font-semibold text-gray-900">テストアカウント:</p>
           <ul className="space-y-1 text-gray-700">
             <li>
-              <strong>STAFF:</strong> staff@example.com
+              <strong>STAFF:</strong> staff1@test.com
             </li>
             <li>
-              <strong>LEAD:</strong> lead@example.com
+              <strong>STAFF:</strong> staff2@test.com
             </li>
             <li>
-              <strong>MANAGER:</strong> manager@example.com
+              <strong>MANAGER:</strong> manager@test.com
             </li>
           </ul>
           <p className="mt-2 text-xs text-gray-600">
@@ -51,7 +51,7 @@ export default function SignInPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded border-2 border-gray-400 p-3 text-base focus:border-black focus:outline-none"
-              placeholder="dev@example.com"
+              placeholder="manager@test.com"
               required
             />
           </div>
