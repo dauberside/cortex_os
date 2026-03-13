@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { TimeSlotRecord } from "@/types/dailyLog";
-import { Copy, Clipboard, ChevronLeft, ChevronRight } from "lucide-react";
+import { Copy, Clipboard } from "lucide-react";
 
 interface TimeSlotRecordTimelineProps {
   records: TimeSlotRecord[];
@@ -79,7 +79,7 @@ export function TimeSlotRecordTimeline({
   const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(
     null
   );
-  const [showTemplateMenu, setShowTemplateMenu] = useState(false);
+  const [showTemplateMenu, setShowTemplateMenu] = useState<number | null>(null);
   const [bulkSelectMode, setBulkSelectMode] = useState(false);
   const [selectedSlots, setSelectedSlots] = useState<Set<number>>(new Set());
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -336,7 +336,7 @@ export function TimeSlotRecordTimeline({
                         type="button"
                         onClick={() => {
                           applyTemplate(index, template.data);
-                          setShowTemplateMenu(false);
+                          setShowTemplateMenu(null);
                         }}
                         className="rounded border border-gray-400 bg-white px-2 py-1 text-xs hover:bg-blue-50"
                       >
@@ -345,7 +345,7 @@ export function TimeSlotRecordTimeline({
                     ))}
                     <button
                       type="button"
-                      onClick={() => setShowTemplateMenu(false)}
+                      onClick={() => setShowTemplateMenu(null)}
                       className="rounded border border-gray-400 bg-white px-2 py-1 text-xs text-gray-600 hover:bg-gray-100"
                     >
                       閉じる
