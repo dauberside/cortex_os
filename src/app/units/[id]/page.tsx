@@ -278,7 +278,15 @@ export default function UnitDetailPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => removeStaffMutation.mutate({ id: s.id })}
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            `${s.user.name || s.user.email} の所属を解除しますか？`
+                          )
+                        ) {
+                          removeStaffMutation.mutate({ id: s.id });
+                        }
+                      }}
                     >
                       <Trash2 className="text-destructive h-4 w-4" />
                     </Button>
@@ -302,7 +310,15 @@ export default function UnitDetailPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => removeStaffMutation.mutate({ id: s.id })}
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            `${s.user.name || s.user.email} の所属を解除しますか？`
+                          )
+                        ) {
+                          removeStaffMutation.mutate({ id: s.id });
+                        }
+                      }}
                     >
                       <Trash2 className="text-destructive h-4 w-4" />
                     </Button>
@@ -405,9 +421,15 @@ export default function UnitDetailPage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() =>
-                        removeRecipientMutation.mutate({ id: r.id })
-                      }
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            `${r.recipient.name} を退所登録しますか？`
+                          )
+                        ) {
+                          removeRecipientMutation.mutate({ id: r.id });
+                        }
+                      }}
                     >
                       <Trash2 className="text-destructive h-4 w-4" />
                     </Button>
