@@ -33,7 +33,7 @@ const guideSchema = z.object({
   assemblyLocation: z.string().optional(),
   dismissalLocation: z.string().optional(),
 
-  // 経路情報（文字列配列）
+  // 経路情報（文字列配列、空文字も許可）
   route: z.array(z.string()).default([]),
 
   transport: z.array(z.string()).default([]),
@@ -75,7 +75,7 @@ const guideSchema = z.object({
 
   // 食事情報
   mealContent: z.string().optional(),
-  mealAmount: z.enum(MEAL_AMOUNT_OPTIONS).optional(),
+  mealAmount: z.enum(MEAL_AMOUNT_OPTIONS).optional().or(z.literal("")),
 
   // 服薬情報
   medicationTaken: z.boolean().default(false),
@@ -120,7 +120,7 @@ export default function EditGuideRecordPage() {
       transport: [],
       cashHandled: false,
       medicationTaken: false,
-      route: [""],
+      route: [],
       transportExpenses: Array(6)
         .fill(null)
         .map(() => ({ amount: 0, description: "" })),
@@ -170,7 +170,7 @@ export default function EditGuideRecordPage() {
         purpose: record.purpose ?? "",
         assemblyLocation: record.assemblyLocation ?? "",
         dismissalLocation: record.dismissalLocation ?? "",
-        route: routeArray.length > 0 ? routeArray : [""],
+        route: routeArray.length > 0 ? routeArray : [],
         transport: record.transport ?? [],
         supportContent: record.supportContent ?? "",
         userCondition: record.userCondition ?? "",
@@ -207,9 +207,10 @@ export default function EditGuideRecordPage() {
               ].slice(0, 4),
         staffMealExpense: record.staffMealExpense ?? "",
         mealContent: record.mealContent ?? "",
-        mealAmount: record.mealAmount as
-          | (typeof MEAL_AMOUNT_OPTIONS)[number]
-          | undefined,
+        mealAmount:
+          record.mealAmount && MEAL_AMOUNT_OPTIONS.includes(record.mealAmount as (typeof MEAL_AMOUNT_OPTIONS)[number])
+            ? (record.mealAmount as (typeof MEAL_AMOUNT_OPTIONS)[number])
+            : "",
         medicationTaken: record.medicationTaken ?? false,
         medicationTime: record.medicationTime ?? "",
         notes: record.notes ?? "",
@@ -309,7 +310,7 @@ export default function EditGuideRecordPage() {
           ? Number(data.staffMealExpense)
           : undefined,
         mealContent: data.mealContent || undefined,
-        mealAmount: data.mealAmount || undefined,
+        mealAmount: (data.mealAmount as "全量" | "半量" | "食べず" | undefined) || undefined,
         medicationTaken: data.medicationTaken,
         medicationTime: data.medicationTime || undefined,
         notes: data.notes || undefined,
@@ -837,6 +838,20 @@ export default function EditGuideRecordPage() {
             placeholder="その他気になること、次回への申し送りなど"
           />
         </div>
+
+        {/* バリデーションエラー表示 */}
+        {Object.keys(errors).length > 0 && (
+          <div className="rounded-lg border border-red-500 bg-red-50 p-4">
+            <p className="font-semibold text-red-700">入力エラーがあります:</p>
+            <ul className="mt-2 list-disc pl-5 text-sm text-red-600">
+              {Object.entries(errors).map(([key, error]) => (
+                <li key={key}>
+                  {key}: {error?.message?.toString() || JSON.stringify(error)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* 送信ボタン */}
         <div className="flex gap-4">

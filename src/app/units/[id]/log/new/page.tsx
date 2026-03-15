@@ -76,6 +76,7 @@ export default function NewLogPage() {
   const [shiftEnd, setShiftEnd] = useState(
     () => applyShiftPreset("Night", now).end
   );
+  const [breakMinutes, setBreakMinutes] = useState(0);
 
   const handleShiftChange = (value: string) => {
     setShift(value);
@@ -153,6 +154,7 @@ export default function NewLogPage() {
       shift: shift as "Day" | "Late" | "Night",
       shiftStart: start,
       shiftEnd: end,
+      breakMinutes,
       staffRole: selectedStaffNames || undefined,
       majorEvent,
       handover: handover.trim() || undefined,
@@ -217,6 +219,25 @@ export default function NewLogPage() {
                 onChange={(e) => setShiftEnd(e.target.value)}
                 className="w-full rounded-md border px-3 py-2 text-sm"
               />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">
+                休憩時間
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min={0}
+                  step={15}
+                  value={breakMinutes}
+                  onChange={(e) => setBreakMinutes(parseInt(e.target.value) || 0)}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                />
+                <span className="text-sm text-gray-600">分</span>
+              </div>
+              <p className="mt-1 text-xs text-gray-500">
+                一般的な休憩時間: 日勤 60分、夜勤 120分
+              </p>
             </div>
           </div>
 

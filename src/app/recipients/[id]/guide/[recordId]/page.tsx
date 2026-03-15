@@ -208,10 +208,10 @@ export default function GuideRecordDetailPage() {
                 <div className="mt-4">
                   <p className="text-muted-foreground mb-2 text-sm">経路</p>
                   <div className="flex flex-wrap items-center gap-2">
-                    {(record.route as string[]).map((place, index) => (
+                    {(record.route as string[]).map((routeItem, index) => (
                       <div key={index} className="flex items-center gap-2">
                         <span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-sm">
-                          {place}
+                          {routeItem}
                         </span>
                         {index < (record.route as string[]).length - 1 && (
                           <span className="text-muted-foreground">→</span>
@@ -319,19 +319,20 @@ export default function GuideRecordDetailPage() {
                               record.transportExpenses as Array<{
                                 amount: number;
                                 description?: string;
+                                item?: string;
                               }>
                             )
-                              .filter((item) => item.amount > 0)
-                              .map((item, index) => (
+                              .filter((expense) => expense.amount > 0)
+                              .map((expense, index) => (
                                 <div
                                   key={index}
                                   className="flex justify-between text-sm"
                                 >
                                   <span className="text-muted-foreground">
-                                    {item.description || "—"}
+                                    {expense.description || expense.item || "—"}
                                   </span>
                                   <span className="font-medium">
-                                    {item.amount.toLocaleString()}円
+                                    {expense.amount.toLocaleString()}円
                                   </span>
                                 </div>
                               ))}
@@ -351,19 +352,20 @@ export default function GuideRecordDetailPage() {
                               record.foodExpenses as Array<{
                                 amount: number;
                                 description?: string;
+                                item?: string;
                               }>
                             )
-                              .filter((item) => item.amount > 0)
-                              .map((item, index) => (
+                              .filter((expense) => expense.amount > 0)
+                              .map((expense, index) => (
                                 <div
                                   key={index}
                                   className="flex justify-between text-sm"
                                 >
                                   <span className="text-muted-foreground">
-                                    {item.description || "—"}
+                                    {expense.description || expense.item || "—"}
                                   </span>
                                   <span className="font-medium">
-                                    {item.amount.toLocaleString()}円
+                                    {expense.amount.toLocaleString()}円
                                   </span>
                                 </div>
                               ))}
@@ -383,19 +385,20 @@ export default function GuideRecordDetailPage() {
                               record.otherExpenses as Array<{
                                 amount: number;
                                 description?: string;
+                                item?: string;
                               }>
                             )
-                              .filter((item) => item.amount > 0)
-                              .map((item, index) => (
+                              .filter((expense) => expense.amount > 0)
+                              .map((expense, index) => (
                                 <div
                                   key={index}
                                   className="flex justify-between text-sm"
                                 >
                                   <span className="text-muted-foreground">
-                                    {item.description || "—"}
+                                    {expense.description || expense.item || "—"}
                                   </span>
                                   <span className="font-medium">
-                                    {item.amount.toLocaleString()}円
+                                    {expense.amount.toLocaleString()}円
                                   </span>
                                 </div>
                               ))}

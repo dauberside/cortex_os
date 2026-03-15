@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
+import { calculateTimeBand } from "../lib/timeBand";
 
 export const dailyLogRouter = router({
   // 業務日誌一覧（ユニット別）
@@ -89,6 +90,7 @@ export const dailyLogRouter = router({
           .optional(),
         majorEvent: z.boolean().default(false),
         handover: z.string().optional(),
+        breakMinutes: z.number().int().min(0).default(0), // 休憩時間（分）
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -156,6 +158,7 @@ export const dailyLogRouter = router({
           .optional(),
         majorEvent: z.boolean().optional(),
         handover: z.string().optional(),
+        breakMinutes: z.number().int().min(0).optional(), // 休憩時間（分）
         changeNote: z.string().optional(),
       })
     )
@@ -164,8 +167,8 @@ export const dailyLogRouter = router({
 
       const dailyLog = await ctx.db.dailyLog.update({ where: { id }, data });
 
-      // shiftStart/shiftEnd が変更された場合、関連する ServiceRecord を更新
-      if (data.shiftStart || data.shiftEnd) {
+      // shiftStart/shiftEnd/breakMinutes が変更された場合、関連する ServiceRecord を更新
+      if (data.shiftStart || data.shiftEnd || data.breakMinutes !== undefined) {
         const entries = await ctx.db.dailyLogEntry.findMany({
           where: { dailyLogId: id },
           include: { serviceRecord: true },
@@ -173,14 +176,16 @@ export const dailyLogRouter = router({
 
         const updatedDailyLog = await ctx.db.dailyLog.findUniqueOrThrow({
           where: { id },
-          select: { shiftStart: true, shiftEnd: true },
+          select: { shiftStart: true, shiftEnd: true, breakMinutes: true },
         });
 
-        const duration = Math.round(
+        const totalMinutes = Math.round(
           (updatedDailyLog.shiftEnd.getTime() -
             updatedDailyLog.shiftStart.getTime()) /
             (1000 * 60)
         );
+        const breakMinutes = updatedDailyLog.breakMinutes ?? 0;
+        const duration = totalMinutes - breakMinutes;
 
         // 各エントリの ServiceRecord を更新
         for (const entry of entries) {
@@ -191,6 +196,7 @@ export const dailyLogRouter = router({
                 startTime: updatedDailyLog.shiftStart,
                 endTime: updatedDailyLog.shiftEnd,
                 duration,
+                breakMinutes,
               },
             });
           }
@@ -308,6 +314,7 @@ export const dailyLogRouter = router({
           shiftStart: true,
           shiftEnd: true,
           staffId: true,
+          breakMinutes: true,
           unit: { select: { serviceType: true } },
         },
       });
@@ -330,6 +337,13 @@ export const dailyLogRouter = router({
       );
 
       if (shouldGenerateServiceRecord) {
+        // 時間帯を計算
+        const { timeBand, ruleVersion } = await calculateTimeBand(
+          ctx.db,
+          dailyLog.shiftStart,
+          dailyLog.shiftEnd
+        );
+
         // サービス詳細の生成
         const serviceDetailParts: string[] = [];
         if (data.mealAmount) serviceDetailParts.push(`食事: ${data.mealAmount}`);
@@ -348,11 +362,13 @@ export const dailyLogRouter = router({
             ? serviceDetailParts.join("\n")
             : "業務日誌による日常生活支援";
 
-        // 所要時間の計算（分）
-        const duration = Math.round(
+        // 所要時間の計算（分）- 休憩控除を含む
+        const totalMinutes = Math.round(
           (dailyLog.shiftEnd.getTime() - dailyLog.shiftStart.getTime()) /
             (1000 * 60)
         );
+        const breakMinutes = dailyLog.breakMinutes ?? 0;
+        const duration = totalMinutes - breakMinutes;
 
         const serviceRecordData = {
           recipientId,
@@ -362,9 +378,12 @@ export const dailyLogRouter = router({
           startTime: dailyLog.shiftStart,
           endTime: dailyLog.shiftEnd,
           duration,
+          breakMinutes,
           serviceDetail,
           userCondition: data.behaviorNote || null,
           incidents: data.notes || null,
+          timeBand,
+          appliedRuleVersion: ruleVersion,
         };
 
         if (existing?.serviceRecord) {

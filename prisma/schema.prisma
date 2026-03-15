@@ -824,7 +824,8 @@ model ServiceRecord {
   serviceDate   DateTime // サービス提供日
   startTime     DateTime // 開始時刻
   endTime       DateTime // 終了時刻
-  duration      Int      // 所要時間（分）
+  duration      Int      // 実働時間（分）= 総時間 - 休憩時間
+  breakMinutes  Int      @default(0) @map("break_minutes") // 休憩時間（分）
 
   // サービス内容
   destination   String?  // 行き先（外出支援の場合）
@@ -971,6 +972,7 @@ model DailyLog {
   residentSummary Json?                      // {inHouse, outing, overnight, hospital, homeLeave}
   majorEvent      Boolean  @default(false)   // 重大イベント有無フラグ
   handover        String?  @db.Text          // 申し送り事項
+  breakMinutes    Int      @default(0) @map("break_minutes") // 休憩時間（分）
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
