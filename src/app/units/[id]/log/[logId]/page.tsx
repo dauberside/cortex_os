@@ -593,15 +593,45 @@ function exportTimeSlotExcel(log: any, entry: any) {
     Night: "夜勤",
   };
 
-  // 30分刻みの時間スロットを生成（15:00から翌9:30まで）
+  // 30分刻みの時間スロットを生成（シフトに応じて変動）
   const timeSlots: string[] = [];
-  for (let h = 15; h < 24; h++) {
-    timeSlots.push(`${h}:00`);
-    timeSlots.push(`${h}:30`);
-  }
-  for (let h = 0; h < 10; h++) {
-    timeSlots.push(`${h}:00`);
-    timeSlots.push(`${h}:30`);
+
+  if (log.shift === 'Day') {
+    // 日勤: 09:00-18:00
+    for (let h = 9; h <= 18; h++) {
+      timeSlots.push(`${h}:00`);
+      if (h < 18) timeSlots.push(`${h}:30`);
+    }
+  } else if (log.shift === 'Late') {
+    // 遅番: 15:00-翌01:00
+    for (let h = 15; h < 24; h++) {
+      timeSlots.push(`${h}:00`);
+      timeSlots.push(`${h}:30`);
+    }
+    for (let h = 0; h <= 1; h++) {
+      timeSlots.push(`${h}:00`);
+      if (h < 1) timeSlots.push(`${h}:30`);
+    }
+  } else if (log.shift === 'Night') {
+    // 夜勤: 16:00-翌10:00
+    for (let h = 16; h < 24; h++) {
+      timeSlots.push(`${h}:00`);
+      timeSlots.push(`${h}:30`);
+    }
+    for (let h = 0; h <= 10; h++) {
+      timeSlots.push(`${h}:00`);
+      if (h < 10) timeSlots.push(`${h}:30`);
+    }
+  } else {
+    // デフォルト: 遅番の時間帯を使用
+    for (let h = 15; h < 24; h++) {
+      timeSlots.push(`${h}:00`);
+      timeSlots.push(`${h}:30`);
+    }
+    for (let h = 0; h < 10; h++) {
+      timeSlots.push(`${h}:00`);
+      timeSlots.push(`${h}:30`);
+    }
   }
 
   // timeSlotRecordsをマップ化
@@ -723,6 +753,7 @@ export default function LogDetailPage() {
   const [editShift, setEditShift] = useState("");
   const [editShiftStart, setEditShiftStart] = useState("");
   const [editShiftEnd, setEditShiftEnd] = useState("");
+  const [editBreakMinutes, setEditBreakMinutes] = useState(0);
   const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
   const [showAddStaff, setShowAddStaff] = useState(false);
   const [editMajorEvent, setEditMajorEvent] = useState(false);
@@ -746,6 +777,7 @@ export default function LogDetailPage() {
     setEditShift(log.shift);
     setEditShiftStart(toLocalDatetimeValue(new Date(log.shiftStart)));
     setEditShiftEnd(toLocalDatetimeValue(new Date(log.shiftEnd)));
+    setEditBreakMinutes(log.breakMinutes ?? 0);
 
     // staffRoleから職員名を抽出してIDに変換
     const staffNames = (log.staffRole ?? "").split("/").map((n: string) => n.trim()).filter(Boolean);
@@ -778,6 +810,7 @@ export default function LogDetailPage() {
       shift: editShift as "Day" | "Late" | "Night",
       shiftStart: start,
       shiftEnd: end,
+      breakMinutes: editBreakMinutes,
       staffRole: selectedStaffNames || undefined,
       majorEvent: editMajorEvent,
       handover: editHandover.trim() || undefined,
@@ -896,6 +929,11 @@ export default function LogDetailPage() {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
+              {log.breakMinutes > 0 && (
+                <span className="ml-1 text-gray-600">
+                  （休憩 {log.breakMinutes}分）
+                </span>
+              )}
             </span>
             <span>担当: {log.staff.name || log.staff.email}</span>
             {log.staffRole && <span>({log.staffRole})</span>}
@@ -945,6 +983,20 @@ export default function LogDetailPage() {
                   onChange={(e) => setEditShiftEnd(e.target.value)}
                   className="w-full rounded-md border px-3 py-2 text-sm"
                 />
+              </div>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">休憩時間</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min={0}
+                  step={15}
+                  value={editBreakMinutes}
+                  onChange={(e) => setEditBreakMinutes(parseInt(e.target.value) || 0)}
+                  className="w-full rounded-md border px-3 py-2 text-sm"
+                />
+                <span className="text-sm text-gray-600">分</span>
               </div>
             </div>
             <div>

@@ -339,28 +339,29 @@ export function GuideRecordPrintView({
           }
 
           .route-grid {
-            display: table;
             width: 100%;
-            border-spacing: 0;
           }
 
           .route-row {
-            display: table-row;
-            height: 5.5mm;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            min-height: 5.5mm;
+            padding: 1mm 0;
           }
 
           .route-cell {
-            display: table-cell;
-            width: 33.33%;
-            text-align: center;
+            display: inline-block;
+            padding: 0.5mm 2mm;
+            text-align: left;
             vertical-align: middle;
-            border-right: 1px solid #000;
-            font-size: 11pt;
-            font-weight: bold;
+            font-size: 9pt;
+            font-weight: normal;
+            white-space: nowrap;
           }
 
-          .route-cell:last-child {
-            border-right: none;
+          .route-cell:first-child {
+            font-weight: bold;
           }
 
           .route-cell-content {
@@ -630,69 +631,30 @@ export function GuideRecordPrintView({
             </div>
           </div>
 
-          {/* 経路【集→ */}
+          {/* 経路【集 → ... → 散】 */}
           <div className="route-section">
             <div className="route-grid">
-              <div className="route-row">
-                <div className="route-cell" style={{ width: "33.33%" }}>
-                  経路【集→{" "}
-                  <span className="route-cell-content">
-                    {routeArray[0] || ""}
-                  </span>
+              {routeArray.length > 0 ? (
+                <div className="route-row" style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
+                  <div className="route-cell" style={{ minWidth: "80px" }}>
+                    経路【集
+                  </div>
+                  {routeArray.map((route, index) => (
+                    <div key={index} className="route-cell" style={{ minWidth: "150px" }}>
+                      → {route}
+                    </div>
+                  ))}
+                  <div className="route-cell" style={{ minWidth: "60px" }}>
+                    → 散】
+                  </div>
                 </div>
-                <div className="route-cell" style={{ width: "33.33%" }}>
-                  →{" "}
-                  <span className="route-cell-content">
-                    {routeArray[1] || ""}
-                  </span>
+              ) : (
+                <div className="route-row">
+                  <div className="route-cell">
+                    経路【集 → 散】
+                  </div>
                 </div>
-                <div className="route-cell" style={{ width: "33.33%" }}>
-                  →{" "}
-                  <span className="route-cell-content">
-                    {routeArray[2] || ""}
-                  </span>
-                </div>
-              </div>
-              <div className="route-row">
-                <div className="route-cell">
-                  →{" "}
-                  <span className="route-cell-content">
-                    {routeArray[3] || ""}
-                  </span>
-                </div>
-                <div className="route-cell">
-                  →{" "}
-                  <span className="route-cell-content">
-                    {routeArray[4] || ""}
-                  </span>
-                </div>
-                <div className="route-cell">
-                  →{" "}
-                  <span className="route-cell-content">
-                    {routeArray[5] || ""}
-                  </span>
-                </div>
-              </div>
-              <div className="route-row">
-                <div className="route-cell">
-                  →{" "}
-                  <span className="route-cell-content">
-                    {routeArray[6] || ""}
-                  </span>
-                </div>
-                <div className="route-cell">
-                  →{" "}
-                  <span className="route-cell-content">
-                    {routeArray[7] || ""}
-                  </span>
-                </div>
-                <div className="route-cell">
-                  散】{" "}
-                  <span className="route-cell-content">
-                    {routeArray[8] || ""}
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
