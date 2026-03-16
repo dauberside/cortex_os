@@ -24,6 +24,8 @@
 ### 2. データ取得 / Next.js
 - [ ] 初期表示は RSC / fetch で扱うべきか確認している
 - [ ] 動的操作は TanStack Query / mutation で扱っている
+- [ ] use client は本当に必要な箇所に限定している
+- [ ] loading.tsx / error.tsx / not-found.tsx の要否を確認している
 - [ ] loading / error / empty state を用意している
 - [ ] invalidate は最小粒度で実行している
 - [ ] server truth 優先で状態同期している
