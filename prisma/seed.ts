@@ -187,6 +187,17 @@ async function main() {
     throw new Error('ShiftTypes not found');
   }
 
+  // 既存データを削除してから再作成（重複防止）
+  await prisma.shift.deleteMany({
+    where: { staffId: { in: [staff1.id, staff2.id] } },
+  });
+  await prisma.timeClockEvent.deleteMany({
+    where: { staffId: { in: [staff1.id, staff2.id] } },
+  });
+  await prisma.attendanceRecord.deleteMany({
+    where: { staffId: { in: [staff1.id, staff2.id] } },
+  });
+
   // Create shifts for last month (February 2026)
   console.log('📅 Creating sample shifts for February 2026...');
 
@@ -384,20 +395,27 @@ async function main() {
   // Support Records（支援記録）
   console.log('📝 Creating Test Support Records...');
 
+  // 既存のテスト支援記録を削除してから再作成（重複防止）
+  await prisma.supportRecord.deleteMany({
+    where: {
+      recipientId: { in: [recipient1.id, recipient2.id] },
+    },
+  });
+
   let supportRecordCount = 0;
 
-  // 山田太郎さんの記録（直近1週間）
+  // 山田太郎さんの記録（2026-03-10基準で直近1週間・固定日付）
+  const baseDate1 = new Date('2026-03-10T12:00:00+09:00');
   for (let daysAgo = 0; daysAgo < 7; daysAgo++) {
-    const recordDate = new Date();
-    recordDate.setDate(recordDate.getDate() - daysAgo);
-    recordDate.setHours(12, 0, 0, 0);
+    const noon = new Date(baseDate1);
+    noon.setDate(noon.getDate() - daysAgo);
 
-    // 朝食記録
+    // 朝食記録 9:00
     await prisma.supportRecord.create({
       data: {
         recipientId: recipient1.id,
         staffId: staff1.id,
-        recordDate: new Date(recordDate.getTime() - 3 * 60 * 60 * 1000), // 9:00
+        recordDate: new Date(noon.getTime() - 3 * 60 * 60 * 1000),
         category: 'MEAL',
         content: {
           mealType: 'breakfast',
@@ -411,12 +429,12 @@ async function main() {
     });
     supportRecordCount++;
 
-    // 昼食記録
+    // 昼食記録 12:00
     await prisma.supportRecord.create({
       data: {
         recipientId: recipient1.id,
         staffId: staff2.id,
-        recordDate,
+        recordDate: noon,
         category: 'MEAL',
         content: {
           mealType: 'lunch',
@@ -429,12 +447,12 @@ async function main() {
     });
     supportRecordCount++;
 
-    // 夕食記録
+    // 夕食記録 18:00
     await prisma.supportRecord.create({
       data: {
         recipientId: recipient1.id,
         staffId: staff1.id,
-        recordDate: new Date(recordDate.getTime() + 6 * 60 * 60 * 1000), // 18:00
+        recordDate: new Date(noon.getTime() + 6 * 60 * 60 * 1000),
         category: 'MEAL',
         content: {
           mealType: 'dinner',
@@ -449,18 +467,18 @@ async function main() {
     supportRecordCount++;
   }
 
-  // 佐藤花子さんの記録（直近3日間）
+  // 佐藤花子さんの記録（2026-03-10基準で直近3日間・固定日付）
+  const baseDate2 = new Date('2026-03-10T12:00:00+09:00');
   for (let daysAgo = 0; daysAgo < 3; daysAgo++) {
-    const recordDate = new Date();
-    recordDate.setDate(recordDate.getDate() - daysAgo);
-    recordDate.setHours(12, 0, 0, 0);
+    const noon = new Date(baseDate2);
+    noon.setDate(noon.getDate() - daysAgo);
 
-    // 昼食記録（介助が必要）
+    // 昼食記録 12:00
     await prisma.supportRecord.create({
       data: {
         recipientId: recipient2.id,
         staffId: staff2.id,
-        recordDate,
+        recordDate: noon,
         category: 'MEAL',
         content: {
           mealType: 'lunch',
@@ -474,12 +492,12 @@ async function main() {
     });
     supportRecordCount++;
 
-    // 夕食記録
+    // 夕食記録 18:00
     await prisma.supportRecord.create({
       data: {
         recipientId: recipient2.id,
         staffId: staff1.id,
-        recordDate: new Date(recordDate.getTime() + 6 * 60 * 60 * 1000),
+        recordDate: new Date(noon.getTime() + 6 * 60 * 60 * 1000),
         category: 'MEAL',
         content: {
           mealType: 'dinner',
