@@ -5,27 +5,21 @@ import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc/client";
 import {
   MealForm,
-  createDefaultMealContent,
 } from "@/components/support-records/category-forms/MealForm";
 import {
   ExcretionForm,
-  createDefaultExcretionContent,
 } from "@/components/support-records/category-forms/ExcretionForm";
 import {
   BathForm,
-  createDefaultBathContent,
 } from "@/components/support-records/category-forms/BathForm";
 import {
   MobilityForm,
-  createDefaultMobilityContent,
 } from "@/components/support-records/category-forms/MobilityForm";
 import {
   CommunicationForm,
-  createDefaultCommunicationContent,
 } from "@/components/support-records/category-forms/CommunicationForm";
 import {
   HealthForm,
-  createDefaultHealthContent,
 } from "@/components/support-records/category-forms/HealthForm";
 
 type SupportCategory =
@@ -36,65 +30,58 @@ type SupportCategory =
   | "COMMUNICATION"
   | "HEALTH";
 
+const CATEGORY_LABELS: Record<SupportCategory, string> = {
+  MEAL: "🍽️ 食事",
+  EXCRETION: "🚽 排泄",
+  BATH: "🛁 入浴",
+  MOBILITY: "🚶 移動・外出",
+  COMMUNICATION: "💬 コミュニケーション",
+  HEALTH: "❤️ 健康状態",
+};
+
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; recordId: string }>;
 }
 
-const CATEGORIES: {
-  value: SupportCategory;
-  label: string;
-  color: string;
-}[] = [
-  { value: "MEAL", label: "🍽️ 食事", color: "orange" },
-  { value: "EXCRETION", label: "🚽 排泄", color: "blue" },
-  { value: "BATH", label: "🛁 入浴", color: "cyan" },
-  { value: "MOBILITY", label: "🚶 移動・外出", color: "green" },
-  { value: "COMMUNICATION", label: "💬 コミュニケーション", color: "purple" },
-  { value: "HEALTH", label: "❤️ 健康状態", color: "red" },
-];
-
-function createDefaultContent(category: SupportCategory) {
-  switch (category) {
-    case "MEAL":
-      return createDefaultMealContent();
-    case "EXCRETION":
-      return createDefaultExcretionContent();
-    case "BATH":
-      return createDefaultBathContent();
-    case "MOBILITY":
-      return createDefaultMobilityContent();
-    case "COMMUNICATION":
-      return createDefaultCommunicationContent();
-    case "HEALTH":
-      return createDefaultHealthContent();
-  }
-}
-
-export default function NewSupportRecordPage({ params }: PageProps) {
+export default function EditSupportRecordPage({ params }: PageProps) {
   const router = useRouter();
   const [recipientId, setRecipientId] = useState<string>("");
-  const [category, setCategory] = useState<SupportCategory>("MEAL");
-  const [recordDate, setRecordDate] = useState<string>(
-    new Date().toISOString().slice(0, 16)
-  );
-  const [content, setContent] = useState<unknown>(createDefaultMealContent());
+  const [recordId, setRecordId] = useState<string>("");
+  const [recordDate, setRecordDate] = useState<string>("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [content, setContent] = useState<any>(null);
   const [notes, setNotes] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    params.then((p) => setRecipientId(p.id));
+    params.then((p) => {
+      setRecipientId(p.id);
+      setRecordId(p.recordId);
+    });
   }, [params]);
 
-  const { data: recipient, isLoading: recipientLoading } =
-    trpc.recipient.get.useQuery(
-      { id: recipientId },
-      { enabled: !!recipientId }
-    );
+  const { data: record, isLoading } = trpc.supportRecord.getById.useQuery(
+    { id: recordId },
+    { enabled: !!recordId }
+  );
 
-  const createMutation = trpc.supportRecord.create.useMutation({
-    onSuccess: (data) => {
+  // 既存データで初期化（一回だけ）
+  useEffect(() => {
+    if (record && !initialized) {
+      setRecordDate(
+        new Date(record.recordDate).toISOString().slice(0, 16)
+      );
+      setContent(record.content);
+      setNotes(record.notes ?? "");
+      setInitialized(true);
+    }
+  }, [record, initialized]);
+
+  const updateMutation = trpc.supportRecord.update.useMutation({
+    onSuccess: () => {
       router.push(
-        `/recipients/${recipientId}/support-records/${data.id}`
+        `/recipients/${recipientId}/support-records/${recordId}`
       );
     },
     onError: (err) => {
@@ -106,16 +93,10 @@ export default function NewSupportRecordPage({ params }: PageProps) {
     e.preventDefault();
     setError("");
 
-    if (!recipientId) {
-      setError("利用者IDが不正です");
-      return;
-    }
-
     try {
-      await createMutation.mutateAsync({
-        recipientId,
+      await updateMutation.mutateAsync({
+        id: recordId,
         recordDate: new Date(recordDate),
-        category,
         content,
         notes: notes || undefined,
       });
@@ -124,12 +105,7 @@ export default function NewSupportRecordPage({ params }: PageProps) {
     }
   };
 
-  const handleCategoryChange = (newCategory: SupportCategory) => {
-    setCategory(newCategory);
-    setContent(createDefaultContent(newCategory));
-  };
-
-  if (recipientLoading || !recipientId) {
+  if (isLoading || !recipientId || !recordId || !initialized) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">読み込み中...</div>
@@ -137,21 +113,23 @@ export default function NewSupportRecordPage({ params }: PageProps) {
     );
   }
 
-  if (!recipient) {
+  if (!record) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-red-500">利用者が見つかりません</div>
+        <div className="text-center text-red-500">記録が見つかりません</div>
       </div>
     );
   }
+
+  const category = record.category as SupportCategory;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       {/* ヘッダー */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-2">支援記録作成</h1>
+        <h1 className="text-2xl font-bold mb-2">支援記録編集</h1>
         <p className="text-gray-600">
-          利用者: {recipient.name}（{recipient.nameKana}）
+          カテゴリ: {CATEGORY_LABELS[category]}
         </p>
       </div>
 
@@ -181,78 +159,51 @@ export default function NewSupportRecordPage({ params }: PageProps) {
           />
         </div>
 
-        {/* カテゴリ選択 */}
-        <div>
-          <label className="block text-sm font-medium mb-2">
-            記録カテゴリ <span className="text-red-500">*</span>
-          </label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {CATEGORIES.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => handleCategoryChange(option.value)}
-                className={`px-4 py-3 rounded-md border transition-colors text-left cursor-pointer ${
-                  category === option.value
-                    ? "bg-blue-500 text-white border-blue-500"
-                    : "bg-white border-gray-300 hover:bg-gray-50"
-                }`}
-              >
-                <div className="font-medium">{option.label}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* カテゴリ別フォーム */}
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-lg font-semibold mb-4">記録内容</h2>
           {category === "MEAL" && (
             <MealForm
-              value={content as ReturnType<typeof createDefaultMealContent>}
+              value={content as Parameters<typeof MealForm>[0]["value"]}
               onChange={setContent}
-              disabled={createMutation.isPending}
+              disabled={updateMutation.isPending}
             />
           )}
           {category === "EXCRETION" && (
             <ExcretionForm
-              value={
-                content as ReturnType<typeof createDefaultExcretionContent>
-              }
+              value={content as Parameters<typeof ExcretionForm>[0]["value"]}
               onChange={setContent}
-              disabled={createMutation.isPending}
+              disabled={updateMutation.isPending}
             />
           )}
           {category === "BATH" && (
             <BathForm
-              value={content as ReturnType<typeof createDefaultBathContent>}
+              value={content as Parameters<typeof BathForm>[0]["value"]}
               onChange={setContent}
-              disabled={createMutation.isPending}
+              disabled={updateMutation.isPending}
             />
           )}
           {category === "MOBILITY" && (
             <MobilityForm
-              value={content as ReturnType<typeof createDefaultMobilityContent>}
+              value={content as Parameters<typeof MobilityForm>[0]["value"]}
               onChange={setContent}
-              disabled={createMutation.isPending}
+              disabled={updateMutation.isPending}
             />
           )}
           {category === "COMMUNICATION" && (
             <CommunicationForm
               value={
-                content as ReturnType<
-                  typeof createDefaultCommunicationContent
-                >
+                content as Parameters<typeof CommunicationForm>[0]["value"]
               }
               onChange={setContent}
-              disabled={createMutation.isPending}
+              disabled={updateMutation.isPending}
             />
           )}
           {category === "HEALTH" && (
             <HealthForm
-              value={content as ReturnType<typeof createDefaultHealthContent>}
+              value={content as Parameters<typeof HealthForm>[0]["value"]}
               onChange={setContent}
-              disabled={createMutation.isPending}
+              disabled={updateMutation.isPending}
             />
           )}
         </div>
@@ -267,7 +218,7 @@ export default function NewSupportRecordPage({ params }: PageProps) {
             rows={4}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            disabled={createMutation.isPending}
+            disabled={updateMutation.isPending}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="特記事項があれば記入してください"
           />
@@ -277,18 +228,22 @@ export default function NewSupportRecordPage({ params }: PageProps) {
         <div className="flex gap-3 justify-end pt-6 border-t">
           <button
             type="button"
-            onClick={() => router.back()}
-            disabled={createMutation.isPending}
+            onClick={() =>
+              router.push(
+                `/recipients/${recipientId}/support-records/${recordId}`
+              )
+            }
+            disabled={updateMutation.isPending}
             className="px-6 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
           >
             キャンセル
           </button>
           <button
             type="submit"
-            disabled={createMutation.isPending}
+            disabled={updateMutation.isPending}
             className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {createMutation.isPending ? "保存中..." : "保存"}
+            {updateMutation.isPending ? "保存中..." : "変更を保存"}
           </button>
         </div>
       </form>

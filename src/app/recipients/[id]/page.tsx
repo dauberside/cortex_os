@@ -1552,6 +1552,16 @@ export default function RecipientDetailPage() {
                 </p>
               </div>
             </Link>
+            <Link href={`/recipients/${recipientId}/support-records`}>
+              <div className="group cursor-pointer rounded-lg border border-gray-300 bg-white p-6 transition-all hover:border-gray-400 hover:shadow-sm">
+                <h3 className="mb-2 text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                  支援記録
+                </h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  日常支援の記録（食事・排泄・入浴など）
+                </p>
+              </div>
+            </Link>
           </div>
         </div>
 

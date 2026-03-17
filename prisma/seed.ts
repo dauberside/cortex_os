@@ -187,6 +187,17 @@ async function main() {
     throw new Error('ShiftTypes not found');
   }
 
+  // 既存データを削除してから再作成（重複防止）
+  await prisma.shift.deleteMany({
+    where: { staffId: { in: [staff1.id, staff2.id] } },
+  });
+  await prisma.timeClockEvent.deleteMany({
+    where: { staffId: { in: [staff1.id, staff2.id] } },
+  });
+  await prisma.attendanceRecord.deleteMany({
+    where: { staffId: { in: [staff1.id, staff2.id] } },
+  });
+
   // Create shifts for last month (February 2026)
   console.log('📅 Creating sample shifts for February 2026...');
 
@@ -384,20 +395,27 @@ async function main() {
   // Support Records（支援記録）
   console.log('📝 Creating Test Support Records...');
 
+  // 既存のテスト支援記録を削除してから再作成（重複防止）
+  await prisma.supportRecord.deleteMany({
+    where: {
+      recipientId: { in: [recipient1.id, recipient2.id] },
+    },
+  });
+
   let supportRecordCount = 0;
 
-  // 山田太郎さんの記録（直近1週間）
+  // 山田太郎さんの記録（2026-03-10基準で直近1週間・固定日付）
+  const baseDate1 = new Date('2026-03-10T12:00:00+09:00');
   for (let daysAgo = 0; daysAgo < 7; daysAgo++) {
-    const recordDate = new Date();
-    recordDate.setDate(recordDate.getDate() - daysAgo);
-    recordDate.setHours(12, 0, 0, 0);
+    const noon = new Date(baseDate1);
+    noon.setDate(noon.getDate() - daysAgo);
 
-    // 朝食記録
+    // 朝食記録 9:00
     await prisma.supportRecord.create({
       data: {
         recipientId: recipient1.id,
         staffId: staff1.id,
-        recordDate: new Date(recordDate.getTime() - 3 * 60 * 60 * 1000), // 9:00
+        recordDate: new Date(noon.getTime() - 3 * 60 * 60 * 1000),
         category: 'MEAL',
         content: {
           mealType: 'breakfast',
@@ -411,12 +429,12 @@ async function main() {
     });
     supportRecordCount++;
 
-    // 昼食記録
+    // 昼食記録 12:00
     await prisma.supportRecord.create({
       data: {
         recipientId: recipient1.id,
         staffId: staff2.id,
-        recordDate,
+        recordDate: noon,
         category: 'MEAL',
         content: {
           mealType: 'lunch',
@@ -429,12 +447,12 @@ async function main() {
     });
     supportRecordCount++;
 
-    // 夕食記録
+    // 夕食記録 18:00
     await prisma.supportRecord.create({
       data: {
         recipientId: recipient1.id,
         staffId: staff1.id,
-        recordDate: new Date(recordDate.getTime() + 6 * 60 * 60 * 1000), // 18:00
+        recordDate: new Date(noon.getTime() + 6 * 60 * 60 * 1000),
         category: 'MEAL',
         content: {
           mealType: 'dinner',
@@ -449,18 +467,18 @@ async function main() {
     supportRecordCount++;
   }
 
-  // 佐藤花子さんの記録（直近3日間）
+  // 佐藤花子さんの記録（2026-03-10基準で直近3日間・固定日付）
+  const baseDate2 = new Date('2026-03-10T12:00:00+09:00');
   for (let daysAgo = 0; daysAgo < 3; daysAgo++) {
-    const recordDate = new Date();
-    recordDate.setDate(recordDate.getDate() - daysAgo);
-    recordDate.setHours(12, 0, 0, 0);
+    const noon = new Date(baseDate2);
+    noon.setDate(noon.getDate() - daysAgo);
 
-    // 昼食記録（介助が必要）
+    // 昼食記録 12:00
     await prisma.supportRecord.create({
       data: {
         recipientId: recipient2.id,
         staffId: staff2.id,
-        recordDate,
+        recordDate: noon,
         category: 'MEAL',
         content: {
           mealType: 'lunch',
@@ -474,12 +492,12 @@ async function main() {
     });
     supportRecordCount++;
 
-    // 夕食記録
+    // 夕食記録 18:00
     await prisma.supportRecord.create({
       data: {
         recipientId: recipient2.id,
         staffId: staff1.id,
-        recordDate: new Date(recordDate.getTime() + 6 * 60 * 60 * 1000),
+        recordDate: new Date(noon.getTime() + 6 * 60 * 60 * 1000),
         category: 'MEAL',
         content: {
           mealType: 'dinner',
@@ -496,6 +514,170 @@ async function main() {
 
   console.log(`  ✓ Created ${supportRecordCount} support records`);
 
+  // UnitRecipient（利用者在籍）
+  console.log('🏠 Creating UnitRecipient enrollments...');
+
+  // 山田太郎: 通常在籍（2026-01-01〜）
+  const existingUr1 = await prisma.unitRecipient.findFirst({
+    where: { unitId: testUnit.id, recipientId: recipient1.id },
+  });
+  if (!existingUr1) {
+    await prisma.unitRecipient.create({
+      data: {
+        unitId: testUnit.id,
+        recipientId: recipient1.id,
+        joinedAt: new Date('2026-01-01'),
+        leftAt: null,
+      },
+    });
+  }
+  console.log(`  ✓ ${recipient1.name}: 通常在籍（2026-01-01〜）`);
+
+  // 佐藤花子: 2026-03-15入所（月途中入所）
+  const existingUr2 = await prisma.unitRecipient.findFirst({
+    where: { unitId: testUnit.id, recipientId: recipient2.id },
+  });
+  if (!existingUr2) {
+    await prisma.unitRecipient.create({
+      data: {
+        unitId: testUnit.id,
+        recipientId: recipient2.id,
+        joinedAt: new Date('2026-03-15'),
+        leftAt: null,
+      },
+    });
+  }
+  console.log(`  ✓ ${recipient2.name}: 月途中入所（2026-03-15〜）`);
+
+  // ServiceRecord（サービス実績）
+  console.log('📋 Creating ServiceRecord data for 2026-03...');
+
+  // 既存のテスト用 ServiceRecord を削除してから再作成
+  await prisma.serviceRecord.deleteMany({
+    where: {
+      recipientId: { in: [recipient1.id, recipient2.id] },
+      serviceDate: {
+        gte: new Date('2026-03-01'),
+        lte: new Date('2026-03-31'),
+      },
+    },
+  });
+
+  let serviceRecordCount = 0;
+
+  // 山田太郎: 2026-03-10（承認済み）
+  await prisma.serviceRecord.create({
+    data: {
+      recipientId: recipient1.id,
+      userId: staff1.id,
+      serviceType: 'GroupHome',
+      serviceDate: new Date('2026-03-10'),
+      startTime: new Date('2026-03-10T09:00:00'),
+      endTime: new Date('2026-03-10T17:00:00'),
+      duration: 420,
+      breakMinutes: 60,
+      serviceDetail: '業務日誌による日常生活支援',
+      isApproved: true,
+      approvedBy: manager.id,
+      approvedAt: new Date('2026-03-11T10:00:00'),
+    },
+  });
+  serviceRecordCount++;
+
+  // 山田太郎: 2026-03-10 同日2件目（未承認・夜勤）
+  await prisma.serviceRecord.create({
+    data: {
+      recipientId: recipient1.id,
+      userId: staff2.id,
+      serviceType: 'GroupHome',
+      serviceDate: new Date('2026-03-10'),
+      startTime: new Date('2026-03-10T22:00:00'),
+      endTime: new Date('2026-03-11T07:00:00'),
+      duration: 420,
+      breakMinutes: 60,
+      serviceDetail: '業務日誌による日常生活支援（夜勤）',
+      isApproved: false,
+    },
+  });
+  serviceRecordCount++;
+  console.log(`  ✓ ${recipient1.name}: 2026-03-10 同日2件（承認済み+未承認）`);
+
+  // 山田太郎: 2026-03-12（未承認）
+  await prisma.serviceRecord.create({
+    data: {
+      recipientId: recipient1.id,
+      userId: staff1.id,
+      serviceType: 'GroupHome',
+      serviceDate: new Date('2026-03-12'),
+      startTime: new Date('2026-03-12T09:00:00'),
+      endTime: new Date('2026-03-12T17:00:00'),
+      duration: 420,
+      breakMinutes: 60,
+      serviceDetail: '業務日誌による日常生活支援',
+      isApproved: false,
+    },
+  });
+  serviceRecordCount++;
+
+  // 山田太郎: 2026-03-14（承認済み）
+  await prisma.serviceRecord.create({
+    data: {
+      recipientId: recipient1.id,
+      userId: staff2.id,
+      serviceType: 'GroupHome',
+      serviceDate: new Date('2026-03-14'),
+      startTime: new Date('2026-03-14T07:00:00'),
+      endTime: new Date('2026-03-14T16:00:00'),
+      duration: 420,
+      breakMinutes: 60,
+      serviceDetail: '業務日誌による日常生活支援',
+      isApproved: true,
+      approvedBy: manager.id,
+      approvedAt: new Date('2026-03-15T09:00:00'),
+    },
+  });
+  serviceRecordCount++;
+  console.log(`  ✓ ${recipient1.name}: 2026-03-12, 2026-03-14 追加`);
+
+  // 佐藤花子: 2026-03-16（月途中入所後・未承認）※joinedAt=03-15 なので対象に含まれる
+  await prisma.serviceRecord.create({
+    data: {
+      recipientId: recipient2.id,
+      userId: staff1.id,
+      serviceType: 'GroupHome',
+      serviceDate: new Date('2026-03-16'),
+      startTime: new Date('2026-03-16T09:00:00'),
+      endTime: new Date('2026-03-16T17:00:00'),
+      duration: 420,
+      breakMinutes: 60,
+      serviceDetail: '業務日誌による日常生活支援',
+      isApproved: false,
+    },
+  });
+  serviceRecordCount++;
+
+  // 佐藤花子: 2026-03-20（月途中入所後・承認済み）
+  await prisma.serviceRecord.create({
+    data: {
+      recipientId: recipient2.id,
+      userId: staff2.id,
+      serviceType: 'GroupHome',
+      serviceDate: new Date('2026-03-20'),
+      startTime: new Date('2026-03-20T09:00:00'),
+      endTime: new Date('2026-03-20T17:00:00'),
+      duration: 420,
+      breakMinutes: 60,
+      serviceDetail: '業務日誌による日常生活支援',
+      isApproved: true,
+      approvedBy: manager.id,
+      approvedAt: new Date('2026-03-21T10:00:00'),
+    },
+  });
+  serviceRecordCount++;
+  console.log(`  ✓ ${recipient2.name}: 2026-03-16, 2026-03-20（月途中入所後）`);
+
+  console.log(`  ✓ Created ${serviceRecordCount} service records`);
+
   console.log('✅ Seed completed successfully!');
   console.log('\n📝 Test data summary:');
   console.log(`   - Unit: ${testUnit.name}`);
@@ -507,6 +689,12 @@ async function main() {
   console.log(`   - Clock events: ${clockEventCount} events`);
   console.log(`   - Attendance records: ${attendanceCount} records`);
   console.log(`   - Support records: ${supportRecordCount} records`);
+  console.log(`   - Service records: ${serviceRecordCount} records (2026-03)`);
+  console.log('');
+  console.log('🔍 受け入れ確認用データ:');
+  console.log('   - 山田太郎: 2026-03-10 同日2件（承認済み+未承認）, 03-12 未承認, 03-14 承認済み');
+  console.log('   - 佐藤花子: 月途中入所（03-15）→ 03-16 未承認, 03-20 承認済み');
+  console.log('   - テストユニット ID:', testUnit.id);
 }
 
 main()
