@@ -8,6 +8,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   BookOpen,
+  ClipboardList,
   Users,
   UserPlus,
   Trash2,
@@ -167,6 +168,12 @@ export default function UnitDetailPage() {
             <Button size="sm" variant="outline">
               <BookOpen className="mr-1.5 h-4 w-4" />
               日誌一覧
+            </Button>
+          </Link>
+          <Link href={`/units/${unitId}/service-records`}>
+            <Button size="sm" variant="outline">
+              <ClipboardList className="mr-1.5 h-4 w-4" />
+              月次サービス提供記録
             </Button>
           </Link>
         </div>

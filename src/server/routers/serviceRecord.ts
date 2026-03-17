@@ -124,6 +124,163 @@ export const serviceRecordRouter = router({
       return record;
     }),
 
+  // ユニット月次一覧（在籍判定つき）
+  listByUnit: protectedProcedure
+    .input(
+      z.object({
+        unitId: z.string(),
+        yearMonth: z.string().regex(/^\d{4}-\d{2}$/), // 例: "2026-03"
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const [year, month] = input.yearMonth.split("-").map(Number);
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+
+      // 対象月に在籍していた受給者を取得（joinedAt/leftAtで在籍判定）
+      const unitRecipients = await ctx.db.unitRecipient.findMany({
+        where: {
+          unitId: input.unitId,
+          joinedAt: { lte: endDate },
+          OR: [{ leftAt: null }, { leftAt: { gte: startDate } }],
+        },
+        select: {
+          recipientId: true,
+          joinedAt: true,
+          leftAt: true,
+          recipient: {
+            select: {
+              id: true,
+              name: true,
+              nameKana: true,
+            },
+          },
+        },
+      });
+
+      const recipientIds = unitRecipients.map((ur: { recipientId: string }) => ur.recipientId);
+
+      if (recipientIds.length === 0) {
+        return { recipients: [], records: [] };
+      }
+
+      const records = await ctx.db.serviceRecord.findMany({
+        where: {
+          recipientId: { in: recipientIds },
+          serviceDate: { gte: startDate, lte: endDate },
+        },
+        select: {
+          id: true,
+          recipientId: true,
+          serviceType: true,
+          serviceDate: true,
+          startTime: true,
+          endTime: true,
+          duration: true,
+          isApproved: true,
+          dailyLogEntryId: true,
+          dailyLogEntry: {
+            select: {
+              dailyLogId: true,
+            },
+          },
+          recipient: {
+            select: {
+              id: true,
+              name: true,
+              nameKana: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: [{ serviceDate: "asc" }, { startTime: "asc" }],
+      });
+
+      return {
+        recipients: unitRecipients.map((ur: { recipientId: string; joinedAt: Date; leftAt: Date | null; recipient: { id: string; name: string; nameKana: string | null } }) => ({
+          ...ur.recipient,
+          joinedAt: ur.joinedAt,
+          leftAt: ur.leftAt,
+        })),
+        records,
+      };
+    }),
+
+  // サービス実績を承認（LEAD / MANAGER のみ）
+  approve: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const currentUser = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+        select: { role: true },
+      });
+
+      if (
+        currentUser?.role !== "LEAD" &&
+        currentUser?.role !== "MANAGER"
+      ) {
+        throw new Error("この操作はリーダー以上の権限が必要です");
+      }
+
+      const record = await ctx.db.serviceRecord.findUnique({
+        where: { id: input.id },
+        select: { id: true },
+      });
+
+      if (!record) {
+        throw new Error("サービス実績が見つかりません");
+      }
+
+      return ctx.db.serviceRecord.update({
+        where: { id: input.id },
+        data: {
+          isApproved: true,
+          approvedBy: ctx.session.user.id,
+          approvedAt: new Date(),
+        },
+      });
+    }),
+
+  // サービス実績の承認を取り消し（LEAD / MANAGER のみ）
+  reject: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const currentUser = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+        select: { role: true },
+      });
+
+      if (
+        currentUser?.role !== "LEAD" &&
+        currentUser?.role !== "MANAGER"
+      ) {
+        throw new Error("この操作はリーダー以上の権限が必要です");
+      }
+
+      const record = await ctx.db.serviceRecord.findUnique({
+        where: { id: input.id },
+        select: { id: true },
+      });
+
+      if (!record) {
+        throw new Error("サービス実績が見つかりません");
+      }
+
+      return ctx.db.serviceRecord.update({
+        where: { id: input.id },
+        data: {
+          isApproved: false,
+          approvedBy: null,
+          approvedAt: null,
+        },
+      });
+    }),
+
   // 月次サマリー（集計情報）
   monthlySummary: protectedProcedure
     .input(
