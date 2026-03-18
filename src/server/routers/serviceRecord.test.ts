@@ -1,6 +1,6 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, assert } from "vitest";
 
 // next-auth と prisma を先にモックしてから router を import
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
@@ -17,6 +17,9 @@ const mockDb = {
     findMany: vi.fn(),
     findUnique: vi.fn(),
     update: vi.fn(),
+  },
+  guideRecord: {
+    findMany: vi.fn(),
   },
   user: {
     findUnique: vi.fn(),
@@ -69,6 +72,7 @@ describe("serviceRecord.listByUnit", () => {
 
     mockDb.unitRecipient.findMany.mockResolvedValue(mockUnitRecipients);
     mockDb.serviceRecord.findMany.mockResolvedValue(mockRecords);
+    mockDb.guideRecord.findMany.mockResolvedValue([]);
 
     const result = await caller.serviceRecord.listByUnit({
       unitId: "unit-1",
@@ -140,6 +144,93 @@ describe("serviceRecord.listByUnit", () => {
         yearMonth: "2026/03", // スラッシュ区切りは不正
       })
     ).rejects.toThrow();
+  });
+
+  it("guideOutingDates が JST 基準で正しい日付になる", async () => {
+    // UTC 2026-03-09T15:00:00Z = JST 2026-03-10T00:00:00+09:00
+    // UTC 表現では前日だが、JST では 3/10 になるケース
+    const mockUnitRecipients = [
+      {
+        recipientId: "r-1",
+        joinedAt: new Date("2026-01-01"),
+        leftAt: null,
+        recipient: { id: "r-1", name: "山田 太郎", nameKana: "ヤマダ タロウ" },
+      },
+    ];
+    mockDb.unitRecipient.findMany.mockResolvedValue(mockUnitRecipients);
+    mockDb.serviceRecord.findMany.mockResolvedValue([]);
+    mockDb.guideRecord.findMany.mockResolvedValue([
+      {
+        recipientId: "r-1",
+        // UTC 3/9 15:00 = JST 3/10 00:00
+        startedAt: new Date("2026-03-09T15:00:00.000Z"),
+      },
+    ]);
+
+    const result = await caller.serviceRecord.listByUnit({
+      unitId: "unit-1",
+      yearMonth: "2026-03",
+    });
+
+    // JST で 3/10 に変換されていること
+    expect(result.guideOutingDates?.["r-1"]).toContain("2026-03-10");
+    // UTC の 3/9 が混入していないこと
+    expect(result.guideOutingDates?.["r-1"]).not.toContain("2026-03-09");
+  });
+
+  it("GuideRecord がある日は outingDone=false でも guideOutingDates に含まれる", async () => {
+    const mockUnitRecipients = [
+      {
+        recipientId: "r-1",
+        joinedAt: new Date("2026-01-01"),
+        leftAt: null,
+        recipient: { id: "r-1", name: "山田 太郎", nameKana: "ヤマダ タロウ" },
+      },
+    ];
+    // outingDone=false のサービス記録
+    const mockRecords = [
+      {
+        id: "sr-1",
+        recipientId: "r-1",
+        serviceDate: new Date("2026-03-10"),
+        serviceType: "GroupHome",
+        startTime: new Date("2026-03-10T09:00:00"),
+        endTime: new Date("2026-03-10T17:00:00"),
+        duration: 480,
+        dailyLogEntryId: "dle-1",
+        dailyLogEntry: {
+          dailyLogId: "dl-1",
+          mealBreakfast: true,
+          mealLunch: true,
+          mealDinner: true,
+          bathDone: false,
+          outingDone: false, // falseだが GuideRecord があるので外出○
+          notes: null,
+        },
+        recipient: { id: "r-1", name: "山田 太郎", nameKana: "ヤマダ タロウ" },
+        user: { id: "user-1", name: "スタッフA" },
+      },
+    ];
+    mockDb.unitRecipient.findMany.mockResolvedValue(mockUnitRecipients);
+    mockDb.serviceRecord.findMany.mockResolvedValue(mockRecords);
+    // 同日に SUBMITTED の GuideRecord が存在
+    mockDb.guideRecord.findMany.mockResolvedValue([
+      {
+        recipientId: "r-1",
+        startedAt: new Date("2026-03-10T09:00:00.000Z"),
+      },
+    ]);
+
+    const result = await caller.serviceRecord.listByUnit({
+      unitId: "unit-1",
+      yearMonth: "2026-03",
+    });
+
+    // outingDone=false でも guideOutingDates に 3/10 が含まれる
+    assert(result.guideOutingDates !== undefined);
+    expect(result.guideOutingDates["r-1"]).toContain("2026-03-10");
+    // レコード自体も返る
+    expect(result.records[0].dailyLogEntry?.outingDone).toBe(false);
   });
 });
 

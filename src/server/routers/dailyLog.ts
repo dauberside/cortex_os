@@ -325,10 +325,13 @@ export const dailyLogRouter = router({
         include: { serviceRecord: true },
       });
 
+      // outingDestination が入力されていれば outingDone=true、空なら false で保存
+      const outingDone = !!(data.outingDestination && data.outingDestination.trim() !== "");
+
       const entry = await ctx.db.dailyLogEntry.upsert({
         where: { dailyLogId_recipientId: { dailyLogId, recipientId } },
-        create: { dailyLogId, recipientId, ...data },
-        update: data,
+        create: { dailyLogId, recipientId, ...data, outingDone },
+        update: { ...data, outingDone },
       });
 
       // ServiceRecord の自動生成・更新（GH/居宅/通所等の場合）
