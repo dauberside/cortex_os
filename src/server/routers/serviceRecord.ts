@@ -182,6 +182,12 @@ export const serviceRecordRouter = router({
           dailyLogEntry: {
             select: {
               dailyLogId: true,
+              mealBreakfast: true,
+              mealLunch: true,
+              mealDinner: true,
+              bathDone: true,
+              outingDone: true,
+              notes: true,
             },
           },
           recipient: {
@@ -201,6 +207,31 @@ export const serviceRecordRouter = router({
         orderBy: [{ serviceDate: "asc" }, { startTime: "asc" }],
       });
 
+      // GuideRecord（SUBMITTED）の日付集約（外出欄判定用）
+      // startedAt を JST 基準の日付文字列 "YYYY-MM-DD" に変換してグルーピング
+      const guideRecords = await ctx.db.guideRecord.findMany({
+        where: {
+          recipientId: { in: recipientIds },
+          status: "SUBMITTED",
+          startedAt: { gte: startDate, lte: endDate },
+        },
+        select: { recipientId: true, startedAt: true },
+      });
+
+      // { recipientId: string[] } 形式で返す（JST日付文字列）
+      const guideOutingDates: Record<string, string[]> = {};
+      for (const gr of guideRecords) {
+        // UTC+9 でローカル日付を算出
+        const jst = new Date(gr.startedAt.getTime() + 9 * 60 * 60 * 1000);
+        const dateStr = jst.toISOString().slice(0, 10); // "YYYY-MM-DD"
+        if (!guideOutingDates[gr.recipientId]) {
+          guideOutingDates[gr.recipientId] = [];
+        }
+        if (!guideOutingDates[gr.recipientId].includes(dateStr)) {
+          guideOutingDates[gr.recipientId].push(dateStr);
+        }
+      }
+
       return {
         recipients: unitRecipients.map((ur: { recipientId: string; joinedAt: Date; leftAt: Date | null; recipient: { id: string; name: string; nameKana: string | null } }) => ({
           ...ur.recipient,
@@ -208,6 +239,7 @@ export const serviceRecordRouter = router({
           leftAt: ur.leftAt,
         })),
         records,
+        guideOutingDates,
       };
     }),
 
