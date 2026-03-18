@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaNeonHttp } from "@prisma/adapter-neon";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: any;
@@ -17,7 +17,7 @@ function createPrismaClient() {
     );
   }
 
-  const adapter = new PrismaNeon({ connectionString });
+  const adapter = new PrismaNeonHttp(connectionString, {});
 
   return new (PrismaClient as any)({
     adapter,

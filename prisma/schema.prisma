@@ -1019,6 +1019,7 @@ model DailyLogEntry {
   prnMedications   Json?                     // [{name, reason, time, effect?}]
 
   // D. 外出・外泊・帰寮
+  outingDone        Boolean  @default(false)
   outingDestination String?
   outingCompanion   String?
   plannedReturnTime DateTime?
